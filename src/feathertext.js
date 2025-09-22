@@ -279,7 +279,7 @@
 							});
 
 							select.addEventListener('change', () => {
-								document.execCommand('fontName', false, select.value);
+								this.applyInlineStyle('fontFamily', select.value);
 								this.updateHistory();
 							});
 
@@ -302,14 +302,8 @@
 							});
 
 							select.addEventListener('change', () => {
-								const selection = window.getSelection();
-								if (selection.rangeCount > 0) {
-									const range = selection.getRangeAt(0);
-									const span = document.createElement('span');
-									span.style.fontSize = select.value;
-									range.surroundContents(span);
-									this.updateHistory();
-								}
+								this.applyInlineStyle('fontSize', select.value);
+								this.updateHistory();
 							});
 
 							wrapper.appendChild(select);
@@ -341,21 +335,8 @@
 							input.addEventListener('pointerdown', () => this.saveSelection());
 							input.addEventListener('mousedown', () => this.saveSelection());
 							input.addEventListener('change', () => {
-								// Restore selection and apply color
 								this.restoreSelection();
-								if (kind === 'fore') {
-									document.execCommand('foreColor', false, input.value);
-								} else {
-									try {
-										if (document.queryCommandSupported && document.queryCommandSupported('hiliteColor')) {
-											document.execCommand('hiliteColor', false, input.value);
-										} else {
-											document.execCommand('backColor', false, input.value);
-										}
-									} catch (e) {
-										document.execCommand('backColor', false, input.value);
-									}
-								}
+								this.applyInlineStyle(kind === 'fore' ? 'color' : 'backgroundColor', input.value);
 								this.updateHistory();
 								this.editor.focus();
 								applySwatch();
@@ -598,6 +579,17 @@
 								if (this.config.onKeydown) this.config.onKeydown(e, this);
 							});
 
+			// keep toolbar state in sync with selection
+			document.addEventListener('selectionchange', () => {
+				if (!this.editor || !window.getSelection) return;
+				const sel = window.getSelection();
+				if (!sel) return;
+				let node = sel.anchorNode;
+				let within = false;
+				while (node) { if (node === this.editor) { within = true; break; } node = node.parentNode; }
+				if (within) this.updateToolbarState();
+			});
+
 			// source events
 			this.source.addEventListener('input', () => {
 				this.element.value = this.source.value;
@@ -749,6 +741,114 @@
 		startAutosave() { if (this.autosaveTimer) clearInterval(this.autosaveTimer); this.autosaveTimer = setInterval(() => { this.element.value = this.getHTML(); }, this.config.autosaveInterval); }
 
 		// ----- Clipboard + formatting helpers -----
+		updateToolbarState() {
+			// Bold/italic/underline/strike active state
+			const mapping = [
+				{ cmd: 'bold', name: 'bold' },
+				{ cmd: 'italic', name: 'italic' },
+				{ cmd: 'underline', name: 'underline' },
+				{ cmd: 'strikeThrough', name: 'strikethrough' }
+			];
+			mapping.forEach(({cmd, name}) => {
+				try {
+					const active = document.queryCommandState(cmd);
+					const btn = this.toolbar && this.toolbar.querySelector(`[data-command="${name}"]`);
+					if (btn) btn.classList.toggle('is-active', !!active);
+				} catch {}
+			});
+		}
+
+		applyInlineStyle(cssProp, value) {
+			const sel = window.getSelection();
+			if (!sel || sel.rangeCount === 0) return;
+			const range = sel.getRangeAt(0);
+			if (range.collapsed) {
+				// Insert styled span with zero-width space to continue typing with the style
+				const span = document.createElement('span');
+				try { span.style[cssProp] = value; } catch {}
+				const zwsp = document.createTextNode('\u200B');
+				span.appendChild(zwsp);
+				range.insertNode(span);
+				// place caret inside the span after the ZWSP
+				sel.removeAllRanges();
+				const newRange = document.createRange();
+				newRange.setStart(zwsp, 1);
+				newRange.collapse(true);
+				sel.addRange(newRange);
+				return;
+			}
+
+			// If selection exactly equals an existing styled span with this property, update it
+			let node = range.commonAncestorContainer;
+			if (node.nodeType === Node.TEXT_NODE) node = node.parentElement;
+			const rangesEqual = (r1, r2) => (
+				r1.startContainer === r2.startContainer &&
+				r1.startOffset === r2.startOffset &&
+				r1.endContainer === r2.endContainer &&
+				r1.endOffset === r2.endOffset
+			);
+			for (let el = node; el && el !== this.editor; el = el.parentElement) {
+				if (el.nodeType === 1 && el.tagName === 'SPAN' && el.style && el.style[cssProp]) {
+					const full = document.createRange();
+					full.selectNodeContents(el);
+					if (rangesEqual(range, full)) {
+						try { el.style[cssProp] = value; } catch {}
+						this.mergeSimilarSpans(el.parentElement || this.editor);
+						return;
+					}
+					break; // nearest span decisive
+				}
+			}
+
+			// Otherwise wrap the selection
+			const span = document.createElement('span');
+			try { span.style[cssProp] = value; } catch {}
+			try {
+				range.surroundContents(span);
+			} catch (e) {
+				const frag = range.extractContents();
+				span.appendChild(frag);
+				range.insertNode(span);
+				// Reselect the newly styled content
+				sel.removeAllRanges();
+				const newRange = document.createRange();
+				newRange.selectNodeContents(span);
+				sel.addRange(newRange);
+			}
+			this.mergeSimilarSpans(span.parentElement || this.editor);
+		}
+
+		mergeSimilarSpans(root) {
+			if (!root) return;
+			const areEqualStyles = (a, b) => a.tagName === 'SPAN' && b.tagName === 'SPAN' && (a.getAttribute('style') || '') === (b.getAttribute('style') || '');
+			// Unwrap identical nested spans and merge adjacent ones
+			let changed = true;
+			while (changed) {
+				changed = false;
+				// unwrap nested spans with identical style
+				const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null);
+				while (walker.nextNode()) {
+					const el = walker.currentNode;
+					if (el.tagName === 'SPAN' && el.parentElement && el.parentElement.tagName === 'SPAN' && areEqualStyles(el, el.parentElement)) {
+						while (el.firstChild) el.parentElement.insertBefore(el.firstChild, el);
+						el.remove();
+						changed = true;
+						break;
+					}
+				}
+				// merge adjacent spans with identical style
+				const all = Array.from(root.querySelectorAll('span'));
+				for (const s of all) {
+					const next = s.nextSibling;
+					if (next && next.nodeType === 1 && next.tagName === 'SPAN' && areEqualStyles(s, next)) {
+						while (next.firstChild) s.appendChild(next.firstChild);
+						next.remove();
+						changed = true;
+						break;
+					}
+				}
+			}
+		}
 		async copyAction() {
 			if (this.isSource) {
 				const ta = this.source; const selection = ta.value.substring(ta.selectionStart, ta.selectionEnd) || ta.value;

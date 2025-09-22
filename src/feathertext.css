@@ -125,6 +125,10 @@
 .feather-color:hover {
 	background: var(--feather-hover);
 }
+.feather-btn.is-active {
+	background: var(--feather-hover);
+	box-shadow: inset 0 0 0 1px var(--feather-accent);
+}
 .feather-btn:active {
 	transform: scale(0.98);
 }
