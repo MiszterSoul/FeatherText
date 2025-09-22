@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build site for Pages",
+			"type": "shell",
+			"command": "npm run build && node -e \"console.log('ok')\"",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		}
+	]
+}

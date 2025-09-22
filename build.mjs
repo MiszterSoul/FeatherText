@@ -21,7 +21,8 @@ await build({
   entryPoints: ["src/feathertext.js"],
   bundle: true,
   format: "iife",
-  globalName: "FeatherText",
+  // Use a different global name to avoid clobbering the UMD-assigned window.FeatherText
+  globalName: "FeatherTextBundle",
   outfile: "dist/feathertext.min.js",
   minify: true,
   sourcemap: false,

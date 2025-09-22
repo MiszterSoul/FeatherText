@@ -30,7 +30,14 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p site
-          cp -r demo/* site/
+          # Root landing page
+          cp index.html site/index.html
+          # Demo and examples
+          mkdir -p site/demo
+          cp -r demo/* site/demo/
+          mkdir -p site/examples
+          cp -r examples/* site/examples/
+          # Built assets
           cp -r dist site/dist
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

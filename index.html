@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>FeatherText – Lightweight Rich Text Editor</title>
-	<link rel="stylesheet" href="feathertext.css">
+	<link rel="stylesheet" href="dist/feathertext.css">
 	<style>
 		:root { --bg-grad: radial-gradient(1000px 600px at 10% -10%, #1b2740 0%, transparent 55%), radial-gradient(1000px 600px at 110% -10%, #18223a 0%, transparent 55%); }
 		body { margin: 0; font: 14px/1.5 system-ui, Segoe UI, Inter, Roboto, Arial; color: var(--feather-text); background: var(--feather-bg); background-image: var(--bg-grad); }
@@ -24,7 +24,7 @@
 	footer { text-align:center; color: var(--feather-muted); padding: 32px 0 24px; background: var(--feather-panel); border-top: 1px solid var(--feather-border); }
 		@media (max-width: 860px){ .hero { grid-template-columns: 1fr; } }
 	</style>
-	<script src="feathertext.js"></script>
+	<script defer src="dist/feathertext.min.js"></script>
 	<link rel="icon" href="data:,">
 	<meta name="description" content="FeatherText is a sleek, dependency-free rich text editor with themes, a modern toolbar, and a tiny API.">
 	<meta name="theme-color" content="#0f1115">
@@ -93,18 +93,24 @@
 	</div>
 
 		<script>
-		// Inline demo
-		FeatherText.init('#try', {
-			theme: 'dark',
-			toolbar: ['format','fontname','fontsize','|','bold','italic','underline','strikethrough','|','link','image','|','ul','ol','|','alignleft','aligncenter','alignright','|','forecolor','backcolor','|','undo','redo','|','source']
+		// Inline demo with a small guard so we can surface issues if the bundle isn't loaded
+		document.addEventListener('DOMContentLoaded', function(){
+			if (!window.FeatherText) {
+				console.error('FeatherText not found. Ensure dist/feathertext.min.js exists and is referenced correctly.');
+				return;
+			}
+			try {
+				FeatherText.init('#try', {
+					theme: 'dark',
+					toolbar: ['format','fontname','fontsize','|','bold','italic','underline','strikethrough','|','link','image','|','ul','ol','|','alignleft','aligncenter','alignright','|','forecolor','backcolor','|','undo','redo','|','source']
+				});
+				// Footer version from JS
+				var el = document.getElementById('ft-ver');
+				if (el) el.textContent = 'FeatherText v' + (FeatherText.version || '') + ' · MIT';
+			} catch (e) {
+				console.error('FeatherText init failed:', e);
+			}
 		});
-			// Footer version from JS
-			(function(){
-				if (window.FeatherText) {
-					const el = document.getElementById('ft-ver');
-					if (el) el.textContent = 'FeatherText v' + (FeatherText.version || '') + ' · MIT';
-				}
-			})();
 	</script>
 </body>
 </html>
