@@ -1,22 +1,41 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>FeatherText – Basic Example (Light)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FeatherText – Basic Example</title>
   <link rel="stylesheet" href="../dist/feathertext.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./theme-toggle.js"></script>
   <script src="../dist/feathertext.min.js"></script>
 </head>
-<body style="margin:24px;">
-  <h1>FeatherText – Basic Example (Light)</h1>
-  <textarea id="basic"><p>Light theme, minimal toolbar.</p></textarea>
+<body>
+  <header class="header">
+    <div class="brand"><span class="dot"></span><h1>FeatherText Examples</h1></div>
+    <div class="toolbar">
+      <button class="btn" onclick="toggleTheme()">Toggle theme</button>
+      <a class="btn" href="./example.html">Simple</a>
+      <a class="btn" href="./example-api.html">API</a>
+      <a class="btn" href="./example-ocean.html">Ocean</a>
+      <a class="btn" href="./config-generator.html">Config Generator</a>
+    </div>
+  </header>
+  <main class="container">
+    <h2>Basic toolbar</h2>
+    <p class="lead">Minimal toolbar with headings, lists, and undo/redo.</p>
+    <textarea id="basic"><p>Minimal toolbar, theme follows page.</p></textarea>
+  </main>
+  <footer class="container footer">FeatherText · MIT License</footer>
 
   <script>
+    const theme = document.documentElement.getAttribute('data-theme') || 'light';
     const [editor] = FeatherText.init('#basic', {
-      theme: 'light',
+      theme,
       placeholder: 'Type here…',
       toolbar: ['format','bold','italic','|','ul','ol','|','undo','redo'],
       headings: ['P','H1','H2']
     });
+    addEventListener('themechange', (e) => editor.setTheme(e.detail));
   </script>
 </body>
 </html>

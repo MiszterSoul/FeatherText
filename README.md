@@ -3,6 +3,9 @@ FeatherText – Lightweight Rich Text Editor
 
 FeatherText is a small, dependency‑free WYSIWYG rich text editor that you can drop into any HTML page. It ships as a single CSS + JS pair, supports multiple themes, a flexible toolbar, and a clean, well‑documented API for runtime control.
 
+Live site (GitHub Pages):
+- https://misztersoul.github.io/FeatherText/
+
 
 ## Features
 
@@ -146,6 +149,29 @@ If the Pages deploy job fails with a 404 on first run, enable Pages once:
 
 This repo's `pages.yml` includes `actions/configure-pages@v5`, `upload-pages-artifact`, and `deploy-pages@v4`. After enabling the settings above, re-run the failed job or push a new commit to deploy the site.
 
+### Release & publish workflow
+
+When you bump the version in `package.json` and create a matching Git tag, CI takes care of everything:
+
+1) Bump version (choose one):
+	- `npm version patch` (or `minor` / `major`) – creates a commit and tag like `v0.1.1`
+	- Or manually edit `package.json` and create the tag yourself: `git tag v0.1.1`
+
+2) Push commits and tags:
+	- `git push && git push --tags`
+
+3) GitHub Actions (release.yml) will:
+	- Install deps and build `dist/` (minified IIFE, ESM, CJS, CSS)
+	- Verify the tag matches `package.json` version
+	- Create a GitHub Release and attach the built files
+	- Publish the package to npm (requires `NPM_TOKEN` secret)
+
+CDN usage (after npm publish):
+
+- jsDelivr: `https://cdn.jsdelivr.net/npm/feathertext@latest/dist/feathertext.min.js`
+- unpkg:   `https://unpkg.com/feathertext@latest/dist/feathertext.min.js`
+
+Pin to a specific version by replacing `latest` with the version number (e.g., `@0.1.0`).
 
 ## License
 ## Toolbar reference

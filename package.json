@@ -6,6 +6,13 @@
   "main": "dist/feathertext.cjs",
   "module": "dist/feathertext.esm.js",
   "unpkg": "dist/feathertext.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/feathertext.esm.js",
+      "require": "./dist/feathertext.cjs",
+      "default": "./dist/feathertext.esm.js"
+    }
+  },
   "files": [
     "dist",
     "src",
@@ -14,8 +21,12 @@
   ],
   "scripts": {
     "build": "node build.mjs",
+    "prepublishOnly": "npm run build",
     "dev": "npx http-server -c-1 -p 5173",
     "release:prepare": "npm run build && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "esbuild": "^0.23.0"

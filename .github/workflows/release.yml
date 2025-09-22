@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # needed to create releases
+      id-token: write   # for npm provenance (optional)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,8 +18,17 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run build
+      - name: Verify version matches tag
+        run: |
+          PKG_VER=$(node -p "require('./package.json').version")
+          TAG_VER=${GITHUB_REF_NAME#v}
+          if [ "$PKG_VER" != "$TAG_VER" ]; then
+            echo "package.json version ($PKG_VER) does not match tag ($TAG_VER)" >&2
+            exit 1
+          fi
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v2
@@ -32,3 +42,8 @@ jobs:
             dist/feathertext.esm.js
             dist/feathertext.cjs
             dist/feathertext.css
+      - name: Publish to npm
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public

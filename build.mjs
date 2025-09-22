@@ -1,5 +1,7 @@
 import { build } from "esbuild";
 import fs from "node:fs";
+const pkgJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const define = { __FEATHER_VERSION__: JSON.stringify(pkgJson.version) };
 
 await build({
   entryPoints: ["src/feathertext.js"],
@@ -7,6 +9,7 @@ await build({
   format: "esm",
   outfile: "dist/feathertext.esm.js",
   sourcemap: true,
+  define,
 });
 
 await build({
@@ -15,6 +18,7 @@ await build({
   format: "cjs",
   outfile: "dist/feathertext.cjs",
   sourcemap: true,
+  define,
 });
 
 await build({
@@ -26,6 +30,7 @@ await build({
   outfile: "dist/feathertext.min.js",
   minify: true,
   sourcemap: false,
+  define,
 });
 
 // tiny CSS example (optional)

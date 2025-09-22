@@ -2,35 +2,61 @@
 <html lang="en" data-theme="dark-b">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FeatherText – API Controls</title>
   <link rel="stylesheet" href="../dist/feathertext.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./theme-toggle.js"></script>
   <script src="../dist/feathertext.min.js"></script>
-  <style>
-    .controls { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
-    .controls button { padding:6px 10px; }
-  </style>
 </head>
-<body style="margin:24px;">
-  <h1>FeatherText – API Controls</h1>
-  <div class="controls">
-    <button id="theme-dark">Theme: Dark</button>
-    <button id="theme-light">Theme: Light</button>
-    <button id="theme-b">Theme: Dark‑B</button>
-    <button id="add-code">Add "code"</button>
-    <button id="remove-image">Remove "image"</button>
-    <button id="hide-video">Hide "video"</button>
-    <button id="show-video">Show "video"</button>
-    <button id="toolbar-min">Toolbar: Minimal</button>
-    <button id="toolbar-max">Toolbar: Full</button>
-  </div>
+<body>
+  <header class="header">
+    <div class="brand"><span class="dot"></span><h1>FeatherText Examples</h1></div>
+    <div class="toolbar">
+      <button class="btn" onclick="toggleTheme()">Toggle theme</button>
+      <a class="btn" href="./example.html">Simple</a>
+      <a class="btn" href="./example-basic.html">Basic</a>
+      <a class="btn" href="./example-ocean.html">Ocean</a>
+      <a class="btn" href="./config-generator.html">Config Generator</a>
+    </div>
+  </header>
+  <main class="container">
+    <h2>API controls</h2>
+    <p class="lead">Interact with the editor programmatically.</p>
 
-  <textarea id="api"><p>Use buttons above to control the editor at runtime.</p></textarea>
+    <div class="grid">
+      <div class="card">
+        <h3>Theme and toolbar</h3>
+        <div class="toolbar" style="flex-wrap:wrap; gap:10px;">
+          <button class="btn" id="theme-dark">Theme: Dark</button>
+          <button class="btn" id="theme-light">Theme: Light</button>
+          <button class="btn" id="theme-b">Theme: Dark‑B</button>
+          <button class="btn" id="toolbar-min">Toolbar: Minimal</button>
+          <button class="btn" id="toolbar-max">Toolbar: Full</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Buttons</h3>
+        <div class="toolbar" style="flex-wrap:wrap; gap:10px;">
+          <button class="btn" id="add-code">Add "code"</button>
+          <button class="btn" id="remove-image">Remove "image"</button>
+          <button class="btn" id="hide-video">Hide "video"</button>
+          <button class="btn" id="show-video">Show "video"</button>
+        </div>
+      </div>
+    </div>
+
+    <textarea id="api"><p>Use buttons above to control the editor at runtime.</p></textarea>
+  </main>
+  <footer class="container footer">FeatherText · MIT License</footer>
 
   <script>
     const [editor] = FeatherText.init('#api', {
-      theme: 'dark-b',
+      theme: document.documentElement.getAttribute('data-theme') || 'dark-b',
       toolbar: ['format','bold','italic','|','link','image','|','ul','ol','|','undo','redo','|','source']
     });
+
+    addEventListener('themechange', (e) => editor.setTheme(e.detail));
 
     document.getElementById('theme-dark').onclick = () => editor.setTheme('dark');
     document.getElementById('theme-light').onclick = () => editor.setTheme('light');

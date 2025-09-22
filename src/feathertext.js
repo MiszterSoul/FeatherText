@@ -795,7 +795,8 @@
 
 	FeatherText.init = function(selector, cfg){ const nodes = document.querySelectorAll(selector); const arr = []; nodes.forEach(n => arr.push(new FeatherText(n, cfg))); return arr; };
 	FeatherText.themes = themes;
-	FeatherText.version = '2.0.0';
+	// Version is injected at build time from package.json via esbuild define
+	FeatherText.version = (typeof __FEATHER_VERSION__ !== 'undefined' ? __FEATHER_VERSION__ : '0.0.0-dev');
 
 	return FeatherText;
 }));

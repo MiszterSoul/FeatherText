@@ -2,17 +2,34 @@
 <html lang="en" data-theme="ocean">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FeatherText – Ocean Theme</title>
   <link rel="stylesheet" href="../dist/feathertext.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./theme-toggle.js"></script>
   <script src="../dist/feathertext.min.js"></script>
 </head>
-<body style="margin:24px;">
-  <h1>FeatherText – Ocean Theme</h1>
-  <textarea id="ocean"><p>Ocean theme with more tools.</p></textarea>
+<body>
+  <header class="header">
+    <div class="brand"><span class="dot"></span><h1>FeatherText Examples</h1></div>
+    <div class="toolbar">
+      <button class="btn" onclick="toggleTheme()">Toggle theme</button>
+      <a class="btn" href="./example.html">Simple</a>
+      <a class="btn" href="./example-basic.html">Basic</a>
+      <a class="btn" href="./example-api.html">API</a>
+      <a class="btn" href="./config-generator.html">Config Generator</a>
+    </div>
+  </header>
+  <main class="container">
+    <h2>Ocean theme</h2>
+    <p class="lead">Full toolbar to showcase features. Page starts in Ocean, but you can toggle themes.</p>
+    <textarea id="ocean"><p>Ocean theme with more tools.</p></textarea>
+  </main>
+  <footer class="container footer">FeatherText · MIT License</footer>
 
   <script>
     const [editor] = FeatherText.init('#ocean', {
-      theme: 'ocean',
+      theme: document.documentElement.getAttribute('data-theme') || 'ocean',
       autosave: true,
       toolbar: [
         'format','fontname','fontsize','|',
@@ -24,6 +41,7 @@
         'forecolor','backcolor','|','undo','redo','|','fullscreen','source'
       ]
     });
+    addEventListener('themechange', (e) => editor.setTheme(e.detail));
   </script>
 </body>
 </html>

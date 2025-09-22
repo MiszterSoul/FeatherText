@@ -1,0 +1,50 @@
+/* Shared layout for examples with light/dark themes */
+:root {
+  --bg: #0f1115;
+  --panel: #151922;
+  --text: #e6e9ef;
+  --muted: #98a2b3;
+  --border: #222938;
+  --accent: #6ea8fe;
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --panel: #f8f9fa;
+  --text: #1f2328;
+  --muted: #57606a;
+  --border: #d0d7de;
+  --accent: #0d6efd;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font: 14px/1.5 system-ui, Segoe UI, Roboto, Inter, Arial;
+  color: var(--text);
+  background: var(--bg);
+}
+.header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.brand { display:flex; gap:10px; align-items:center; }
+.brand .dot { width:10px; height:10px; border-radius:50%; background: var(--accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent), transparent 80%); }
+.brand h1 { font-size: 16px; margin: 0; }
+
+.container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+.lead { color: var(--muted); margin-top: 8px; }
+
+.toolbar { display:flex; gap:8px; align-items:center; }
+.btn { height: 32px; padding: 0 10px; border-radius: 8px; border:1px solid var(--border); background: var(--bg); color: var(--text); cursor:pointer; }
+.btn:hover { background: color-mix(in srgb, var(--bg), var(--panel)); }
+
+.grid { display:grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 960px){ .grid { grid-template-columns: 1fr 1fr; } }
+
+.card { padding: 14px; border:1px solid var(--border); border-radius: 12px; background: var(--panel); }
+.card h3 { margin: 0 0 8px; }
+
+.footer { color: var(--muted); text-align:center; padding: 30px 0; }
