@@ -6,8 +6,9 @@
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		define([], factory);
-	} else if (typeof module === 'object' && module.exports) {
-		module.exports = factory();
+	} else if (root && typeof root === 'object' && root.module && root.module.exports) {
+		// Avoid referencing `module` identifier directly to keep ESM bundlers happy
+		root.module.exports = factory();
 	} else {
 		root.FeatherText = factory();
 	}
@@ -738,7 +739,7 @@
 		getConfig() { return Object.assign({}, this.config); }
 		setConfig(cfg) { this.config = Object.assign({}, this.config, cfg || {}); this.destroy(); this.applyTheme(this.config.theme); this.buildEditor(); this.setupEvents(); }
 
-		startAutosave() { if (this.autosaveTimer) clearInterval(this.autosaveTimer); this.autosaveTimer = setInterval(() => { this.element.value = this.getHTML(); }, this.config.autosaveInterval); }
+		// removed duplicate startAutosave (kept single definition above)
 
 		// ----- Clipboard + formatting helpers -----
 		updateToolbarState() {

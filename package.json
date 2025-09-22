@@ -9,8 +9,7 @@
   "exports": {
     ".": {
       "import": "./dist/feathertext.esm.js",
-      "require": "./dist/feathertext.cjs",
-      "default": "./dist/feathertext.esm.js"
+      "require": "./dist/feathertext.cjs"
     }
   },
   "files": [
