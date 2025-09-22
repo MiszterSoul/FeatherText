@@ -137,6 +137,15 @@ The editor sets CSS variables on :root with prefix --feather- (bg, panel, border
 
 ## Tips & notes
 
+### GitHub Pages first-time setup
+
+If the Pages deploy job fails with a 404 on first run, enable Pages once:
+
+- Repo Settings → Pages → Build and deployment → Source: GitHub Actions
+- Repo Settings → Actions → General → Workflow permissions: Read and write permissions
+
+This repo's `pages.yml` includes `actions/configure-pages@v5`, `upload-pages-artifact`, and `deploy-pages@v4`. After enabling the settings above, re-run the failed job or push a new commit to deploy the site.
+
 
 ## License
 ## Toolbar reference
