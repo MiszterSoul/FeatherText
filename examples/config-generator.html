@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <title>FeatherText – Config Generator</title>
+  <link rel="stylesheet" href="../dist/feathertext.css">
+  <style>
+    body { font:14px system-ui; margin:24px; }
+    .grid { display:grid; grid-template-columns: 320px minmax(420px,1fr); gap:24px; align-items:start; }
+    fieldset { border:1px solid var(--feather-border); padding:12px; border-radius:10px; background:var(--feather-panel); }
+    legend { padding:0 6px; color:var(--feather-text); }
+    label { display:block; margin:6px 0; color:var(--feather-muted); }
+    .row { display:flex; flex-wrap:wrap; gap:10px; }
+    .code { background:#0b1020; color:#e6e9ef; padding:12px; border-radius:10px; overflow:auto; min-height:120px; }
+    button { padding:6px 10px; }
+    .badge { font-size:12px; color:var(--feather-muted); }
+  </style>
+</head>
+<body>
+  <h1>FeatherText – Config Generator</h1>
+  <p class="badge">Copy and paste the snippet into your page. If you add an API key, lightweight usage will be tracked.</p>
+  <div class="grid">
+    <div>
+      <fieldset>
+        <legend>Theme</legend>
+        <label><select id="theme">
+          <option value="dark">dark</option>
+          <option value="light">light</option>
+          <option value="ocean">ocean</option>
+          <option value="forest">forest</option>
+          <option value="dark-b">dark-b</option>
+        </select></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Toolbar</legend>
+        <div class="row" id="btns"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Options</legend>
+        <label><input id="sanitize" type="checkbox" checked> sanitizePaste</label>
+        <label><input id="autosave" type="checkbox"> autosave</label>
+        <label><input id="wordCount" type="checkbox" checked> wordCount</label>
+        <label><input id="charCount" type="checkbox" checked> charCount</label>
+        <label>apiKey (optional)<br><input id="apiKey" placeholder="your-public-key" style="width:100%"></label>
+      </fieldset>
+
+      <div class="row">
+        <button id="copy">Copy snippet</button>
+        <span class="badge" id="copied" style="display:none;">Copied!</span>
+      </div>
+    </div>
+
+    <div>
+      <pre class="code" id="out"></pre>
+      <h3>Preview</h3>
+      <textarea id="prev" data-placeholder="Preview..."><p>Preview editor</p></textarea>
+    </div>
+  </div>
+
+  <script>
+    const all = ['format','fontname','fontsize','|','bold','italic','underline','strikethrough','|','link','unlink','image','video','table','|','ul','ol','indent','outdent','|','alignleft','aligncenter','alignright','alignjustify','|','blockquote','code','hr','|','forecolor','backcolor','|','undo','redo','|','fullscreen','source'];
+    const container = document.getElementById('btns');
+    all.forEach(item => {
+      if (item === '|') {
+        const sep = document.createElement('div');
+        sep.textContent = '|';
+        sep.style.padding = '6px 4px';
+        container.appendChild(sep);
+        return;
+      }
+      const wrap = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = ['bold','italic','underline','link','image','ul','ol','undo','redo','source','format','forecolor','backcolor'].includes(item);
+      cb.dataset.name = item;
+      wrap.appendChild(cb);
+      wrap.appendChild(document.createTextNode(' ' + item));
+      container.appendChild(wrap);
+    });
+
+    function getToolbar() {
+      const names = [...container.querySelectorAll('input[type=checkbox]')].filter(x => x.checked).map(x => x.dataset.name);
+      // keep one separator between logical groups if any of group’s items selected
+      const groups = [
+        ['format','fontname','fontsize'],
+        ['bold','italic','underline','strikethrough'],
+        ['link','unlink','image','video','table'],
+        ['ul','ol','indent','outdent'],
+        ['alignleft','aligncenter','alignright','alignjustify'],
+        ['blockquote','code','hr'],
+        ['forecolor','backcolor'],
+        ['undo','redo'],
+        ['fullscreen','source']
+      ];
+      const tb = [];
+      groups.forEach(g => {
+        const items = g.filter(n => names.includes(n));
+        if (items.length) {
+          if (tb.length) tb.push('|');
+          tb.push(...items);
+        }
+      });
+      return tb;
+    }
+
+    function render() {
+      const theme = document.getElementById('theme').value;
+      const toolbar = getToolbar();
+      const config = {
+        theme,
+        apiKey: document.getElementById('apiKey').value || undefined,
+        sanitizePaste: document.getElementById('sanitize').checked,
+        autosave: document.getElementById('autosave').checked,
+        wordCount: document.getElementById('wordCount').checked,
+        charCount: document.getElementById('charCount').checked,
+        toolbar
+      };
+      const json = JSON.stringify(config, null, 2);
+      const snippet = [
+        '<link rel="stylesheet" href="feathertext.css">',
+        '<script src="feathertext.js"></' + 'script>',
+        '',
+        '<textarea id="editor"></textarea>',
+        '',
+        '<script>',
+        `  document.documentElement.setAttribute('data-theme', '${theme}');`,
+        '  const [editor] = FeatherText.init("#editor", ' + json + ');',
+        '</' + 'script>'
+      ].join('\n');
+      out.textContent = snippet;
+
+      // preview
+      if (!window._inst) {
+        window._inst = FeatherText.init('#prev', config)[0];
+      } else {
+        _inst.setTheme(theme);
+        _inst.setToolbar(toolbar);
+      }
+    }
+
+    document.querySelectorAll('input,select').forEach(el => el.addEventListener('input', render));
+    document.getElementById('copy').onclick = async () => {
+      await navigator.clipboard.writeText(out.textContent);
+      document.getElementById('copied').style.display = 'inline';
+      setTimeout(() => document.getElementById('copied').style.display = 'none', 1200);
+    };
+    render();
+  </script>
+  <script src="../dist/feathertext.min.js"></script>
+</body>
+</html>

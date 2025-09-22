@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FeatherText Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="../dist/feathertext.css">
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem; }
+    .editor { border: 1px solid #ddd; border-radius: 8px; padding: 12px; min-height: 180px; }
+    .toolbar button { margin-right: 6px; }
+  </style>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="FeatherText demo page">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:title" content="FeatherText Demo">
+  <meta property="og:description" content="A tiny, good-looking rich text editor.">
+  <meta name="robots" content="noindex">
+  <script defer src="../dist/feathertext.min.js"></script>
+  <!-- note: FeatherText global provided by dist/feathertext.min.js -->
+</head>
+<body>
+  <h1>FeatherText</h1>
+  <div class="toolbar">
+    <button data-cmd="bold">Bold</button>
+    <button data-cmd="italic">Italic</button>
+    <button data-cmd="underline">Underline</button>
+    <button data-cmd="h1">H1</button>
+    <button data-cmd="code">Code</button>
+  </div>
+  <div id="editor" class="editor" contenteditable="true">Type here…</div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const ed = document.getElementById('editor');
+      const ft = new FeatherText(ed);
+
+      const map = {
+        bold: () => document.execCommand('bold'),
+        italic: () => document.execCommand('italic'),
+        underline: () => document.execCommand('underline'),
+        h1: () => document.execCommand('formatBlock', false, 'h1'),
+        code: () => ft.insertCode()
+      };
+
+      document.querySelectorAll('[data-cmd]').forEach(b => {
+        b.addEventListener('click', () => {
+          const fn = map[b.dataset.cmd];
+          if (fn) fn();
+          ed.focus();
+        });
+      });
+    });
+  </script>
+</body>
+<script>
+  // Fallback if script loading order changes
+  if (!window.FeatherText) {
+    console.error('FeatherText script failed to load. Build dist first: npm run build');
+  }
+</script>
+</html>

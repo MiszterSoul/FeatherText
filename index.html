@@ -1,0 +1,110 @@
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>FeatherText – Lightweight Rich Text Editor</title>
+	<link rel="stylesheet" href="feathertext.css">
+	<style>
+		:root { --bg-grad: radial-gradient(1000px 600px at 10% -10%, #1b2740 0%, transparent 55%), radial-gradient(1000px 600px at 110% -10%, #18223a 0%, transparent 55%); }
+		body { margin: 0; font: 14px/1.5 system-ui, Segoe UI, Inter, Roboto, Arial; color: var(--feather-text); background: var(--feather-bg); background-image: var(--bg-grad); }
+		.wrap { max-width: 1000px; margin: 0 auto; padding: 48px 20px; }
+		.hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; }
+		.hero h1 { font-size: 2.2rem; margin: 0 0 10px; }
+		.sub { color: var(--feather-muted); margin: 0 0 18px; }
+		.cta { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+		.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid var(--feather-border); background: var(--feather-panel); color: var(--feather-text); border-radius:12px; text-decoration:none; transition: background .15s ease, transform .06s ease; }
+		.btn:hover { background: var(--feather-hover); }
+		.btn:active { transform: translateY(1px); }
+		.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 32px; }
+		.card { border:1px solid var(--feather-border); background: var(--feather-panel); border-radius: 14px; padding: 14px; }
+		.card h3 { margin: 6px 0 8px; font-size: 1.05rem; }
+		.muted { color: var(--feather-muted); }
+	footer { text-align:center; color: var(--feather-muted); padding: 32px 0 24px; background: var(--feather-panel); border-top: 1px solid var(--feather-border); }
+		@media (max-width: 860px){ .hero { grid-template-columns: 1fr; } }
+	</style>
+	<script src="feathertext.js"></script>
+	<link rel="icon" href="data:,">
+	<meta name="description" content="FeatherText is a sleek, dependency-free rich text editor with themes, a modern toolbar, and a tiny API.">
+	<meta name="theme-color" content="#0f1115">
+	<meta property="og:title" content="FeatherText – Lightweight Rich Text Editor">
+	<meta property="og:description" content="Sleek, themeable, dependency-free editor with a modern toolbar and simple API.">
+</head>
+<body>
+	<div class="wrap">
+		<section class="hero">
+			<div>
+				<h1>FeatherText</h1>
+				<p class="sub">A modern, dependency‑free rich text editor with themes, smart toolbar, and a tiny API surface. Drop it in and start typing.</p>
+				<div class="cta">
+					<a class="btn" href="#try">Try inline demo</a>
+					<a class="btn" href="examples/example.html">Quick example</a>
+					<a class="btn" href="examples/example-basic.html">Basic (light)</a>
+					<a class="btn" href="examples/example-ocean.html">Ocean theme</a>
+					<a class="btn" href="examples/example-api.html">API controls</a>
+					<a class="btn" href="examples/config-generator.html">Config generator</a>
+				</div>
+			</div>
+			<div>
+				<textarea id="try" data-placeholder="Write something…"><h2>Welcome</h2><p>Meet <b>FeatherText</b>—your minimal, themeable editor.</p></textarea>
+			</div>
+		</section>
+
+		<section class="grid" style="margin-top: 28px;">
+			<div class="card">
+				<h3>Clean UI</h3>
+				<p class="muted">Sticky toolbar with tooltips, grouped controls, and tasteful defaults.</p>
+			</div>
+			<div class="card">
+				<h3>Themes</h3>
+				<p class="muted">Dark, Light, Ocean, Forest, and Dark‑B—swap instantly or define your own.</p>
+			</div>
+			<div class="card">
+				<h3>Simple API</h3>
+				<p class="muted">Initialize in one line. Update toolbar, theme, or content at runtime.</p>
+			</div>
+			<div class="card">
+				<h3>No Dependencies</h3>
+				<p class="muted">One CSS + one JS. Copy, paste, and go.</p>
+			</div>
+		</section>
+
+		<section style="margin-top: 28px;">
+			<h2 style="margin: 0 0 8px;">Usage</h2>
+			<pre class="card" style="overflow:auto;">
+&lt;link rel="stylesheet" href="feathertext.css"&gt;
+&lt;script src="feathertext.js"&gt;&lt;/script&gt;
+
+&lt;textarea id="editor"&gt;&lt;/textarea&gt;
+
+&lt;script&gt;
+	const [editor] = FeatherText.init('#editor', {
+		theme: 'dark',
+		toolbar: ['format','bold','italic','underline','|','link','image','|','ul','ol','|','forecolor','backcolor','|','undo','redo','|','source']
+	});
+&lt;/script&gt;
+			</pre>
+		</section>
+
+			<footer>
+				<small id="ft-ver">FeatherText · MIT</small>
+			</footer>
+	</div>
+
+		<script>
+		// Inline demo
+		FeatherText.init('#try', {
+			theme: 'dark',
+			toolbar: ['format','fontname','fontsize','|','bold','italic','underline','strikethrough','|','link','image','|','ul','ol','|','alignleft','aligncenter','alignright','|','forecolor','backcolor','|','undo','redo','|','source']
+		});
+			// Footer version from JS
+			(function(){
+				if (window.FeatherText) {
+					const el = document.getElementById('ft-ver');
+					if (el) el.textContent = 'FeatherText v' + (FeatherText.version || '') + ' · MIT';
+				}
+			})();
+	</script>
+</body>
+</html>

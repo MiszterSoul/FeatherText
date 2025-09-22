@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="ocean">
+<head>
+  <meta charset="utf-8">
+  <title>FeatherText – Ocean Theme</title>
+  <link rel="stylesheet" href="../dist/feathertext.css">
+  <script src="../dist/feathertext.min.js"></script>
+</head>
+<body style="margin:24px;">
+  <h1>FeatherText – Ocean Theme</h1>
+  <textarea id="ocean"><p>Ocean theme with more tools.</p></textarea>
+
+  <script>
+    const [editor] = FeatherText.init('#ocean', {
+      theme: 'ocean',
+      autosave: true,
+      toolbar: [
+        'format','fontname','fontsize','|',
+        'bold','italic','underline','strikethrough','|',
+        'link','unlink','image','video','table','|',
+        'ul','ol','indent','outdent','|',
+        'alignleft','aligncenter','alignright','alignjustify','|',
+        'blockquote','code','hr','|',
+        'forecolor','backcolor','|','undo','redo','|','fullscreen','source'
+      ]
+    });
+  </script>
+</body>
+</html>

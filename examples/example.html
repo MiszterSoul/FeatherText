@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="../dist/feathertext.css">
+<script src="../dist/feathertext.min.js"></script>
+
+<textarea id="desc" name="description" data-placeholder="Write description…">
+  <h2>Hello 👋</h2><p>This is a <b>tiny</b> editor.</p>
+</textarea>
+
+<script>
+  document.documentElement.setAttribute('data-theme', 'dark');
+
+  const [editor] = FeatherText.init('#desc', {
+    theme: 'dark',
+    sanitizePaste: true,
+  });
+
+  // API example
+  editor.getHTML();
+</script>

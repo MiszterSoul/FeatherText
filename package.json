@@ -1,0 +1,30 @@
+{
+  "name": "feathertext",
+  "version": "0.1.0",
+  "description": "A tiny, good-looking rich text editor.",
+  "type": "module",
+  "main": "dist/feathertext.cjs",
+  "module": "dist/feathertext.esm.js",
+  "unpkg": "dist/feathertext.min.js",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "npx http-server -c-1 -p 5173",
+    "release:prepare": "npm run build && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0"
+  },
+  "keywords": [
+    "rich-text",
+    "editor",
+    "lightweight",
+    "wysiwyg"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="dark-b">
+<head>
+  <meta charset="utf-8">
+  <title>FeatherText – API Controls</title>
+  <link rel="stylesheet" href="../dist/feathertext.css">
+  <script src="../dist/feathertext.min.js"></script>
+  <style>
+    .controls { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .controls button { padding:6px 10px; }
+  </style>
+</head>
+<body style="margin:24px;">
+  <h1>FeatherText – API Controls</h1>
+  <div class="controls">
+    <button id="theme-dark">Theme: Dark</button>
+    <button id="theme-light">Theme: Light</button>
+    <button id="theme-b">Theme: Dark‑B</button>
+    <button id="add-code">Add "code"</button>
+    <button id="remove-image">Remove "image"</button>
+    <button id="hide-video">Hide "video"</button>
+    <button id="show-video">Show "video"</button>
+    <button id="toolbar-min">Toolbar: Minimal</button>
+    <button id="toolbar-max">Toolbar: Full</button>
+  </div>
+
+  <textarea id="api"><p>Use buttons above to control the editor at runtime.</p></textarea>
+
+  <script>
+    const [editor] = FeatherText.init('#api', {
+      theme: 'dark-b',
+      toolbar: ['format','bold','italic','|','link','image','|','ul','ol','|','undo','redo','|','source']
+    });
+
+    document.getElementById('theme-dark').onclick = () => editor.setTheme('dark');
+    document.getElementById('theme-light').onclick = () => editor.setTheme('light');
+    document.getElementById('theme-b').onclick = () => editor.setTheme('dark-b');
+
+    document.getElementById('add-code').onclick = () => {
+      editor.addButton('code', { icon: '<svg viewBox="0 0 24 24"><path d="M9.4 16.6 4.8 12 9.4 7.4 8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>', tooltip: 'Code Block', handler: 'insertCode' });
+    };
+    document.getElementById('remove-image').onclick = () => editor.removeButton('image');
+    document.getElementById('hide-video').onclick = () => editor.hideButton('video');
+    document.getElementById('show-video').onclick = () => editor.showButton('video');
+
+    document.getElementById('toolbar-min').onclick = () => {
+      editor.setToolbar(['format','bold','italic','|','ul','ol','|','undo','redo','|','source']);
+    };
+    document.getElementById('toolbar-max').onclick = () => {
+      editor.setToolbar([
+        'format','fontname','fontsize','|',
+        'bold','italic','underline','strikethrough','|',
+        'link','unlink','image','video','table','|',
+        'ul','ol','indent','outdent','|',
+        'alignleft','aligncenter','alignright','alignjustify','|',
+        'blockquote','code','hr','|',
+        'forecolor','backcolor','|','undo','redo','|','fullscreen','source'
+      ]);
+    };
+  </script>
+</body>
+</html>
