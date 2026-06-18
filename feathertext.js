@@ -727,17 +727,11 @@
     setupEvents() {
       this.addManagedListener(this.wrapper, "focusin", (e) => {
         if (this.wrapper.contains(e.target)) this._isFocusedWithin = true;
-        this.handleTooltipFocus(e.target, true);
       });
       this.addManagedListener(this.wrapper, "focusout", (e) => {
         this._isFocusedWithin = !!(e.relatedTarget && this.wrapper.contains(e.relatedTarget));
-        this.handleTooltipFocus(e.target, false, e.relatedTarget);
       });
       this.addManagedListener(this.wrapper, "keydown", (e) => this.handleToolbarKeydown(e));
-      this.addManagedListener(this.wrapper, "pointerover", (e) => this.handleTooltipPointer(e, true));
-      this.addManagedListener(this.wrapper, "pointerout", (e) => this.handleTooltipPointer(e, false));
-      this.addManagedListener(typeof window !== "undefined" ? window : globalThis, "scroll", () => this.positionTooltip(), true);
-      this.addManagedListener(typeof window !== "undefined" ? window : globalThis, "resize", () => this.positionTooltip());
       this.addManagedListener(this.editor, "input", () => {
         this.scheduleCountsUpdate();
         this.element.value = this.getHTML();
@@ -962,48 +956,15 @@
       if (tooltipTarget === this.tooltipAnchor) this.hideTooltip();
     }
     showTooltip(target) {
-      const text = target && target.dataset ? target.dataset.featherTooltip : "";
-      if (!text) return;
-      const tooltip = this.ensureTooltip();
-      if (!tooltip) return;
-      this.tooltipAnchor = target;
-      this.tooltipText = text;
-      tooltip.textContent = text;
-      tooltip.hidden = false;
-      tooltip.classList.add("is-visible");
-      this.positionTooltip();
+      return null;
     }
     positionTooltip() {
-      if (!this.tooltipEl || !this.tooltipAnchor || this.tooltipEl.hidden) return;
-      if (this.tooltipFrame) this._cancelFrame(this.tooltipFrame);
-      this.tooltipFrame = this._scheduleFrame(() => {
-        this.tooltipFrame = null;
-        if (!this.tooltipEl || !this.tooltipAnchor) return;
-        const anchorBox = this.tooltipAnchor.getBoundingClientRect();
-        const tooltipBox = this.tooltipEl.getBoundingClientRect();
-        const offset = Number(this.config.tooltipOffset) || 14;
-        const maxLeft = Math.max(8, window.innerWidth - tooltipBox.width - 8);
-        const left = Math.min(maxLeft, Math.max(8, anchorBox.left + anchorBox.width / 2 - tooltipBox.width / 2));
-        let top = anchorBox.top - tooltipBox.height - offset;
-        let below = false;
-        if (top < 8) {
-          top = anchorBox.bottom + offset;
-          below = true;
-        }
-        this.tooltipEl.style.left = `${left + window.scrollX}px`;
-        this.tooltipEl.style.top = `${top + window.scrollY}px`;
-        this.tooltipEl.dataset.side = below ? "bottom" : "top";
-      });
+      return null;
     }
     hideTooltip() {
-      if (!this.tooltipEl) return;
-      this.tooltipAnchor = null;
-      this.tooltipText = "";
-      this.tooltipEl.hidden = true;
-      this.tooltipEl.classList.remove("is-visible");
+      return null;
     }
     disposeTooltip() {
-      this.hideTooltip();
       if (this.tooltipEl) this.tooltipEl.remove();
       this.tooltipEl = null;
     }
