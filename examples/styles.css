@@ -5,27 +5,23 @@ body {
 body {
   margin: 0;
   font:
-    15px/1.6 "Segoe UI",
-    Inter,
+    14px/1.55 "Inter",
+    "Segoe UI",
     system-ui,
     sans-serif;
   color: var(--feather-text);
   background:
     radial-gradient(
-      900px 600px at 0% -10%,
+      900px 620px at -10% -20%,
       color-mix(in srgb, var(--feather-accent), transparent 78%) 0%,
-      transparent 55%
+      transparent 56%
     ),
     radial-gradient(
-      900px 520px at 100% 0%,
-      color-mix(in srgb, var(--feather-hover), transparent 18%) 0%,
-      transparent 60%
+      800px 560px at 110% 0%,
+      color-mix(in srgb, var(--feather-hover), transparent 16%) 0%,
+      transparent 62%
     ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--feather-panel), transparent 35%) 0%,
-      transparent 24%
-    ),
+    linear-gradient(180deg, color-mix(in srgb, var(--feather-panel), transparent 28%) 0%, transparent 24%),
     var(--feather-bg);
 }
 .header {
@@ -37,12 +33,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 14px 18px;
-  padding: 18px clamp(16px, 3vw, 28px);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--feather-border), transparent 18%);
-  background: color-mix(in srgb, var(--feather-panel), transparent 16%);
-  backdrop-filter: blur(18px) saturate(1.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  padding: 16px clamp(16px, 3vw, 28px);
+  border-bottom: 1px solid color-mix(in srgb, var(--feather-border), transparent 16%);
+  background: color-mix(in srgb, var(--feather-panel), transparent 86%);
+  backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 .brand {
   display: inline-flex;
@@ -55,14 +50,8 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    white 0%,
-    color-mix(in srgb, var(--feather-accent), white 16%) 18%,
-    var(--feather-accent) 65%
-  );
-  box-shadow: 0 0 0 5px
-    color-mix(in srgb, var(--feather-accent), transparent 82%);
+  background: radial-gradient(circle at 35% 35%, white 0%, color-mix(in srgb, var(--feather-accent), white 16%) 18%, var(--feather-accent) 65%);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--feather-accent), transparent 82%);
 }
 .brand h1 {
   margin: 0;
@@ -71,18 +60,23 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-
 .container {
-  max-width: 1040px;
-  margin: 32px auto;
-  padding: 0 20px 28px;
+  max-width: 1080px;
+  margin: 24px auto 32px;
+  padding: 0 20px 32px;
+}
+.hero {
+  padding: 20px 0 8px;
+}
+.hero h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.55rem, 2.1vw, 2rem);
 }
 .lead {
   color: var(--feather-muted);
-  margin-top: 8px;
-  max-width: 68ch;
+  margin: 0;
+  max-width: 70ch;
 }
-
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -96,66 +90,41 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 40px;
-  padding: 0 15px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--feather-border), white 4%);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--feather-panel), white 6%) 0%,
-    color-mix(in srgb, var(--feather-panel), var(--feather-bg) 18%) 100%
-  );
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--feather-border), transparent 20%);
+  background: color-mix(in srgb, var(--feather-panel), transparent 10%);
   color: var(--feather-text);
   cursor: pointer;
   text-decoration: none;
   font: inherit;
   font-weight: 600;
   letter-spacing: 0.01em;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white, transparent 88%),
-    0 10px 22px rgba(0, 0, 0, 0.12);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.16s ease,
-    border-color 0.16s ease,
-    background 0.16s ease;
+  box-shadow: none;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 .btn:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(
-    in srgb,
-    var(--feather-accent),
-    var(--feather-border) 55%
-  );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white, transparent 84%),
-    0 14px 28px rgba(0, 0, 0, 0.16);
+  background: color-mix(in srgb, var(--feather-hover), transparent 6%);
+  border-color: color-mix(in srgb, var(--feather-accent), transparent 40%);
 }
 .btn:active {
-  transform: translateY(0);
+  transform: none;
 }
 .btn:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--feather-accent), white 12%);
+  outline: 2px solid color-mix(in srgb, var(--feather-accent), transparent 30%);
   outline-offset: 2px;
 }
 .btn[aria-current="page"] {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--feather-accent), white 12%) 0%,
-    color-mix(in srgb, var(--feather-accent), var(--feather-panel) 30%) 100%
-  );
-  border-color: color-mix(in srgb, var(--feather-accent), white 10%);
+  background: color-mix(in srgb, var(--feather-accent), transparent 88%);
+  border-color: color-mix(in srgb, var(--feather-accent), transparent 55%);
   color: color-mix(in srgb, var(--feather-text), white 8%);
 }
 .btn-theme {
   margin-left: auto;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--feather-accent), white 18%) 0%,
-    color-mix(in srgb, var(--feather-accent), var(--feather-panel) 44%) 100%
-  );
-  border-color: color-mix(in srgb, var(--feather-accent), white 4%);
+  background: color-mix(in srgb, var(--feather-accent), transparent 86%);
+  border-color: color-mix(in srgb, var(--feather-accent), transparent 45%);
 }
 .btn-icon {
   display: inline-flex;
@@ -177,7 +146,6 @@ body {
 .btn-label {
   white-space: nowrap;
 }
-
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -188,28 +156,21 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
-
 .card {
-  padding: 16px;
-  border: 1px solid color-mix(in srgb, var(--feather-border), transparent 8%);
-  border-radius: 18px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--feather-panel), white 5%) 0%,
-    color-mix(in srgb, var(--feather-panel), transparent 6%) 100%
-  );
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--feather-border), transparent 12%);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--feather-panel), transparent 8%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 .card h3 {
   margin: 0 0 8px;
 }
-
 .footer {
   color: var(--feather-muted);
   text-align: center;
   padding: 34px 0 42px;
 }
-
 @media (max-width: 860px) {
   .header {
     justify-content: flex-start;
