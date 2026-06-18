@@ -192,7 +192,7 @@
       this.tooltipAnchor = null;
       this.tooltipText = "";
       this.tooltipFrame = null;
-      this._scheduleFrame = typeof window !== "undefined" && typeof window.requestAnimationFrame === "function" ? window.requestAnimationFrame.bind(window) : function(callback) {
+      this._scheduleFrame = typeof window !== "undefined" && typeof window.requestAnimationFrame === "function" ? window.requestAnimationFrame.bind(window) : function (callback) {
         return setTimeout(callback, 16);
       };
       this._cancelFrame = typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function" ? window.cancelAnimationFrame.bind(window) : clearTimeout;
@@ -1369,10 +1369,37 @@ ${nextIndent}${trailingIndent}`;
       return this.isSource ? this.source.value : this.editor.innerHTML;
     }
     setHTML(html) {
-      this.editor.innerHTML = html;
-      this.element.value = html;
+      const nextValue = html == null ? "" : html;
+      this.editor.innerHTML = nextValue;
+      if (this.source) this.source.value = nextValue;
+      this.element.value = nextValue;
       this.flushCountsUpdate();
+      this.scheduleSourceRefresh(true);
       this.pushHistory();
+    }
+    pasteIntoSource(sourceText) {
+      const nextValue = typeof sourceText === "string" ? sourceText : "";
+      if (!nextValue) return;
+      if (!this.source) {
+        this.editor.innerHTML = nextValue;
+        this.element.value = nextValue;
+        this.flushCountsUpdate();
+        this.pushHistory();
+        return;
+      }
+      const ta = this.source;
+      const start = ta.selectionStart ?? ta.value.length;
+      const end = ta.selectionEnd ?? start;
+      const insertStart = start === 0 && end === 0 && ta.value.length > 0 ? ta.value.length : start;
+      const insertEnd = start === 0 && end === 0 && ta.value.length > 0 ? ta.value.length : end;
+      ta.setRangeText(nextValue, insertStart, insertEnd, "end");
+      const renderedValue = ta.value;
+      this.editor.innerHTML = renderedValue;
+      this.element.value = renderedValue;
+      this.flushCountsUpdate();
+      this.scheduleSourceRefresh(true);
+      this.pushHistory();
+      if (this.config.onChange) this.config.onChange(renderedValue, this);
     }
     getText() {
       return this.editor.innerText || "";

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../dist/feathertext.css">
   <link rel="stylesheet" href="./styles.css">
   <script src="./theme-toggle.js"></script>
-  <script src="../dist/feathertext.min.js"></script>
+  <script src="../feathertext.js"></script>
 </head>
 
 <body>
@@ -49,6 +49,7 @@
           <button class="btn" id="remove-image">Remove "image"</button>
           <button class="btn" id="hide-video">Hide "video"</button>
           <button class="btn" id="show-video">Show "video"</button>
+          <button class="btn" id="paste-source">Paste source via API</button>
         </div>
       </div>
     </div>
@@ -75,6 +76,10 @@
     document.getElementById('remove-image').onclick = () => editor.removeButton('image');
     document.getElementById('hide-video').onclick = () => editor.hideButton('video');
     document.getElementById('show-video').onclick = () => editor.showButton('video');
+
+    document.getElementById('paste-source').onclick = () => {
+      editor.pasteIntoSource('<section><h3>Inserted from API</h3><p>This content is visible immediately in the normal view.</p></section>');
+    };
 
     document.getElementById('toolbar-min').onclick = () => {
       editor.setToolbar(['format', 'bold', 'italic', '|', 'ul', 'ol', '|', 'undo', 'redo', '|', 'source']);

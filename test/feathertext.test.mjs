@@ -207,6 +207,21 @@ test("toolbar controls expose tooltips while the editor surface does not", () =>
   }
 });
 
+test("pasteIntoSource updates the source buffer and the visible editor preview", () => {
+  const { cleanup } = installDom();
+  try {
+    const [editor] = FeatherText.init("#editor", {});
+
+    editor.pasteIntoSource("<p>Inserted via API</p>");
+
+    assert.equal(editor.source.value, "<p>Inserted via API</p>");
+    assert.equal(editor.editor.innerHTML, "<p>Inserted via API</p>");
+    assert.equal(document.getElementById("editor").value, "<p>Inserted via API</p>");
+  } finally {
+    cleanup();
+  }
+});
+
 test("destroy removes managed listeners and detaches tooltip state", () => {
   const { window, document, cleanup } = installDom();
   try {

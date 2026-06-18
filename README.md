@@ -143,6 +143,7 @@ Given `const [editor] = FeatherText.init('#editor', config)`:
   - Also available: 'clearformat' (remove formatting), 'copy', 'paste'
 
 - setHTML(html: string): void – replace entire content
+- pasteIntoSource(sourceText: string): void – insert source markup into the source buffer and immediately update the normal view without opening the source pane
  - startInSource: boolean – if true, editor opens in Source mode by default
 - undo(): void – step back in history
 - redo(): void – step forward in history
@@ -157,6 +158,8 @@ editor.setTheme({
 	bg: '#121212', panel: '#1e1e1e', border: '#333',
 	accent: '#8ab4ff', text: '#e6e9ef', muted: '#98a2b3', hover: '#222'
 });
+
+editor.pasteIntoSource('<p>Inserted from the API</p>');
 ````
 
 The editor sets CSS variables on :root with prefix --feather- (bg, panel, border, accent, text, muted, hover). You can customize styling in your own CSS using these variables.
