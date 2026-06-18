@@ -405,7 +405,11 @@
   position: relative;
   overflow: auto;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--feather-panel), transparent 18%), transparent 120px),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--feather-panel), transparent 18%),
+      transparent 120px
+    ),
     var(--feather-bg);
 }
 .feather-gutter {
@@ -574,7 +578,9 @@
   pointer-events: none;
   opacity: 0;
   transform: translateY(4px) scale(0.98);
-  transition: opacity 0.14s ease, transform 0.14s ease;
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease;
 }
 .feather-tooltip.is-visible {
   opacity: 1;

@@ -196,6 +196,9 @@
         return setTimeout(callback, 16);
       };
       this._cancelFrame = typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function" ? window.cancelAnimationFrame.bind(window) : clearTimeout;
+      this._themeMediaQuery = null;
+      this._themeListener = null;
+      this._themeMode = null;
       this.applyTheme(this.config.theme);
       this.buildEditor();
       this.setupEvents();
@@ -205,12 +208,60 @@
       if (this.config.onReady) this.config.onReady(this);
     }
     // ----- Theme -----
+    resolveThemeName(themeName) {
+      if (typeof themeName === "object") return null;
+      if (themeName === "auto") {
+        if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+          return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        return "dark";
+      }
+      return themes[themeName] ? themeName : "dark";
+    }
     applyTheme(themeName) {
-      const theme = typeof themeName === "object" ? themeName : themes[themeName] || themes.dark;
       const root = document.documentElement;
+      if (themeName === "auto") {
+        this._themeMode = "auto";
+        this._attachThemeListener();
+        const resolved = this.resolveThemeName(themeName);
+        if (resolved && themes[resolved]) {
+          root.setAttribute("data-theme", resolved);
+          Object.entries(themes[resolved]).forEach(([k, v]) => root.style.setProperty(`--feather-${k}`, v));
+        }
+        return;
+      }
+      this._detachThemeListener();
+      this._themeMode = null;
+      const theme = typeof themeName === "object" ? themeName : themes[themeName] || themes.dark;
       if (typeof themeName === "string" && themes[themeName]) root.setAttribute("data-theme", themeName);
       else root.removeAttribute("data-theme");
       Object.entries(theme).forEach(([k, v]) => root.style.setProperty(`--feather-${k}`, v));
+    }
+    _attachThemeListener() {
+      if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+      if (this._themeMediaQuery && this._themeListener) return;
+      this._themeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      this._themeListener = (event) => {
+        const resolved = event && typeof event.matches === "boolean" ? event.matches ? "dark" : "light" : this.resolveThemeName("auto");
+        const root = document.documentElement;
+        root.setAttribute("data-theme", resolved);
+        Object.entries(themes[resolved]).forEach(([k, v]) => root.style.setProperty(`--feather-${k}`, v));
+      };
+      if (typeof this._themeMediaQuery.addEventListener === "function") {
+        this._themeMediaQuery.addEventListener("change", this._themeListener);
+      } else if (typeof this._themeMediaQuery.addListener === "function") {
+        this._themeMediaQuery.addListener(this._themeListener);
+      }
+    }
+    _detachThemeListener() {
+      if (!this._themeMediaQuery || !this._themeListener) return;
+      if (typeof this._themeMediaQuery.removeEventListener === "function") {
+        this._themeMediaQuery.removeEventListener("change", this._themeListener);
+      } else if (typeof this._themeMediaQuery.removeListener === "function") {
+        this._themeMediaQuery.removeListener(this._themeListener);
+      }
+      this._themeMediaQuery = null;
+      this._themeListener = null;
     }
     // ----- DOM -----
     buildEditor() {
@@ -1350,6 +1401,7 @@ ${nextIndent}${trailingIndent}`;
       this.cancelDeferredWork();
       this.disposeTooltip();
       this.removeManagedListeners();
+      this._detachThemeListener();
       if (this.wrapper) this.wrapper.remove();
       this.element.style.display = "";
       this._isFocusedWithin = false;

@@ -162,6 +162,38 @@ test("source mode toggles and smart editor helpers update the source textarea", 
   }
 });
 
+test("auto theme follows the system color scheme", () => {
+  const { window, document, cleanup } = installDom();
+  try {
+    let darkMode = true;
+    const mediaQuery = {
+      matches: darkMode,
+      media: "(prefers-color-scheme: dark)",
+      _handler: null,
+      addEventListener(_event, handler) { this._handler = handler; },
+      removeEventListener(_event, handler) { if (this._handler === handler) this._handler = null; },
+      addListener(handler) { this._handler = handler; },
+      removeListener(handler) { if (this._handler === handler) this._handler = null; },
+      dispatch(next) { this.matches = next; if (this._handler) this._handler({ matches: next, media: this.media }); },
+    };
+
+    window.matchMedia = () => mediaQuery;
+
+    const [editor] = FeatherText.init("#editor", { theme: "auto" });
+
+    assert.equal(document.documentElement.getAttribute("data-theme"), "dark");
+
+    mediaQuery.dispatch(false);
+    assert.equal(document.documentElement.getAttribute("data-theme"), "light");
+
+    editor.destroy();
+    mediaQuery.dispatch(true);
+    assert.equal(document.documentElement.getAttribute("data-theme"), "light");
+  } finally {
+    cleanup();
+  }
+});
+
 test("destroy removes managed listeners and detaches tooltip state", () => {
   const { window, document, cleanup } = installDom();
   try {
