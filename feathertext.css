@@ -204,10 +204,14 @@
 .feather-btn svg {
   width: 16px;
   height: 16px;
-  opacity: 0.9;
+  display: block;
+  opacity: 0.95;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.9;
+  overflow: visible;
+  filter: none;
+  box-shadow: none;
 }
 .feather-select {
   /* Revert to the editor's original closed look */
@@ -423,7 +427,7 @@
   color: #6c7a99;
   border-right: 1px solid var(--feather-border);
   font:
-    12px/1.45 ui-monospace,
+    12px/1.7 ui-monospace,
     SFMono-Regular,
     Consolas,
     Monaco,
@@ -445,7 +449,7 @@
   padding: 16px;
   color: var(--feather-text);
   font:
-    12px/1.45 ui-monospace,
+    12px/1.7 ui-monospace,
     SFMono-Regular,
     Consolas,
     Monaco,
