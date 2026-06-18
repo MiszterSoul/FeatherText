@@ -154,6 +154,7 @@
     pasteMode: "auto",
     pasteFilter: null,
     sourceTabSize: 4,
+    sourceRows: 10,
     sourceWrapLines: false,
     sourceSmartTabs: true,
     sourceAutoClose: true,
@@ -300,6 +301,7 @@
       this.codeOverlay.className = "feather-code";
       this.source = document.createElement("textarea");
       this.source.className = "feather-source";
+      this.source.setAttribute("rows", String(this.config.sourceRows || 10));
       this.source.setAttribute("wrap", this.config.sourceWrapLines ? "soft" : "off");
       this.source.setAttribute("aria-label", this.config.sourceAriaLabel);
       this.source.dataset.featherTooltip = "Smart source editor";
@@ -732,6 +734,11 @@
         this._isFocusedWithin = !!(e.relatedTarget && this.wrapper.contains(e.relatedTarget));
       });
       this.addManagedListener(this.wrapper, "keydown", (e) => this.handleToolbarKeydown(e));
+      this.addManagedListener(this.wrapper, "mouseover", (e) => this.handleTooltipPointer(e, true));
+      this.addManagedListener(this.wrapper, "mouseout", (e) => this.handleTooltipPointer(e, false));
+      this.addManagedListener(this.wrapper, "focusin", (e) => this.handleTooltipFocus(e.target, true, e.relatedTarget));
+      this.addManagedListener(this.wrapper, "focusout", (e) => this.handleTooltipFocus(e.target, false, e.relatedTarget));
+      this.addManagedListener(this.wrapper, "mouseleave", () => this.hideTooltip());
       this.addManagedListener(this.editor, "input", () => {
         this.scheduleCountsUpdate();
         this.element.value = this.getHTML();
@@ -792,6 +799,10 @@
       this.addManagedListener(this.source, "scroll", () => this.syncSourceScroll());
       this.addManagedListener(this.source, "keydown", (e) => this.handleSourceKeydown(e));
       if (this.sourceHeader) {
+        this.addManagedListener(this.sourceHeader, "mouseover", (e) => this.handleTooltipPointer(e, true));
+        this.addManagedListener(this.sourceHeader, "mouseout", (e) => this.handleTooltipPointer(e, false));
+        this.addManagedListener(this.sourceHeader, "focusin", (e) => this.handleTooltipFocus(e.target, true, e.relatedTarget));
+        this.addManagedListener(this.sourceHeader, "focusout", (e) => this.handleTooltipFocus(e.target, false, e.relatedTarget));
         this.addManagedListener(this.sourceHeader, "click", (e) => {
           const buttonEl = e.target.closest("button[data-setting]");
           if (!buttonEl) return;

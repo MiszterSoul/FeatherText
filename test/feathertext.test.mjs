@@ -133,6 +133,7 @@ test("source mode toggles and smart editor helpers update the source textarea", 
 
     assert.equal(editor.isSource, true);
     assert.equal(editor.sourceHeader.style.display, "flex");
+    assert.equal(editor.source.getAttribute("rows"), "10");
 
     editor.source.value = "<section";
     editor.source.setSelectionRange(editor.source.value.length, editor.source.value.length);
@@ -157,6 +158,22 @@ test("source mode toggles and smart editor helpers update the source textarea", 
     editor.toggleSourceSetting("sourceWrapLines");
     assert.equal(editor.source.getAttribute("wrap"), "soft");
     assert.equal(editor.sourceWrap.classList.contains("feather-source-wrapped"), true);
+  } finally {
+    cleanup();
+  }
+});
+
+test("switching from source mode renders encoded HTML tags as regular HTML", () => {
+  const { cleanup } = installDom();
+  try {
+    const [editor] = FeatherText.init("#editor", {});
+
+    editor.editor.innerHTML = "&lt;p&gt;Hello&lt;/p&gt;";
+    editor.toggleSource();
+    assert.equal(editor.source.value, "&lt;p&gt;Hello&lt;/p&gt;");
+
+    editor.toggleSource();
+    assert.equal(editor.editor.innerHTML, "<p>Hello</p>");
   } finally {
     cleanup();
   }

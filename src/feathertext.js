@@ -135,6 +135,7 @@ const defaultConfig = {
 	pasteMode: 'auto',
 	pasteFilter: null,
 	sourceTabSize: 4,
+	sourceRows: 10,
 	sourceWrapLines: false,
 	sourceSmartTabs: true,
 	sourceAutoClose: true,
@@ -302,6 +303,7 @@ export default class FeatherText {
 		// Editable source textarea
 		this.source = document.createElement('textarea');
 		this.source.className = 'feather-source';
+		this.source.setAttribute('rows', String(this.config.sourceRows || 10));
 		this.source.setAttribute('wrap', this.config.sourceWrapLines ? 'soft' : 'off');
 		this.source.setAttribute('aria-label', this.config.sourceAriaLabel);
 		this.source.dataset.featherTooltip = 'Smart source editor';
@@ -721,7 +723,7 @@ export default class FeatherText {
 			this.highlightSource();
 			this.source.focus();
 		} else {
-			this.editor.innerHTML = this.source.value;
+			this.editor.innerHTML = this.renderSourceToHTML(this.source.value);
 			this.sourceWrap.classList.add('feather-hidden');
 			this.editor.classList.remove('feather-hidden');
 			this.flushCountsUpdate();
@@ -741,6 +743,11 @@ export default class FeatherText {
 		});
 
 		this.addManagedListener(this.wrapper, 'keydown', (e) => this.handleToolbarKeydown(e));
+		this.addManagedListener(this.wrapper, 'mouseover', (e) => this.handleTooltipPointer(e, true));
+		this.addManagedListener(this.wrapper, 'mouseout', (e) => this.handleTooltipPointer(e, false));
+		this.addManagedListener(this.wrapper, 'focusin', (e) => this.handleTooltipFocus(e.target, true, e.relatedTarget));
+		this.addManagedListener(this.wrapper, 'focusout', (e) => this.handleTooltipFocus(e.target, false, e.relatedTarget));
+		this.addManagedListener(this.wrapper, 'mouseleave', () => this.hideTooltip());
 
 		this.addManagedListener(this.editor, 'input', () => {
 			this.scheduleCountsUpdate();
@@ -810,6 +817,10 @@ export default class FeatherText {
 		this.addManagedListener(this.source, 'keydown', (e) => this.handleSourceKeydown(e));
 
 		if (this.sourceHeader) {
+			this.addManagedListener(this.sourceHeader, 'mouseover', (e) => this.handleTooltipPointer(e, true));
+			this.addManagedListener(this.sourceHeader, 'mouseout', (e) => this.handleTooltipPointer(e, false));
+			this.addManagedListener(this.sourceHeader, 'focusin', (e) => this.handleTooltipFocus(e.target, true, e.relatedTarget));
+			this.addManagedListener(this.sourceHeader, 'focusout', (e) => this.handleTooltipFocus(e.target, false, e.relatedTarget));
 			this.addManagedListener(this.sourceHeader, 'click', (e) => {
 				const buttonEl = e.target.closest('button[data-setting]');
 				if (!buttonEl) return;
@@ -1367,10 +1378,18 @@ export default class FeatherText {
 	redo() { if (this.historyIndex < this.history.length - 1) { this.historyIndex++; const html = this.history[this.historyIndex] || ''; this.editor.innerHTML = html; this.element.value = html; this.flushCountsUpdate(); } }
 
 	// ----- API -----
+	renderSourceToHTML(sourceText) {
+		const nextValue = typeof sourceText === 'string' ? sourceText : '';
+		if (!nextValue) return '';
+		if (!nextValue.includes('&')) return nextValue;
+		const temp = document.createElement('div');
+		temp.innerHTML = nextValue;
+		return temp.innerHTML;
+	}
 	getHTML() { return this.isSource ? this.source.value : this.editor.innerHTML; }
 	setHTML(html) {
 		const nextValue = html == null ? '' : html;
-		this.editor.innerHTML = nextValue;
+		this.editor.innerHTML = this.renderSourceToHTML(nextValue);
 		if (this.source) this.source.value = nextValue;
 		this.element.value = nextValue;
 		this.flushCountsUpdate();
@@ -1394,7 +1413,7 @@ export default class FeatherText {
 		const insertEnd = (start === 0 && end === 0 && ta.value.length > 0) ? ta.value.length : end;
 		ta.setRangeText(nextValue, insertStart, insertEnd, 'end');
 		const renderedValue = ta.value;
-		this.editor.innerHTML = renderedValue;
+		this.editor.innerHTML = this.renderSourceToHTML(renderedValue);
 		this.element.value = renderedValue;
 		this.flushCountsUpdate();
 		this.scheduleSourceRefresh(true);
