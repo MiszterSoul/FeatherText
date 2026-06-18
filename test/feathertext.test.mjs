@@ -194,6 +194,19 @@ test("auto theme follows the system color scheme", () => {
   }
 });
 
+test("toolbar controls expose tooltips while the editor surface does not", () => {
+  const { cleanup } = installDom();
+  try {
+    const [editor] = FeatherText.init("#editor", {});
+    const button = editor.toolbar.querySelector('[data-command="bold"]');
+
+    assert.equal(editor.getTooltipTarget(editor.editor), null);
+    assert.equal(editor.getTooltipTarget(button), button);
+  } finally {
+    cleanup();
+  }
+});
+
 test("destroy removes managed listeners and detaches tooltip state", () => {
   const { window, document, cleanup } = installDom();
   try {

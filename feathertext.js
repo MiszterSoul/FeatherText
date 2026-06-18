@@ -922,7 +922,11 @@
       focusables[(index + direction + focusables.length) % focusables.length].focus();
     }
     getTooltipTarget(target) {
-      return target && target.closest ? target.closest("[data-feather-tooltip]") : null;
+      if (!target || !target.closest) return null;
+      const tooltipHost = target.closest("[data-feather-tooltip]");
+      if (!tooltipHost) return null;
+      if (tooltipHost === this.editor || tooltipHost.closest(".feather-editor") || tooltipHost === this.source || tooltipHost.closest(".feather-source")) return null;
+      return tooltipHost;
     }
     ensureTooltip() {
       if (this.tooltipEl || !document || !document.body) return this.tooltipEl;
@@ -956,13 +960,45 @@
       if (tooltipTarget === this.tooltipAnchor) this.hideTooltip();
     }
     showTooltip(target) {
-      return null;
+      const text = target && target.dataset ? target.dataset.featherTooltip : "";
+      if (!text) return;
+      const tooltip = this.ensureTooltip();
+      if (!tooltip) return;
+      this.tooltipAnchor = target;
+      this.tooltipText = text;
+      tooltip.textContent = text;
+      tooltip.hidden = false;
+      tooltip.classList.add("is-visible");
+      this.positionTooltip();
     }
     positionTooltip() {
-      return null;
+      if (!this.tooltipEl || !this.tooltipAnchor || this.tooltipEl.hidden) return;
+      if (this.tooltipFrame) this._cancelFrame(this.tooltipFrame);
+      this.tooltipFrame = this._scheduleFrame(() => {
+        this.tooltipFrame = null;
+        if (!this.tooltipEl || !this.tooltipAnchor) return;
+        const anchorBox = this.tooltipAnchor.getBoundingClientRect();
+        const tooltipBox = this.tooltipEl.getBoundingClientRect();
+        const offset = Number(this.config.tooltipOffset) || 14;
+        const maxLeft = Math.max(8, window.innerWidth - tooltipBox.width - 8);
+        const left = Math.min(maxLeft, Math.max(8, anchorBox.left + anchorBox.width / 2 - tooltipBox.width / 2));
+        let top = anchorBox.top - tooltipBox.height - offset;
+        let below = false;
+        if (top < 8) {
+          top = anchorBox.bottom + offset;
+          below = true;
+        }
+        this.tooltipEl.style.left = `${left + window.scrollX}px`;
+        this.tooltipEl.style.top = `${top + window.scrollY}px`;
+        this.tooltipEl.dataset.side = below ? "bottom" : "top";
+      });
     }
     hideTooltip() {
-      return null;
+      if (!this.tooltipEl) return;
+      this.tooltipAnchor = null;
+      this.tooltipText = "";
+      this.tooltipEl.hidden = true;
+      this.tooltipEl.classList.remove("is-visible");
     }
     disposeTooltip() {
       if (this.tooltipEl) this.tooltipEl.remove();
