@@ -37,7 +37,10 @@ jobs:
           cp -r demo/* site/demo/
           mkdir -p site/examples
           cp -r examples/* site/examples/
-          # Built assets
+          # Built assets for the published site
+          cp feathertext.css site/feathertext.css
+          cp feathertext.js site/feathertext.js
+          cp feathertext.min.js site/feathertext.min.js
           cp -r dist site/dist
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
