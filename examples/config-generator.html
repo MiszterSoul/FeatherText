@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,74 +9,131 @@
   <link rel="stylesheet" href="./styles.css">
   <script src="./theme-toggle.js"></script>
   <style>
-    .grid-gen { display:grid; grid-template-columns: 320px minmax(420px,1fr); gap:24px; align-items:start; }
-    fieldset { border:1px solid var(--feather-border); padding:12px; border-radius:10px; background:var(--feather-panel); }
-    legend { padding:0 6px; color:var(--feather-text); }
-    label { display:block; margin:6px 0; color:var(--feather-muted); }
-    .row { display:flex; flex-wrap:wrap; gap:10px; }
-    .code { background: var(--feather-bg); color: var(--feather-text); padding:12px; border-radius:10px; overflow:auto; min-height:120px; border:1px dashed var(--feather-border); }
-    button { padding:6px 10px; }
-    .badge { font-size:12px; color:var(--feather-muted); }
+    .grid-gen {
+      display: grid;
+      grid-template-columns: 320px minmax(420px, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    fieldset {
+      border: 1px solid var(--feather-border);
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--feather-panel);
+    }
+
+    legend {
+      padding: 0 6px;
+      color: var(--feather-text);
+    }
+
+    label {
+      display: block;
+      margin: 6px 0;
+      color: var(--feather-muted);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .code {
+      background: var(--feather-bg);
+      color: var(--feather-text);
+      padding: 12px;
+      border-radius: 10px;
+      overflow: auto;
+      min-height: 120px;
+      border: 1px dashed var(--feather-border);
+    }
+
+    button {
+      padding: 6px 10px;
+    }
+
+    .badge {
+      font-size: 12px;
+      color: var(--feather-muted);
+    }
   </style>
 </head>
+
 <body>
   <header class="header">
-    <div class="brand"><span class="dot"></span><h1>FeatherText Examples</h1></div>
+    <a class="brand" href="../index.html"><span class="dot"></span>
+      <h1>FeatherText Examples</h1>
+    </a>
+    <nav class="toolbar toolbar-nav" aria-label="Example pages">
+      <a class="btn" href="./example.html" data-nav="simple" data-label="Simple">Simple</a>
+      <a class="btn" href="./example-basic.html" data-nav="basic" data-label="Basic">Basic</a>
+      <a class="btn" href="./example-api.html" data-nav="api" data-label="API">API</a>
+      <a class="btn" href="./example-ocean.html" data-nav="ocean" data-label="Ocean">Ocean</a>
+      <a class="btn" href="./config-generator.html" data-nav="config" data-label="Config" aria-current="page">Config</a>
+    </nav>
     <div class="toolbar">
-      <button class="btn" onclick="toggleTheme()">Toggle theme</button>
-      <a class="btn" href="./example.html">Simple</a>
-      <a class="btn" href="./example-basic.html">Basic</a>
-      <a class="btn" href="./example-api.html">API</a>
-      <a class="btn" href="./example-ocean.html">Ocean</a>
+      <button class="btn btn-theme" type="button" onclick="toggleTheme()" data-theme-toggle>Theme</button>
     </div>
   </header>
   <main class="container">
-  <h2>Config generator</h2>
-  <p class="lead">Copy and paste the snippet into your page. If you add an API key, lightweight usage will be tracked.</p>
-  <div class="grid-gen">
-    <div>
-      <fieldset>
-        <legend>Theme</legend>
-        <label><select id="theme">
-          <option value="dark">dark</option>
-          <option value="light">light</option>
-          <option value="ocean">ocean</option>
-          <option value="forest">forest</option>
-          <option value="dark-b">dark-b</option>
-        </select></label>
-      </fieldset>
+    <h2>Config generator</h2>
+    <p class="lead">Copy and paste the snippet into your page. If you add an API key, lightweight usage will be tracked.
+    </p>
+    <div class="grid-gen">
+      <div>
+        <fieldset>
+          <legend>Theme</legend>
+          <label><select id="theme">
+              <option value="dark">dark</option>
+              <option value="light">light</option>
+              <option value="ocean">ocean</option>
+              <option value="forest">forest</option>
+              <option value="dark-b">dark-b</option>
+              <option value="aurora">aurora</option>
+              <option value="dawn">dawn</option>
+              <option value="rose">rose</option>
+              <option value="graphite">graphite</option>
+              <option value="canyon">canyon</option>
+            </select></label>
+        </fieldset>
 
-      <fieldset>
-        <legend>Toolbar</legend>
-        <div class="row" id="btns"></div>
-      </fieldset>
+        <fieldset>
+          <legend>Toolbar</legend>
+          <div class="row" id="btns"></div>
+        </fieldset>
 
-      <fieldset>
-        <legend>Options</legend>
-        <label><input id="sanitize" type="checkbox" checked> sanitizePaste</label>
-        <label><input id="autosave" type="checkbox"> autosave</label>
-        <label><input id="wordCount" type="checkbox" checked> wordCount</label>
-        <label><input id="charCount" type="checkbox" checked> charCount</label>
-        <label>apiKey (optional)<br><input id="apiKey" placeholder="your-public-key" style="width:100%"></label>
-      </fieldset>
+        <fieldset>
+          <legend>Options</legend>
+          <label><input id="sanitize" type="checkbox" checked> sanitizePaste</label>
+          <label><input id="autosave" type="checkbox"> autosave</label>
+          <label><input id="wordCount" type="checkbox" checked> wordCount</label>
+          <label><input id="charCount" type="checkbox" checked> charCount</label>
+          <label><input id="sourceWrapLines" type="checkbox"> sourceWrapLines</label>
+          <label><input id="sourceSmartTabs" type="checkbox" checked> sourceSmartTabs</label>
+          <label><input id="sourceAutoClose" type="checkbox" checked> sourceAutoClose</label>
+          <label>apiKey (optional)<br><input id="apiKey" placeholder="your-public-key" style="width:100%"></label>
+        </fieldset>
 
-      <div class="row">
-        <button id="copy">Copy snippet</button>
-        <span class="badge" id="copied" style="display:none;">Copied!</span>
+        <div class="row">
+          <button id="copy">Copy snippet</button>
+          <span class="badge" id="copied" style="display:none;">Copied!</span>
+        </div>
+      </div>
+
+      <div>
+        <pre class="code" id="out"></pre>
+        <h3>Preview</h3>
+        <textarea id="prev" data-placeholder="Preview..."><p>Preview editor</p></textarea>
       </div>
     </div>
-
-    <div>
-      <pre class="code" id="out"></pre>
-      <h3>Preview</h3>
-      <textarea id="prev" data-placeholder="Preview..."><p>Preview editor</p></textarea>
-    </div>
-  </div>
   </main>
   <footer class="container footer">FeatherText · MIT License</footer>
 
+  <script src="../dist/feathertext.min.js"></script>
   <script>
-    const all = ['format','fontname','fontsize','|','bold','italic','underline','strikethrough','|','link','unlink','image','video','table','|','ul','ol','indent','outdent','|','alignleft','aligncenter','alignright','alignjustify','|','blockquote','code','hr','|','forecolor','backcolor','|','undo','redo','|','fullscreen','source'];
+    const all = ['format', 'fontname', 'fontsize', '|', 'bold', 'italic', 'underline', 'strikethrough', '|', 'link', 'unlink', 'image', 'video', 'table', '|', 'ul', 'ol', 'indent', 'outdent', '|', 'alignleft', 'aligncenter', 'alignright', 'alignjustify', '|', 'blockquote', 'code', 'clearformat', 'hr', '|', 'forecolor', 'backcolor', '|', 'undo', 'redo', '|', 'fullscreen', 'source', 'copy', 'paste'];
     const container = document.getElementById('btns');
     all.forEach(item => {
       if (item === '|') {
@@ -88,7 +146,7 @@
       const wrap = document.createElement('label');
       const cb = document.createElement('input');
       cb.type = 'checkbox';
-      cb.checked = ['bold','italic','underline','link','image','ul','ol','undo','redo','source','format','forecolor','backcolor'].includes(item);
+      cb.checked = ['bold', 'italic', 'underline', 'link', 'image', 'ul', 'ol', 'undo', 'redo', 'source', 'format', 'forecolor', 'backcolor'].includes(item);
       cb.dataset.name = item;
       wrap.appendChild(cb);
       wrap.appendChild(document.createTextNode(' ' + item));
@@ -99,15 +157,15 @@
       const names = [...container.querySelectorAll('input[type=checkbox]')].filter(x => x.checked).map(x => x.dataset.name);
       // keep one separator between logical groups if any of group’s items selected
       const groups = [
-        ['format','fontname','fontsize'],
-        ['bold','italic','underline','strikethrough'],
-        ['link','unlink','image','video','table'],
-        ['ul','ol','indent','outdent'],
-        ['alignleft','aligncenter','alignright','alignjustify'],
-        ['blockquote','code','hr'],
-        ['forecolor','backcolor'],
-        ['undo','redo'],
-        ['fullscreen','source']
+        ['format', 'fontname', 'fontsize'],
+        ['bold', 'italic', 'underline', 'strikethrough'],
+        ['link', 'unlink', 'image', 'video', 'table'],
+        ['ul', 'ol', 'indent', 'outdent'],
+        ['alignleft', 'aligncenter', 'alignright', 'alignjustify'],
+        ['blockquote', 'code', 'hr'],
+        ['forecolor', 'backcolor'],
+        ['undo', 'redo'],
+        ['fullscreen', 'source']
       ];
       const tb = [];
       groups.forEach(g => {
@@ -130,6 +188,9 @@
         autosave: document.getElementById('autosave').checked,
         wordCount: document.getElementById('wordCount').checked,
         charCount: document.getElementById('charCount').checked,
+        sourceWrapLines: document.getElementById('sourceWrapLines').checked,
+        sourceSmartTabs: document.getElementById('sourceSmartTabs').checked,
+        sourceAutoClose: document.getElementById('sourceAutoClose').checked,
         toolbar
       };
       const json = JSON.stringify(config, null, 2);
@@ -150,8 +211,7 @@
       if (!window._inst) {
         window._inst = FeatherText.init('#prev', config)[0];
       } else {
-        _inst.setTheme(theme);
-        _inst.setToolbar(toolbar);
+        _inst.setConfig(config);
       }
     }
 
@@ -168,6 +228,6 @@
     };
     render();
   </script>
-  <script src="../dist/feathertext.min.js"></script>
 </body>
+
 </html>

@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs",
     "prepublishOnly": "npm run build",
     "dev": "npx http-server -c-1 -p 5173",
     "release:prepare": "npm run build && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
@@ -28,7 +29,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "esbuild": "^0.23.0"
+    "esbuild": "^0.23.0",
+    "jsdom": "^24.1.0"
   },
   "keywords": [
     "rich-text",

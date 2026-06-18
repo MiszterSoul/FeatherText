@@ -1,55 +1,74 @@
-FeatherText – Lightweight Rich Text Editor
-=========================================
+# FeatherText – Lightweight Rich Text Editor
 
 FeatherText is a small, dependency‑free WYSIWYG rich text editor that you can drop into any HTML page. It ships as a single CSS + JS pair, supports multiple themes, a flexible toolbar, and a clean, well‑documented API for runtime control.
 
 Live site (GitHub Pages):
-- https://misztersoul.github.io/FeatherText/
 
+- https://misztersoul.github.io/FeatherText/
 
 ## Features
 
 - Zero dependencies; just include one CSS and one JS file
-- Built‑in themes: dark, light, ocean, forest, dark-b
+- Built‑in themes: dark, light, ocean, forest, dark-b, aurora, dawn, rose, graphite, canyon
 - Configurable toolbar (groups, separators, color pickers, dropdowns)
 - Clean API: get/set HTML, dynamic toolbar/theme changes, add/remove buttons
 - Paste sanitization, autosave, word/char counters, max length
+- Smarter source mode with syntax coloring, wrap toggle, smart tabs, and auto-close tags
 - Keyboard shortcuts for common actions (Ctrl/Cmd + B, I, U, K, Z, Y)
-
 
 ## Quick start
 
-1) Include the assets on your page (from dist/):
+1. Include the assets on your page (from dist/):
 
 ```html
-<link rel="stylesheet" href="dist/feathertext.css">
+<link rel="stylesheet" href="dist/feathertext.css" />
 <script src="dist/feathertext.min.js"></script>
 ```
 
-2) Add a textarea and initialize:
+2. Add a textarea and initialize:
 
 ```html
-<textarea id="editor" data-placeholder="Write something…"><p>Hello <b>world</b>!</p></textarea>
+<textarea id="editor" data-placeholder="Write something…">
+<p>Hello <b>world</b>!</p></textarea
+>
 <script>
-	// Optional: set initial theme on the root element
-	document.documentElement.setAttribute('data-theme', 'dark');
+  // Optional: set initial theme on the root element
+  document.documentElement.setAttribute("data-theme", "dark");
 
-	// Create one or more editors (returns an array of instances)
-	const [editor] = FeatherText.init('#editor', {
-		theme: 'dark',
-		sanitizePaste: true,
-		headings: ['P','H1','H2','H3'],
-		toolbar: [
-			'format','bold','italic','underline','|',
-			'link','image','|','ul','ol','|',
-			'alignleft','aligncenter','alignright','|',
-			'forecolor','backcolor','|','undo','redo','|','source'
-		]
-	});
+  // Create one or more editors (returns an array of instances)
+  const [editor] = FeatherText.init("#editor", {
+    theme: "dark",
+    sanitizePaste: true,
+    headings: ["P", "H1", "H2", "H3"],
+    toolbar: [
+      "format",
+      "bold",
+      "italic",
+      "underline",
+      "|",
+      "link",
+      "image",
+      "|",
+      "ul",
+      "ol",
+      "|",
+      "alignleft",
+      "aligncenter",
+      "alignright",
+      "|",
+      "forecolor",
+      "backcolor",
+      "|",
+      "undo",
+      "redo",
+      "|",
+      "source",
+    ],
+  });
 
-	// Example API call
-	console.log(editor.getHTML());
-	// editor.setHTML('<p>New content</p>');
+  // Example API call
+  console.log(editor.getHTML());
+  // editor.setHTML('<p>New content</p>');
 </script>
 ```
 
@@ -61,11 +80,14 @@ Local demo:
 1) Build once: npm run build
 2) Serve demo: npm run dev
 3) Open http://localhost:5173/demo/
+4) Run regression tests: npm test
 ```
- - Sticky source header with language selector (HTML/CSS/JS/XML/JSON)
- - Always-visible Copy/Paste buttons in toolbar
- - Clear Formatting button and color pickers with a Clear color action
-```
+
+- Sticky source header with language selector (HTML/CSS/JS/XML/JSON)
+- Always-visible Copy/Paste buttons in toolbar
+- Clear Formatting button and color pickers with a Clear color action
+
+````
 
 - selector: CSS selector for one or more textareas to transform
 - config: optional configuration object (see below)
@@ -75,7 +97,7 @@ Local demo:
 ## Configuration options
 
 - theme: string | object
-	- One of: 'dark' | 'light' | 'ocean' | 'forest' | 'dark-b', or a custom object with color tokens
+	- One of: 'dark' | 'light' | 'ocean' | 'forest' | 'dark-b' | 'aurora' | 'dawn' | 'rose' | 'graphite' | 'canyon', or a custom object with color tokens
 - toolbar: array of items, groups separated by '|'
 	- Items: 'format','fontname','fontsize','bold','italic','underline','strikethrough','link','unlink','image','video','table','ul','ol','indent','outdent','alignleft','aligncenter','alignright','alignjustify','blockquote','code','hr','forecolor','backcolor','undo','redo','fullscreen','source'
 - headings: array of heading tags to offer in the Format dropdown
@@ -90,8 +112,19 @@ Local demo:
 - height: number | 'auto' – fixed editor height; when 'auto', it grows
 - minHeight: number (px)
 - maxHeight: number (px)
+- historyLimit: number (default 50)
+- countDebounceMs: number (default 200)
+- pasteMode: 'auto' | 'text' | 'html'
+- pasteFilter: function | null – intercept and transform pasted text/html/files
 - fonts: string[] – choices for the Font Family dropdown
 - fontSizes: string[] – CSS sizes for Font Size dropdown (e.g. '12px','14px',...)
+- ariaLabel: string – accessible label for the rich text surface
+- sourceAriaLabel: string – accessible label for source mode
+- sourceWrapLines: boolean (default false)
+- sourceSmartTabs: boolean (default true)
+- sourceAutoClose: boolean (default true)
+- sourceIndentUnit: string | null – override inferred indentation
+- sourceTabSize: number (default 4)
 - colors: string[] – palette used by color pickers
 		toolbar: ['format','bold','italic','underline','|','link','image','|','ul','ol','|','forecolor','backcolor','|','undo','redo','|','clearformat','source','copy','paste'],
 		startInSource: false
@@ -124,10 +157,9 @@ editor.setTheme({
 	bg: '#121212', panel: '#1e1e1e', border: '#333',
 	accent: '#8ab4ff', text: '#e6e9ef', muted: '#98a2b3', hover: '#222'
 });
-```
+````
 
 The editor sets CSS variables on :root with prefix --feather- (bg, panel, border, accent, text, muted, hover). You can customize styling in your own CSS using these variables.
-
 
 ## Examples in this repo
 
@@ -136,7 +168,6 @@ The editor sets CSS variables on :root with prefix --feather- (bg, panel, border
 - example-ocean.html – ocean theme with extended toolbar
 - example-api.html – buttons demonstrating runtime API control
 - config-generator.html – interactive snippet generator with live preview
-
 
 ## Tips & notes
 
@@ -153,25 +184,26 @@ This repo's `pages.yml` includes `actions/configure-pages@v5`, `upload-pages-art
 
 When you bump the version in `package.json` and create a matching Git tag, CI takes care of everything:
 
-1) Bump version (choose one):
-	- `npm version patch` (or `minor` / `major`) – creates a commit and tag like `v0.1.1`
-	- Or manually edit `package.json` and create the tag yourself: `git tag v0.1.1`
+1. Bump version (choose one):
+   - `npm version patch` (or `minor` / `major`) – creates a commit and tag like `v0.1.1`
+   - Or manually edit `package.json` and create the tag yourself: `git tag v0.1.1`
 
-2) Push commits and tags:
-	- `git push && git push --tags`
+2. Push commits and tags:
+   - `git push && git push --tags`
 
-3) GitHub Actions (release.yml) will:
-	- Install deps and build `dist/` (minified IIFE, ESM, CJS, CSS)
-	- Verify the tag matches `package.json` version
-	- Create a GitHub Release and attach the built files
-	- Publish the package to npm (requires `NPM_TOKEN` secret)
+3. GitHub Actions (release.yml) will:
+   - Install deps and build `dist/` (minified IIFE, ESM, CJS, CSS)
+   - Verify the tag matches `package.json` version
+   - Create a GitHub Release and attach the built files
+   - Publish the package to npm (requires `NPM_TOKEN` secret)
 
 CDN usage (after npm publish):
 
 - jsDelivr: `https://cdn.jsdelivr.net/npm/feathertext@latest/dist/feathertext.min.js`
-- unpkg:   `https://unpkg.com/feathertext@latest/dist/feathertext.min.js`
+- unpkg: `https://unpkg.com/feathertext@latest/dist/feathertext.min.js`
 
 Pin to a specific version by replacing `latest` with the version number (e.g., `@0.1.0`).
 
 ## License
+
 ## Toolbar reference

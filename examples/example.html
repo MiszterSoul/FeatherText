@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,15 +10,21 @@
   <script src="./theme-toggle.js"></script>
   <script src="../dist/feathertext.min.js"></script>
 </head>
+
 <body>
   <header class="header">
-    <div class="brand"><span class="dot"></span><h1>FeatherText Examples</h1></div>
+    <a class="brand" href="../index.html"><span class="dot"></span>
+      <h1>FeatherText Examples</h1>
+    </a>
+    <nav class="toolbar toolbar-nav" aria-label="Example pages">
+      <a class="btn" href="./example.html" data-nav="simple" data-label="Simple" aria-current="page">Simple</a>
+      <a class="btn" href="./example-basic.html" data-nav="basic" data-label="Basic">Basic</a>
+      <a class="btn" href="./example-api.html" data-nav="api" data-label="API">API</a>
+      <a class="btn" href="./example-ocean.html" data-nav="ocean" data-label="Ocean">Ocean</a>
+      <a class="btn" href="./config-generator.html" data-nav="config" data-label="Config">Config</a>
+    </nav>
     <div class="toolbar">
-      <button class="btn" onclick="toggleTheme()">Toggle theme</button>
-      <a class="btn" href="./example-basic.html">Basic</a>
-      <a class="btn" href="./example-api.html">API</a>
-      <a class="btn" href="./example-ocean.html">Ocean</a>
-      <a class="btn" href="./config-generator.html">Config Generator</a>
+      <button class="btn btn-theme" type="button" onclick="toggleTheme()" data-theme-toggle>Theme</button>
     </div>
   </header>
   <main class="container">
@@ -39,4 +46,5 @@
     addEventListener('themechange', (e) => editor.setTheme(e.detail));
   </script>
 </body>
+
 </html>
