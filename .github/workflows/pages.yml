@@ -1,7 +1,8 @@
 name: pages
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,27 +18,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Pages
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Build package
+        run: npm run build
+      - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
       - name: Prepare site
         run: |
-          mkdir -p site
-          # Root landing page
+          mkdir -p site/demo site/examples
           cp index.html site/index.html
-          # Demo and examples
-          mkdir -p site/demo
+          cp site.css site/site.css
+          cp site.js site/site.js
+          cp README.md site/README.md
+          cp CHANGELOG.md site/CHANGELOG.md
           cp -r demo/* site/demo/
-          mkdir -p site/examples
           cp -r examples/* site/examples/
-          # Built assets for the published site
           cp feathertext.css site/feathertext.css
           cp feathertext.js site/feathertext.js
           cp feathertext.min.js site/feathertext.min.js

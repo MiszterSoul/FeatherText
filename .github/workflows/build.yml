@@ -1,7 +1,7 @@
 name: build
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,10 +11,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24
+          cache: npm
       - run: npm ci
-      - run: npm test
+      - name: Run tests
+        id: tests
+        continue-on-error: true
+        run: npm test > test-output.log 2>&1
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: test-output.log
+      - name: Report test failure
+        if: steps.tests.outcome == 'failure'
+        run: |
+          cat test-output.log
+          exit 1
       - run: npm run build
       - name: Upload dist as artifact
         uses: actions/upload-artifact@v4

@@ -1,212 +1,184 @@
-# FeatherText – Lightweight Rich Text Editor
+# FeatherText
 
-FeatherText is a small, dependency‑free WYSIWYG rich text editor that you can drop into any HTML page. It ships as a single CSS + JS pair, supports multiple themes, a flexible toolbar, and a clean, well‑documented API for runtime control.
+FeatherText is a dependency-free rich text editor for browser applications. It provides configurable toolbars, ten built-in themes, source editing, paste controls, counters, and a small runtime API.
 
-Live site (GitHub Pages):
+**Current version:** `0.2.0`
 
-- https://misztersoul.github.io/FeatherText/
+- Live documentation and playground: https://misztersoul.github.io/FeatherText/
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- License: MIT
 
-## Features
+## Why FeatherText
 
-- Zero dependencies; just include one CSS and one JS file
-- Built‑in themes: dark, light, ocean, forest, dark-b, aurora, dawn, rose, graphite, canyon
-- Configurable toolbar (groups, separators, color pickers, dropdowns)
-- Clean API: get/set HTML, dynamic toolbar/theme changes, add/remove buttons
-- Paste sanitization, autosave, word/char counters, max length
-- Smarter source mode with syntax coloring, wrap toggle, smart tabs, and auto-close tags
-- Keyboard shortcuts for common actions (Ctrl/Cmd + B, I, U, K, Z, Y)
+- **Performance-first defaults:** shadows, decorative gradients, transitions, press transforms, and backdrop filters are disabled unless `fancy: true` is enabled.
+- **No runtime dependencies:** ship one CSS file and one JavaScript file.
+- **Configurable UI:** select toolbar items, headings, fonts, sizes, themes, counters, source behavior, and dimensions.
+- **Runtime controls:** update themes, toolbar contents, editor HTML, source content, and fancy mode without replacing the instance.
+- **Accessible foundations:** labeled editing surfaces, keyboard navigation, focus-visible states, and reduced-motion handling.
 
-## Quick start
+## Install
 
-1. Include the assets on your page (from dist/):
-
-```html
-<link rel="stylesheet" href="dist/feathertext.css" />
-<script src="dist/feathertext.min.js"></script>
+```bash
+npm install feathertext
 ```
 
-2. Add a textarea and initialize:
+```js
+import FeatherText from "feathertext";
+import "feathertext/css";
+
+const editor = new FeatherText("#editor", {
+  theme: "dark",
+  fancy: false,
+});
+```
+
+For a script-tag setup:
 
 ```html
-<textarea id="editor" data-placeholder="Write something…">
-<p>Hello <b>world</b>!</p></textarea
->
-<script>
-  // Optional: set initial theme on the root element
-  document.documentElement.setAttribute("data-theme", "dark");
+<link rel="stylesheet" href="feathertext.css">
+<script src="feathertext.js"></script>
 
-  // Create one or more editors (returns an array of instances)
+<textarea id="editor"><p>Hello world.</p></textarea>
+<script>
   const [editor] = FeatherText.init("#editor", {
     theme: "dark",
+    fancy: false,
     sanitizePaste: true,
-    headings: ["P", "H1", "H2", "H3"],
-    toolbar: [
-      "format",
-      "bold",
-      "italic",
-      "underline",
-      "|",
-      "link",
-      "image",
-      "|",
-      "ul",
-      "ol",
-      "|",
-      "alignleft",
-      "aligncenter",
-      "alignright",
-      "|",
-      "forecolor",
-      "backcolor",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "source",
-    ],
   });
-
-  // Example API call
-  console.log(editor.getHTML());
-  // editor.setHTML('<p>New content</p>');
 </script>
 ```
 
-Open the HTML file directly in your browser, or serve the folder locally.
+## Performance mode and fancy mode
 
-Local demo:
+`fancy` defaults to `false`. This keeps decorative rendering work off the default path.
 
-```powershell
-1) Build once: npm run build
-2) Serve demo: npm run dev
-3) Open http://localhost:5173/demo/
-4) Run regression tests: npm test
+```js
+const editor = new FeatherText("#editor");
+
+editor.setFancy(true);  // enable decorative effects
+editor.setFancy(false); // return to performance-first rendering
 ```
 
-- Sticky source header with language selector (HTML/CSS/JS/XML/JSON)
-- Always-visible Copy/Paste buttons in toolbar
-- Clear Formatting button and color pickers with a Clear color action
+Fancy mode restores editor shadows, active-button inset effects, press transforms, source-pane gradients, tooltip transitions, and tooltip shadows. `prefers-reduced-motion` still disables transitions and transforms.
 
-````
+## Common configuration
 
-- selector: CSS selector for one or more textareas to transform
-- config: optional configuration object (see below)
-- returns: array of editor instances (in the same order as matched elements)
+```js
+const [editor] = FeatherText.init("#editor", {
+  theme: "auto",
+  fancy: false,
+  toolbar: [
+    "format", "fontname", "fontsize", "|",
+    "bold", "italic", "underline", "strikethrough", "|",
+    "link", "image", "table", "|",
+    "ul", "ol", "|",
+    "undo", "redo", "|",
+    "source",
+  ],
+  headings: ["P", "H1", "H2", "H3"],
+  sanitizePaste: true,
+  wordCount: true,
+  charCount: true,
+  minHeight: 220,
+  maxHeight: 600,
+  sourceWrapLines: false,
+  sourceSmartTabs: true,
+  sourceAutoClose: true,
+});
+```
 
+### Core options
 
-## Configuration options
+| Option | Default | Description |
+| --- | --- | --- |
+| `theme` | `"dark"` | Built-in theme name, `"auto"`, or a custom theme object. |
+| `fancy` | `false` | Enables decorative visual effects. |
+| `toolbar` | full toolbar | Ordered toolbar items; use `"|"` between groups. |
+| `sanitizePaste` | `true` | Uses plain-text paste unless another paste mode/filter is configured. |
+| `wordCount` | `true` | Displays a debounced word count. |
+| `charCount` | `true` | Displays a debounced character count. |
+| `height` | `"auto"` | Fixed height or automatic sizing. |
+| `minHeight` | `220` | Minimum editor height in pixels. |
+| `maxHeight` | `600` | Maximum editor height before scrolling. |
+| `sourceWrapLines` | `false` | Soft-wraps source lines. |
+| `sourceSmartTabs` | `true` | Applies indentation helpers in source mode. |
+| `sourceAutoClose` | `true` | Auto-closes source tags and bracket pairs. |
+| `startInSource` | `false` | Opens directly in source mode. |
 
-- theme: string | object
-	- One of: 'dark' | 'light' | 'ocean' | 'forest' | 'dark-b' | 'aurora' | 'dawn' | 'rose' | 'graphite' | 'canyon', or a custom object with color tokens
-- toolbar: array of items, groups separated by '|'
-	- Items: 'format','fontname','fontsize','bold','italic','underline','strikethrough','link','unlink','image','video','table','ul','ol','indent','outdent','alignleft','aligncenter','alignright','alignjustify','blockquote','code','hr','forecolor','backcolor','undo','redo','fullscreen','source'
-- headings: array of heading tags to offer in the Format dropdown
-	- Default: ['P','H1','H2','H3','H4','H5','H6']
-- sanitizePaste: boolean (default true) – paste as plain text when enabled
-- placeholder: string – placeholder text
-- autosave: boolean – enable localStorage autosave
-- autosaveInterval: number (ms, default 30000)
-- wordCount: boolean (default true)
-- charCount: boolean (default true)
-- maxLength: number | null – hard cap on characters
-- height: number | 'auto' – fixed editor height; when 'auto', it grows
-- minHeight: number (px)
-- maxHeight: number (px)
-- historyLimit: number (default 50)
-- countDebounceMs: number (default 200)
-- pasteMode: 'auto' | 'text' | 'html'
-- pasteFilter: function | null – intercept and transform pasted text/html/files
-- fonts: string[] – choices for the Font Family dropdown
-- fontSizes: string[] – CSS sizes for Font Size dropdown (e.g. '12px','14px',...)
-- ariaLabel: string – accessible label for the rich text surface
-- sourceAriaLabel: string – accessible label for source mode
-- sourceWrapLines: boolean (default false)
-- sourceSmartTabs: boolean (default true)
-- sourceAutoClose: boolean (default true)
-- sourceIndentUnit: string | null – override inferred indentation
-- sourceTabSize: number (default 4)
-- colors: string[] – palette used by color pickers
-		toolbar: ['format','bold','italic','underline','|','link','image','|','ul','ol','|','forecolor','backcolor','|','undo','redo','|','clearformat','source','copy','paste'],
-		startInSource: false
+The live [configuration generator](https://misztersoul.github.io/FeatherText/examples/config-generator.html) covers the most-used options and toolbar presets.
 
-Callbacks:
+## Themes
 
-- onReady(editor)
-- onChange(html, editor)
-- onFocus(editor)
-- onBlur(editor)
-- onPaste(event, editor)
-- onKeydown(event, editor)
+Built-in themes:
+
+`dark`, `light`, `ocean`, `forest`, `dark-b`, `aurora`, `dawn`, `rose`, `graphite`, `canyon`
+
+```js
+editor.setTheme("ocean");
+
+editor.setTheme({
+  bg: "#121212",
+  panel: "#1e1e1e",
+  border: "#333333",
+  accent: "#8ab4ff",
+  text: "#e6e9ef",
+  muted: "#98a2b3",
+  hover: "#222222",
+});
+```
 
 ## Instance API
-Given `const [editor] = FeatherText.init('#editor', config)`:
-  - Also available: 'clearformat' (remove formatting), 'copy', 'paste'
 
-- setHTML(html: string): void – replace entire content
-- pasteIntoSource(sourceText: string): void – insert source markup into the source buffer and immediately update the normal view without opening the source pane
- - startInSource: boolean – if true, editor opens in Source mode by default
-- undo(): void – step back in history
-- redo(): void – step forward in history
-- toggleFullscreen(): void – enter/exit fullscreen mode
-- toggleSource(): void – toggle HTML source editing textarea
-
- - copyAction(): void – copy current selection (WYSIWYG or source)
- - pasteAction(): void – paste plain text (respects sanitizePaste)
- - clearFormatting(): void – remove formatting from selected text
 ```js
-editor.setTheme({
-	bg: '#121212', panel: '#1e1e1e', border: '#333',
-	accent: '#8ab4ff', text: '#e6e9ef', muted: '#98a2b3', hover: '#222'
-});
+editor.getHTML();
+editor.setHTML("<p>Updated content</p>");
+editor.getText();
+editor.clear();
+editor.focus();
+editor.disable();
+editor.enable();
+editor.setTheme("light");
+editor.setFancy(true);
+editor.setToolbar(["bold", "italic", "|", "undo", "redo"]);
+editor.setConfig({ theme: "ocean", fancy: false });
+editor.toggleSource();
+editor.toggleFullscreen();
+editor.pasteIntoSource("<p>Inserted from source</p>");
+editor.undo();
+editor.redo();
+editor.destroy();
+```
 
-editor.pasteIntoSource('<p>Inserted from the API</p>');
-````
+## Examples
 
-The editor sets CSS variables on :root with prefix --feather- (bg, panel, border, accent, text, muted, hover). You can customize styling in your own CSS using these variables.
+- [Examples overview](https://misztersoul.github.io/FeatherText/examples/)
+- [Quick start](https://misztersoul.github.io/FeatherText/examples/example.html)
+- [Basic toolbar](https://misztersoul.github.io/FeatherText/examples/example-basic.html)
+- [Runtime API](https://misztersoul.github.io/FeatherText/examples/example-api.html)
+- [Ocean theme](https://misztersoul.github.io/FeatherText/examples/example-ocean.html)
+- [Configuration generator](https://misztersoul.github.io/FeatherText/examples/config-generator.html)
 
-## Examples in this repo
+## Development
 
-- example.html – smallest setup using dark theme
-- example-basic.html – light theme with minimal toolbar
-- example-ocean.html – ocean theme with extended toolbar
-- example-api.html – buttons demonstrating runtime API control
-- config-generator.html – interactive snippet generator with live preview
+```bash
+npm ci
+npm test
+npm run build
+npm run dev
+```
 
-## Tips & notes
+Then open `http://localhost:5173/`.
 
-### GitHub Pages first-time setup
+The CI and GitHub Pages workflows run tests before building. Release tags must match the version in `package.json`.
 
-If the Pages deploy job fails with a 404 on first run, enable Pages once:
+## Release process
 
-- Repo Settings → Pages → Build and deployment → Source: GitHub Actions
-- Repo Settings → Actions → General → Workflow permissions: Read and write permissions
-
-This repo's `pages.yml` includes `actions/configure-pages@v5`, `upload-pages-artifact`, and `deploy-pages@v4`. After enabling the settings above, re-run the failed job or push a new commit to deploy the site.
-
-### Release & publish workflow
-
-When you bump the version in `package.json` and create a matching Git tag, CI takes care of everything:
-
-1. Bump version (choose one):
-   - `npm version patch` (or `minor` / `major`) – creates a commit and tag like `v0.1.1`
-   - Or manually edit `package.json` and create the tag yourself: `git tag v0.1.1`
-
-2. Push commits and tags:
-   - `git push && git push --tags`
-
-3. GitHub Actions (release.yml) will:
-   - Install deps and build `dist/` (minified IIFE, ESM, CJS, CSS)
-   - Verify the tag matches `package.json` version
-   - Create a GitHub Release and attach the built files
-   - Publish the package to npm (requires `NPM_TOKEN` secret)
-
-CDN usage (after npm publish):
-
-- jsDelivr: `https://cdn.jsdelivr.net/npm/feathertext@latest/dist/feathertext.min.js`
-- unpkg: `https://unpkg.com/feathertext@latest/dist/feathertext.min.js`
-
-Pin to a specific version by replacing `latest` with the version number (e.g., `@0.1.0`).
+1. Update `package.json` and `CHANGELOG.md` together. Regenerate `package-lock.json` when dependency metadata changes.
+2. Run `npm test` and `npm run build`.
+3. Commit the release changes.
+4. Create and push a matching tag, for example `v0.2.0`.
+5. The release workflow verifies the tag, builds distributable assets, creates a GitHub Release, and publishes to npm when `NPM_TOKEN` is configured.
 
 ## License
 
-## Toolbar reference
+MIT
