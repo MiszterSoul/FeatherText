@@ -1,4 +1,4 @@
-import FeatherText, { themes, version } from "./feathertext.js";
+import FeatherText, { themes, version } from "./feathertext.performance-entry.js";
 
 FeatherText.themes = themes;
 FeatherText.version = version;
