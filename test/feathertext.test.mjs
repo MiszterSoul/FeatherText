@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 
-import FeatherText from "../src/feathertext.js";
+import FeatherText from "../src/feathertext.performance-entry.js";
 
 function installDom(markup = '<textarea id="editor"></textarea>') {
   const dom = new JSDOM(`<!doctype html><html><body>${markup}</body></html>`, {
