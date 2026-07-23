@@ -2,24 +2,25 @@ name: release
 on:
   push:
     tags:
-      - 'v*.*.*'   # e.g., v0.1.0
+      - 'v*.*.*'
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to create releases
-      id-token: write   # for npm provenance (optional)
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # ensure tags available
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24
+          cache: npm
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+      - run: npm test
       - run: npm run build
       - name: Verify version matches tag
         run: |
@@ -29,21 +30,24 @@ jobs:
             echo "package.json version ($PKG_VER) does not match tag ($TAG_VER)" >&2
             exit 1
           fi
+      - name: Verify changelog contains version
+        run: |
+          PKG_VER=$(node -p "require('./package.json').version")
+          grep -F "## [$PKG_VER]" CHANGELOG.md
       - name: Create GitHub Release
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+          name: FeatherText ${{ github.ref_name }}
           draft: false
           prerelease: false
+          generate_release_notes: true
           files: |
             dist/feathertext.min.js
             dist/feathertext.esm.js
             dist/feathertext.cjs
             dist/feathertext.css
       - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/v')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --access public

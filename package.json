@@ -1,7 +1,7 @@
 {
   "name": "feathertext",
-  "version": "0.1.0",
-  "description": "A tiny, good-looking rich text editor.",
+  "version": "0.2.0",
+  "description": "A dependency-free, performance-first rich text editor with configurable themes and toolbars.",
   "type": "module",
   "main": "dist/feathertext.cjs",
   "module": "dist/feathertext.esm.js",
@@ -10,20 +10,32 @@
     ".": {
       "import": "./dist/feathertext.esm.js",
       "require": "./dist/feathertext.cjs"
-    }
+    },
+    "./css": "./dist/feathertext.css",
+    "./dist/feathertext.css": "./dist/feathertext.css"
   },
   "files": [
     "dist",
     "src",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "node build.mjs",
     "test": "node --test test/*.test.mjs",
-    "prepublishOnly": "npm run build",
+    "check": "npm test && npm run build",
+    "prepublishOnly": "npm run check",
     "dev": "npx http-server -c-1 -p 5173",
-    "release:prepare": "npm run build && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
+    "release:prepare": "npm run check && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiszterSoul/FeatherText.git"
+  },
+  "homepage": "https://misztersoul.github.io/FeatherText/",
+  "bugs": {
+    "url": "https://github.com/MiszterSoul/FeatherText/issues"
   },
   "publishConfig": {
     "access": "public"
@@ -36,7 +48,9 @@
     "rich-text",
     "editor",
     "lightweight",
-    "wysiwyg"
+    "wysiwyg",
+    "dependency-free",
+    "performance"
   ],
   "license": "MIT"
 }
