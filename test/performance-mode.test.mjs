@@ -89,3 +89,34 @@ test("fancy effects can be enabled at construction or runtime", () => {
     cleanup();
   }
 });
+
+test("setConfig preserves or explicitly changes fancy mode after rebuilding", () => {
+  const { cleanup } = installDom();
+  try {
+    const [editor] = FeatherText.init("#editor", { fancy: true });
+
+    assert.equal(editor.setConfig({ theme: "light" }), editor);
+    assert.equal(editor.config.fancy, true);
+    assert.equal(editor.wrapper.classList.contains("feather-fancy"), true);
+
+    editor.setConfig({ fancy: false });
+    assert.equal(editor.config.fancy, false);
+    assert.equal(editor.wrapper.classList.contains("feather-fancy"), false);
+  } finally {
+    cleanup();
+  }
+});
+
+test("encoded source tags decode without altering encoded text inside real markup", () => {
+  const { cleanup } = installDom();
+  try {
+    const [editor] = FeatherText.init("#editor");
+
+    assert.equal(editor.renderSourceToHTML("&lt;p&gt;Hello&lt;/p&gt;"), "<p>Hello</p>");
+    assert.equal(editor.renderSourceToHTML("&#60;p&#62;Hello&#60;/p&#62;"), "<p>Hello</p>");
+    assert.equal(editor.renderSourceToHTML("<p>&lt;code&gt;</p>"), "<p>&lt;code&gt;</p>");
+    assert.equal(editor.renderSourceToHTML("Fish &amp; Chips"), "Fish &amp; Chips");
+  } finally {
+    cleanup();
+  }
+});
