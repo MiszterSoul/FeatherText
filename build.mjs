@@ -9,12 +9,13 @@ const baseConfig = {
   legalComments: "none",
   define,
 };
+const packageEntry = "src/feathertext.performance-entry.js";
 
 fs.mkdirSync("dist", { recursive: true });
 
 await build({
   ...baseConfig,
-  entryPoints: ["src/feathertext.js"],
+  entryPoints: [packageEntry],
   format: "esm",
   outfile: "dist/feathertext.esm.js",
   sourcemap: true,
@@ -22,7 +23,7 @@ await build({
 
 await build({
   ...baseConfig,
-  entryPoints: ["src/feathertext.js"],
+  entryPoints: [packageEntry],
   format: "cjs",
   outfile: "dist/feathertext.cjs",
   sourcemap: true,
@@ -47,7 +48,13 @@ await build({
 
 fs.copyFileSync("dist/feathertext.min.js", "feathertext.min.js");
 
-if (fs.existsSync("src/feathertext.css")) {
-  fs.copyFileSync("src/feathertext.css", "dist/feathertext.css");
-  fs.copyFileSync("src/feathertext.css", "feathertext.css");
+const cssSources = [
+  "src/feathertext.css",
+  "src/feathertext.performance.css",
+].filter((file) => fs.existsSync(file));
+
+if (cssSources.length > 0) {
+  const css = cssSources.map((file) => fs.readFileSync(file, "utf8").trimEnd()).join("\n\n") + "\n";
+  fs.writeFileSync("dist/feathertext.css", css);
+  fs.writeFileSync("feathertext.css", css);
 }
