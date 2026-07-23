@@ -35,6 +35,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Encoded HTML tags now render correctly when returning from source mode.
 - `setConfig()` preserves or explicitly updates fancy mode after rebuilding the editor.
 - Removed the broken standalone demo implementation that initialized FeatherText against an unsupported element structure.
+- Updated the test environment for Node 24's getter-only global `navigator`.
 
 ## [0.1.0] - 2026-06-18
 

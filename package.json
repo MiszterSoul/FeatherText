@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "node build.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --import ./test/test-env.mjs --test test/*.test.mjs",
     "check": "npm test && npm run build",
     "prepublishOnly": "npm run check",
     "dev": "npx http-server -c-1 -p 5173",
