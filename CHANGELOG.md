@@ -4,16 +4,14 @@ All notable project changes should be documented here. The format follows [Keep 
 
 ## [0.3.0](https://github.com/MiszterSoul/FeatherText/compare/v0.2.0...v0.3.0) (2026-07-27)
 
-
 ### Features
 
-* modernize editor and release pipeline ([5d1b311](https://github.com/MiszterSoul/FeatherText/commit/5d1b311489d1c7a0c5eaf1c6b723e9e7f12c3cb5))
-
+- Modernize editor and release pipeline ([5d1b311](https://github.com/MiszterSoul/FeatherText/commit/5d1b311489d1c7a0c5eaf1c6b723e9e7f12c3cb5))
 
 ### Bug Fixes
 
-* **ci:** bootstrap Release Please from v0.2.0 baseline ([054e896](https://github.com/MiszterSoul/FeatherText/commit/054e896064ecdd3d4b9767c1c39556959ca53522))
-* **ci:** skip dependency review for release metadata PRs ([e90967a](https://github.com/MiszterSoul/FeatherText/commit/e90967a04d0b454e2c1620ab400cf1731f89f6ec))
+- **ci:** Bootstrap Release Please from v0.2.0 baseline ([054e896](https://github.com/MiszterSoul/FeatherText/commit/054e896064ecdd3d4b9767c1c39556959ca53522))
+- **ci:** Skip dependency review for release metadata PRs ([e90967a](https://github.com/MiszterSoul/FeatherText/commit/e90967a04d0b454e2c1620ab400cf1731f89f6ec))
 
 ## [Unreleased]
 
