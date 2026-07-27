@@ -1,14 +1,43 @@
 # Changelog
 
-All notable changes to FeatherText are documented here.
-
-This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable project changes should be documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and release versions should follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
 
-- Placeholder section for changes that have not been released.
+- Typed public configuration, autosave, find/replace, plugin, event, upload, theme, paste, and security utility declarations in `index.d.ts`.
+- Local labelled dialogs for links, images, videos, tables, draft restoration, and find/replace; browser `prompt()` is no longer used.
+- Visual/source find and replace with case/whole-word options, cyclic navigation, replace-current, replace-all, and undoable transactions.
+- Opt-in local draft autosave with stable custom keys, debounce, storage adapters, restore prompts, status/events, stop/start, and clear operations.
+- Minimal plugin registry/lifecycle, instance event subscriptions, and bubbling `feathertext:*` DOM events.
+- `setUntrustedHTML()`, `sanitizeUntrustedHTML()`, centralized safe-URL helpers, restricted video embed normalization, secure link attributes, and validated attribution URLs.
+- Application-provided asynchronous `imageUpload` hooks and bounded table insertion/editing operations.
+- Theme-transition, read-only, disabled, attribution, support-link, project URL, and support URL configuration, building on the performance-first `fancy: false` behavior released in 0.2.0.
+- Framework-free site and examples using local scripts, styles, SVG assets, and generated distribution files.
+- Playwright E2E projects for Chromium, Firefox, WebKit, Mobile Chrome, and Tablet WebKit, plus full-document axe checks.
+- Governance and detailed API, architecture, browser, accessibility, security, comparison, and migration documentation.
+
+### Changed
+
+- Theme attributes and `--feather-*` tokens are scoped to each editor wrapper, allowing independent simultaneous themes without mutating `document.documentElement`.
+- `theme: "auto"` responds to color scheme, forced colors, and increased-contrast media queries.
+- `setConfig()` now applies focused diffs while preserving wrapper/editor/source identity, content, source/fullscreen mode, history, and relevant focus/selection state.
+- HTML clipboard content and HTML returned by `pasteFilter` now pass through the conservative untrusted-HTML baseline.
+- `onPaste` now uses one consistent `(event, payload, editor)` callback shape.
+- `maxLength` now blocks overflowing visual `beforeinput` text insertion; applications must still enforce authoritative limits elsewhere.
+- Original form controls now remain synchronized with native input/change behavior, inherited read-only/disabled semantics, and native form reset/history restoration.
+- History uses bounded transactions shared by visual edits, source edits, API changes, media/table operations, and find/replace.
+- Public documentation and site copy now use the current implementation, exact automated evidence, and the canonical positioning: “A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.”
+- Support actions now use <https://buymeacoffee.com/devpeter>; GitHub issues remain available separately for bugs and feature proposals.
+
+### Security
+
+- Trusted `setHTML()`/source-mode paths are documented separately from the limited `setUntrustedHTML()` baseline.
+- Source mode remains an explicit trusted-author path and does not sanitize raw source when applying it to the visual editor.
+- Link, image, video, upload-result, project, and support URLs use purpose-specific validation; unsafe external attribution links are omitted.
+
+The following sections preserve verified upstream repository release history. They do not assert npm publication: the current rebased `package.json` and Release Please manifest declare `0.2.0`, while the npm `latest` endpoint returned `404 Not Found` when checked on 2026-07-27.
 
 ## [0.2.0] - 2026-07-23
 

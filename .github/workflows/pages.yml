@@ -1,62 +1,68 @@
-name: pages
+name: Pages
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+permissions: {}
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
+    name: Build Pages artifact
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: package-lock.json
+
       - name: Install dependencies
         run: npm ci
-      - name: Run tests
-        run: npm test
-      - name: Build package
-        run: npm run build
+
+      - name: Check core project
+        run: npm run check:core
+
+      - name: Build site
+        run: npm run build:site
+
       - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Prepare site
-        run: |
-          mkdir -p site/demo site/examples
-          cp index.html site/index.html
-          cp site.css site/site.css
-          cp site.js site/site.js
-          cp README.md site/README.md
-          cp CHANGELOG.md site/CHANGELOG.md
-          cp -r demo/* site/demo/
-          cp -r examples/* site/examples/
-          cp feathertext.css site/feathertext.css
-          cp feathertext.js site/feathertext.js
-          cp feathertext.min.js site/feathertext.min.js
-          cp -r dist site/dist
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: site
+          path: _site
+          retention-days: 1
 
   deploy:
+    name: Deploy Pages
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

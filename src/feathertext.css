@@ -1,7 +1,7 @@
-/* FeatherText – Professional Rich Text Editor v2.0 */
-/* Theme system with CSS variables */
-:root {
-  /* Default dark theme */
+/* FeatherText editor styles */
+/* Theme tokens are scoped to each editor instance. */
+.feather {
+  /* Instance-scoped default dark theme */
   --feather-bg: #0f1115;
   --feather-panel: #151922;
   --feather-border: #222938;
@@ -13,7 +13,7 @@
 }
 
 /* Explicit dark mapping so data-theme="dark" behaves like defaults */
-[data-theme="dark"] {
+.feather[data-theme="dark"] {
   --feather-bg: #0f1115;
   --feather-panel: #151922;
   --feather-border: #222938;
@@ -25,7 +25,7 @@
 }
 
 /* Light theme */
-[data-theme="light"] {
+.feather[data-theme="light"] {
   --feather-bg: #ffffff;
   --feather-panel: #f8f9fa;
   --feather-border: #dee2e6;
@@ -37,7 +37,7 @@
 }
 
 /* Ocean theme */
-[data-theme="ocean"] {
+.feather[data-theme="ocean"] {
   --feather-bg: #0a192f;
   --feather-panel: #112240;
   --feather-border: #233554;
@@ -49,7 +49,7 @@
 }
 
 /* Forest theme */
-[data-theme="forest"] {
+.feather[data-theme="forest"] {
   --feather-bg: #0d1117;
   --feather-panel: #161b22;
   --feather-border: #30363d;
@@ -61,7 +61,7 @@
 }
 
 /* B variant (dark-b) */
-[data-theme="dark-b"] {
+.feather[data-theme="dark-b"] {
   --feather-bg: #0c0f14;
   --feather-panel: #111624;
   --feather-border: #1e2636;
@@ -72,7 +72,7 @@
   --feather-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
 }
 
-[data-theme="aurora"] {
+.feather[data-theme="aurora"] {
   --feather-bg: #08131b;
   --feather-panel: #102330;
   --feather-border: #1f4350;
@@ -83,7 +83,7 @@
   --feather-shadow: 0 12px 34px rgba(2, 10, 14, 0.38);
 }
 
-[data-theme="dawn"] {
+.feather[data-theme="dawn"] {
   --feather-bg: #fff7ee;
   --feather-panel: #fffdf8;
   --feather-border: #eedbc6;
@@ -94,7 +94,7 @@
   --feather-shadow: 0 12px 32px rgba(141, 97, 67, 0.18);
 }
 
-[data-theme="rose"] {
+.feather[data-theme="rose"] {
   --feather-bg: #1d1118;
   --feather-panel: #271620;
   --feather-border: #4c2d3f;
@@ -105,7 +105,7 @@
   --feather-shadow: 0 12px 34px rgba(27, 11, 20, 0.42);
 }
 
-[data-theme="graphite"] {
+.feather[data-theme="graphite"] {
   --feather-bg: #13161b;
   --feather-panel: #1b2027;
   --feather-border: #303844;
@@ -116,7 +116,7 @@
   --feather-shadow: 0 12px 32px rgba(6, 7, 10, 0.36);
 }
 
-[data-theme="canyon"] {
+.feather[data-theme="canyon"] {
   --feather-bg: #20140f;
   --feather-panel: #2b1d16;
   --feather-border: #5b3a2b;
@@ -127,12 +127,25 @@
   --feather-shadow: 0 14px 36px rgba(20, 9, 5, 0.42);
 }
 
+.feather[data-theme="high-contrast"] {
+  --feather-bg: #000;
+  --feather-panel: #000;
+  --feather-border: #fff;
+  --feather-accent: #00ffff;
+  --feather-text: #fff;
+  --feather-muted: #e6e6e6;
+  --feather-hover: #262626;
+  --feather-shadow: 0 0 0 2px currentColor;
+}
+
 .feather-hidden {
   display: none !important;
 }
 .feather {
+  position: relative;
+  max-width: 100%;
   border-radius: 14px;
-  box-shadow: var(--feather-shadow);
+  box-shadow: none;
   overflow: hidden;
   font:
     14px/1.5 system-ui,
@@ -181,10 +194,8 @@
   justify-content: center;
   gap: 8px;
   padding: 0 10px;
-  transition:
-    transform 0.06s ease,
-    background 0.15s;
-  position: relative; /* ensure tooltip positions correctly */
+  transition: none;
+  position: relative;
 }
 .feather-fixed-height .feather-editor {
   height: var(--feather-height);
@@ -198,7 +209,17 @@
   background: var(--feather-hover);
   box-shadow: inset 0 0 0 1px var(--feather-accent);
 }
-.feather-btn:active {
+.feather-fancy {
+  box-shadow: var(--feather-shadow);
+}
+.feather-fancy .feather-btn,
+.feather-fancy .feather-select,
+.feather-fancy .feather-color {
+  transition:
+    transform 0.06s ease,
+    background 0.15s ease;
+}
+.feather-fancy .feather-btn:active {
   transform: scale(0.98);
 }
 .feather-btn svg {
@@ -520,17 +541,62 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
+  min-height: 38px;
+  padding: 7px 12px;
   border-top: 1px solid var(--feather-border);
   color: var(--feather-muted);
   font-size: 12px;
   background: var(--feather-panel);
+}
+.feather-counters,
+.feather-attribution {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 .feather-badge {
   background: var(--feather-bg);
   padding: 4px 8px;
   border-radius: 999px;
   border: 1px solid var(--feather-border);
+}
+.feather-attribution a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  color: currentColor;
+  text-decoration: none;
+  opacity: 0.82;
+}
+.feather-attribution a:hover,
+.feather-attribution a:focus-visible {
+  color: var(--feather-text);
+  opacity: 1;
+}
+.feather-attribution svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.feather-attribution-support {
+  color: currentColor;
+}
+.feather-save-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--feather-muted);
+}
+.feather-save-state[data-state="saving"],
+.feather-save-state[data-state="pending"] {
+  color: var(--feather-text);
+}
+.feather-save-state[data-state="error"] {
+  color: var(--feather-accent);
 }
 /* Content defaults */
 .feather-editor h1 {
@@ -567,7 +633,7 @@
 }
 
 .feather-tooltip {
-  position: absolute;
+  position: fixed;
   z-index: 10000;
   max-width: min(240px, calc(100vw - 24px));
   padding: 9px 12px;
@@ -575,19 +641,26 @@
   border: 1px solid color-mix(in srgb, var(--feather-border), transparent 15%);
   background: color-mix(in srgb, var(--feather-panel), black 16%);
   color: var(--feather-text);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   font-size: 12px;
   line-height: 1.35;
   letter-spacing: 0.01em;
   pointer-events: none;
   opacity: 0;
+  transform: none;
+  transition: none;
+}
+.feather-tooltip.is-visible {
+  opacity: 1;
+}
+.feather-fancy .feather-tooltip {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   transform: translateY(4px) scale(0.98);
   transition:
     opacity 0.14s ease,
     transform 0.14s ease;
 }
-.feather-tooltip.is-visible {
-  opacity: 1;
+.feather-fancy .feather-tooltip.is-visible {
   transform: translateY(0) scale(1);
 }
 .feather-tooltip::after {
@@ -621,6 +694,134 @@
   }
 }
 
+.feather-readonly .feather-editor,
+.feather-disabled .feather-editor,
+.feather-readonly .feather-source,
+.feather-disabled .feather-source {
+  cursor: default;
+}
+.feather-disabled {
+  opacity: 0.72;
+}
+
+/* Local accessible dialogs */
+.feather-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: color-mix(in srgb, var(--feather-bg), transparent 20%);
+}
+.feather-dialog {
+  width: min(430px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  border: 1px solid var(--feather-border);
+  border-radius: 14px;
+  padding: 18px;
+  color: var(--feather-text);
+  background: var(--feather-panel);
+  box-shadow: none;
+}
+.feather-fancy .feather-dialog {
+  box-shadow: var(--feather-shadow);
+}
+.feather-dialog h2 {
+  margin: 0 0 14px;
+  font-size: 1rem;
+}
+.feather-dialog-description {
+  margin: 0 0 14px;
+  color: var(--feather-muted);
+}
+.feather-dialog-field {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.feather-dialog-field label {
+  font-weight: 600;
+}
+.feather-dialog-field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--feather-border);
+  border-radius: 9px;
+  padding: 7px 9px;
+  color: var(--feather-text);
+  background: var(--feather-bg);
+  font: inherit;
+}
+.feather-dialog-field small {
+  color: var(--feather-muted);
+}
+.feather-dialog-field input:focus-visible {
+  outline: 2px solid var(--feather-accent);
+  outline-offset: 1px;
+}
+.feather-dialog-error {
+  margin: 6px 0 10px;
+  color: var(--feather-text);
+}
+.feather-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.feather-dialog-actions button {
+  min-height: 36px;
+  border: 1px solid var(--feather-border);
+  border-radius: 9px;
+  padding: 6px 13px;
+  color: var(--feather-text);
+  background: var(--feather-bg);
+  cursor: pointer;
+  font: inherit;
+}
+.feather-dialog-actions .feather-dialog-confirm {
+  border-color: var(--feather-accent);
+}
+.feather-dialog-actions button:focus-visible {
+  outline: 2px solid var(--feather-accent);
+  outline-offset: 2px;
+}
+.feather-dialog-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.feather-find-dialog {
+  width: min(520px, 100%);
+}
+.feather-find-options,
+.feather-find-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0;
+}
+.feather-find-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.feather-find-option input {
+  width: auto;
+  min-height: auto;
+}
+.feather-find-count {
+  min-width: 4.5em;
+  color: var(--feather-muted);
+  font-variant-numeric: tabular-nums;
+}
+.feather-find-actions {
+  flex-wrap: wrap;
+}
+
 /* Fullscreen mode */
 .feather-fullscreen {
   position: fixed !important;
@@ -630,12 +831,14 @@
   bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
+  height: 100dvh !important;
   z-index: 9999 !important;
   border-radius: 0 !important;
 }
 
 .feather-fullscreen .feather-editor {
   height: calc(100vh - 120px) !important;
+  height: calc(100dvh - 120px) !important;
   max-height: none !important;
 }
 
@@ -665,6 +868,20 @@
 }
 
 /* Print styles */
+@media (forced-colors: active) {
+  .feather {
+    border: 1px solid CanvasText;
+  }
+  .feather-btn,
+  .feather-select,
+  .feather-color,
+  .feather-dialog,
+  .feather-dialog-field input,
+  .feather-dialog-actions button {
+    forced-color-adjust: auto;
+  }
+}
+
 @media print {
   .feather-toolbar,
   .feather-status {
@@ -710,8 +927,142 @@
   animation: spin 0.8s linear infinite;
 }
 
+.feather-theme-transitions .feather-toolbar,
+.feather-theme-transitions .feather-editor,
+.feather-theme-transitions .feather-source-pane,
+.feather-theme-transitions .feather-source-toolbar,
+.feather-theme-transitions .feather-status {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (pointer: coarse) {
+  .feather-btn,
+  .feather-select,
+  .feather-color {
+    min-width: 44px;
+    height: 44px;
+  }
+
+  .feather-dialog-actions button,
+  .feather-dialog-field input {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  .feather-toolbar {
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding: 6px;
+    scrollbar-width: thin;
+  }
+
+  .feather-toolbar .feather-group {
+    flex: 0 0 auto;
+    gap: 4px;
+    padding-right: 4px;
+  }
+
+  .feather-select {
+    min-width: 104px;
+  }
+
+  .feather-select.feather-fontname {
+    min-width: 94px;
+  }
+
+  .feather-select.feather-fontsize {
+    min-width: 70px;
+  }
+
+  .feather-editor,
+  .feather-source {
+    padding: 12px;
+  }
+
+  .feather-source {
+    padding-left: 58px;
+  }
+
+  .feather-gutter {
+    width: 42px;
+    padding-inline: 6px;
+  }
+
+  .feather-code {
+    left: 42px;
+    padding: 12px;
+  }
+
+  .feather-status {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .feather-counters,
+  .feather-attribution {
+    gap: 4px;
+  }
+
+  .feather-dialog-backdrop {
+    align-items: start;
+    overflow-y: auto;
+    padding: max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+  }
+
+  .feather-dialog {
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+  }
+
+  .feather-fullscreen .feather-toolbar {
+    padding-top: max(6px, env(safe-area-inset-top));
+  }
+
+  .feather-fullscreen .feather-status {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 360px) {
+  .feather-status {
+    font-size: 11px;
+  }
+
+  .feather-badge {
+    padding: 3px 5px;
+  }
+
+  .feather-attribution-project span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feather *,
+  .feather *::before,
+  .feather *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

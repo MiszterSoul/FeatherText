@@ -1,0 +1,47 @@
+name: Feature request
+description: Suggest a focused improvement to FeatherText
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: Describe the user problem first so alternatives and scope can be evaluated clearly.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to accomplish, and who benefits?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior or API you would like, with examples where useful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Explain current workarounds or other approaches you evaluated.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add mockups, related standards, prior art, or compatibility considerations.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and did not find an equivalent request.
+          required: true
+        - label: This request is narrowly scoped and does not combine unrelated features.
+          required: true

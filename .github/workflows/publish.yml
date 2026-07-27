@@ -1,0 +1,818 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing published vX.Y.Z release tag; select the same tag as the workflow ref
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_PACKAGE: feathertext
+  EXPECTED_REPOSITORY: MiszterSoul/FeatherText
+  RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+jobs:
+  verify:
+    name: Verify, test, and package
+    if: github.repository == 'MiszterSoul/FeatherText' && github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    outputs:
+      artifact_name: ${{ steps.release.outputs.artifact_name }}
+      version: ${{ steps.release.outputs.version }}
+      tgz_name: ${{ steps.bundle.outputs.tgz_name }}
+      zip_name: ${{ steps.bundle.outputs.zip_name }}
+    steps:
+      - name: Verify published release and exact tag ref
+        id: release
+        shell: bash
+        env:
+          EVENT_RELEASE_ID: ${{ github.event.release.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_JSON: ${{ runner.temp }}/release.json
+          TAG_COMMIT_JSON: ${{ runner.temp }}/release-tag-commit.json
+        run: |
+          set -euo pipefail
+
+          if [[ "$GITHUB_REPOSITORY" != "$EXPECTED_REPOSITORY" ]]; then
+            echo "Refusing to package from $GITHUB_REPOSITORY." >&2
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Release tag must be an exact stable SemVer tag (vX.Y.Z): $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_REF_TYPE" != "tag" || "$GITHUB_REF_NAME" != "$RELEASE_TAG" ]]; then
+            echo "Run this workflow from the exact release tag ref ($RELEASE_TAG), not $GITHUB_REF." >&2
+            exit 1
+          fi
+
+          gh api "repos/$EXPECTED_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON"
+          gh api "repos/$EXPECTED_REPOSITORY/commits/$RELEASE_TAG" > "$TAG_COMMIT_JSON"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const release = JSON.parse(readFileSync(process.env.RELEASE_JSON, 'utf8'));
+          const taggedCommit = JSON.parse(readFileSync(process.env.TAG_COMMIT_JSON, 'utf8'));
+          const expectedTag = process.env.RELEASE_TAG;
+          const eventReleaseId = process.env.EVENT_RELEASE_ID;
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+
+          if (release.tag_name !== expectedTag) fail(`Release tag mismatch: ${release.tag_name}`);
+          if (release.name !== expectedTag) fail(`Release name must exactly match ${expectedTag}.`);
+          if (release.draft) fail('Draft releases cannot be published.');
+          if (release.prerelease) fail('Prereleases cannot be published by this workflow.');
+          if (!release.published_at) fail('The GitHub release is not published.');
+          if (!Array.isArray(release.assets) || release.assets.length !== 0) fail('The release must not contain assets before this workflow uploads them.');
+          if (taggedCommit.sha !== process.env.GITHUB_SHA) fail('The release tag no longer resolves to the workflow commit.');
+          if (eventReleaseId && String(release.id) !== eventReleaseId) fail('Release event ID does not match the API release.');
+          NODE
+
+          version="${RELEASE_TAG#v}"
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'artifact_name=release-assets-%s\n' "$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Verify clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag_commit="$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          head_commit="$(git rev-parse HEAD)"
+          main_ref=refs/remotes/origin/main
+          if [[ "$tag_commit" != "$head_commit" || "$head_commit" != "$GITHUB_SHA" ]]; then
+            echo "The workflow SHA, tag commit, and checked-out commit must match." >&2
+            exit 1
+          fi
+          if ! git show-ref --verify --quiet "$main_ref"; then
+            echo "The canonical main branch was not fetched." >&2
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$head_commit" "$main_ref"; then
+            echo "The release tag commit must be part of canonical main history." >&2
+            exit 1
+          fi
+          if [[ -n "$(git status --porcelain=v1 --untracked-files=all)" ]]; then
+            echo "Checkout is not clean before build:" >&2
+            git status --short >&2
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Verify package identity
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'));
+          const expectedRepositoryUrl = `https://github.com/${process.env.EXPECTED_REPOSITORY}.git`;
+          const repositoryUrl = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url;
+          const normalizedRepositoryUrl = repositoryUrl?.replace(/^git\+/, '');
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+
+          if (pkg.name !== process.env.EXPECTED_PACKAGE) fail(`Unexpected package name: ${pkg.name}`);
+          if (pkg.version !== process.env.VERSION) fail(`package.json version ${pkg.version} does not match ${process.env.VERSION}.`);
+          if (lock.name !== pkg.name || lock.version !== pkg.version) fail('package-lock.json root name/version does not match package.json.');
+          if (lock.packages?.['']?.name !== pkg.name || lock.packages?.['']?.version !== pkg.version) {
+            fail('package-lock.json package metadata does not match package.json.');
+          }
+          if (normalizedRepositoryUrl !== expectedRepositoryUrl) {
+            fail(`package.json repository must resolve exactly to ${expectedRepositoryUrl}.`);
+          }
+          if (pkg.repository && typeof pkg.repository === 'object' && pkg.repository.type !== 'git') {
+            fail('package.json repository.type must be git.');
+          }
+          if (pkg.private === true) fail('The package is marked private.');
+          if (pkg.publishConfig?.access !== 'public') fail('publishConfig.access must be public.');
+          if (pkg.publishConfig?.registry && pkg.publishConfig.registry !== 'https://registry.npmjs.org/') {
+            fail('publishConfig.registry must be https://registry.npmjs.org/.');
+          }
+          if (pkg.publishConfig?.provenance === false) fail('Package metadata disables provenance.');
+          NODE
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Playwright browsers and system dependencies
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Accessibility tests
+        run: npm run test:a11y
+
+      - name: Size limits
+        run: npm run size
+
+      - name: Package checks
+        run: npm run package:check
+
+      - name: Verify source checkout remained clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$(git status --porcelain=v1 --untracked-files=all)" ]]; then
+            echo "Tracked or non-ignored project files changed during verification:" >&2
+            git status --short >&2
+            exit 1
+          fi
+
+      - name: Create and inspect release bundle
+        id: bundle
+        shell: bash
+        env:
+          ASSET_DIR: ${{ runner.temp }}/release-assets
+          MANIFEST_PATH: dist/build-manifest.json
+          PACK_JSON: ${{ runner.temp }}/npm-pack.json
+          TAR_LIST: ${{ runner.temp }}/npm-pack-files.txt
+          VERSION: ${{ steps.release.outputs.version }}
+          ZIP_LIST: ${{ runner.temp }}/release-zip-files.txt
+          ZIP_LISTING: ${{ runner.temp }}/release-zip-listing.txt
+          ZIP_STAGE: ${{ runner.temp }}/release-zip-stage
+          npm_config_ignore_scripts: "true"
+        run: |
+          set -euo pipefail
+          export TGZ_NAME="$EXPECTED_PACKAGE-$VERSION.tgz"
+          export ZIP_NAME="$EXPECTED_PACKAGE-$VERSION-dist.zip"
+          export CHECKSUMS_NAME="SHA256SUMS.txt"
+
+          rm -rf "$ASSET_DIR" "$ZIP_STAGE"
+          mkdir -p "$ASSET_DIR" "$ZIP_STAGE"
+
+          node --input-type=module <<'NODE'
+          import { copyFile, readFile, rm, stat, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+
+          const expectedNpmFiles = [
+            'README.md',
+            'CHANGELOG.md',
+            'LICENSE',
+            'index.d.ts',
+            'package.json',
+            'dist/feathertext.cjs',
+            'dist/feathertext.esm.js',
+            'dist/feathertext.js',
+            'dist/feathertext.min.js',
+            'dist/feathertext.css',
+            'dist/feathertext.min.css',
+          ];
+          const expectedReleaseZipFiles = [
+            'README.md',
+            'LICENSE',
+            'index.d.ts',
+            'dist/feathertext.cjs',
+            'dist/feathertext.esm.js',
+            'dist/feathertext.js',
+            'dist/feathertext.min.js',
+            'dist/feathertext.css',
+            'dist/feathertext.min.css',
+          ];
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          const assertExactList = (actual, expected, label) => {
+            if (!Array.isArray(actual) || actual.length !== expected.length
+                || actual.some((value, index) => value !== expected[index])) {
+              fail(`${label} changed: ${JSON.stringify(actual)}`);
+            }
+          };
+          const isSafeProjectPath = (file) => typeof file === 'string'
+            && file.length > 0
+            && !path.posix.isAbsolute(file)
+            && !file.includes('\\')
+            && path.posix.normalize(file) === file
+            && !file.split('/').includes('..');
+
+          const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
+          const manifest = JSON.parse(await readFile(process.env.MANIFEST_PATH, 'utf8'));
+          if (manifest.name !== process.env.EXPECTED_PACKAGE || manifest.name !== packageJson.name) {
+            fail(`Unexpected build-manifest package name: ${manifest.name}`);
+          }
+          if (manifest.version !== process.env.VERSION || manifest.version !== packageJson.version) {
+            fail(`Unexpected build-manifest version: ${manifest.version}`);
+          }
+          if (manifest.fileListBase !== 'project-root') fail('Build-manifest file lists must be project-root-relative.');
+          assertExactList(manifest.npmFiles, expectedNpmFiles, 'build-manifest npmFiles');
+          assertExactList(manifest.releaseZipFiles, expectedReleaseZipFiles, 'build-manifest releaseZipFiles');
+
+          for (const file of manifest.npmFiles) {
+            if (!isSafeProjectPath(file)) fail(`Unsafe npm file path in build manifest: ${file}`);
+            if ((await stat(file)).size === 0) fail(`npm package file is empty: ${file}`);
+          }
+
+          const zipNames = [];
+          const seenZipNames = new Set();
+          for (const file of manifest.releaseZipFiles) {
+            const isGeneratedDistribution = file.startsWith('dist/');
+            const isRootSupplement = ['README.md', 'LICENSE', 'index.d.ts'].includes(file);
+            if (!isSafeProjectPath(file) || (!isGeneratedDistribution && !isRootSupplement)) {
+              fail(`Unsafe release ZIP path in build manifest: ${file}`);
+            }
+            const name = path.posix.basename(file);
+            if (seenZipNames.has(name)) fail(`Duplicate flat release ZIP name: ${name}`);
+            seenZipNames.add(name);
+            const info = await stat(file);
+            const metadata = manifest.files?.[name];
+            if (info.size === 0) fail(`Release ZIP file is empty: ${file}`);
+            if (isGeneratedDistribution && (!metadata || metadata.bytes !== info.size)) {
+              fail(`Build-manifest metadata mismatch for ${file}`);
+            }
+            await copyFile(file, path.join(process.env.ZIP_STAGE, name));
+            zipNames.push(name);
+          }
+          await writeFile(process.env.ZIP_LIST, `${zipNames.join('\n')}\n`, 'utf8');
+
+          const npmFiles = new Set(manifest.npmFiles);
+          for (const file of manifest.releaseZipFiles) {
+            if (!npmFiles.has(file)) await rm(file);
+          }
+          NODE
+
+          npm pack . --json --ignore-scripts --pack-destination "$ASSET_DIR" > "$PACK_JSON"
+
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          import path from 'node:path';
+
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          const manifest = JSON.parse(await readFile(process.env.MANIFEST_PATH, 'utf8'));
+          const packResult = JSON.parse(await readFile(process.env.PACK_JSON, 'utf8'));
+          if (!Array.isArray(packResult) || packResult.length !== 1) fail('npm pack did not return exactly one package.');
+
+          const packed = packResult[0];
+          if (packed.filename !== process.env.TGZ_NAME) fail(`Unexpected tarball filename: ${packed.filename}`);
+          if (packed.name !== process.env.EXPECTED_PACKAGE || packed.version !== process.env.VERSION) {
+            fail('npm pack name/version does not match the release.');
+          }
+          if (!Array.isArray(packed.files)) fail('npm pack did not report its files.');
+
+          const packedFiles = packed.files.map((file) => {
+            if (typeof file.path !== 'string' || path.posix.isAbsolute(file.path)
+                || file.path.includes('\\') || file.path.split('/').includes('..')) {
+              fail(`Unsafe path in npm package: ${file.path}`);
+            }
+            if (!Number.isFinite(file.size) || file.size <= 0) fail(`Invalid packed size for ${file.path}.`);
+            return file.path;
+          });
+          const expected = [...manifest.npmFiles].sort();
+          const actual = [...packedFiles].sort();
+          if (actual.length !== 11 || new Set(actual).size !== actual.length
+              || actual.some((file, index) => file !== expected[index])) {
+            fail(`npm pack files do not exactly match build-manifest npmFiles: ${JSON.stringify(actual)}`);
+          }
+          NODE
+
+          (
+            cd "$ZIP_STAGE"
+            zip -X -q "$ASSET_DIR/$ZIP_NAME" -@ < "$ZIP_LIST"
+          )
+          unzip -tq "$ASSET_DIR/$ZIP_NAME"
+          unzip -Z1 "$ASSET_DIR/$ZIP_NAME" > "$ZIP_LISTING"
+          tar -tzf "$ASSET_DIR/$TGZ_NAME" > "$TAR_LIST"
+
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          import path from 'node:path';
+
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          const lines = async (file) => (await readFile(file, 'utf8')).split('\n').filter(Boolean);
+          const sameSorted = (actual, expected) => {
+            const left = [...actual].sort();
+            const right = [...expected].sort();
+            return left.length === right.length && left.every((value, index) => value === right[index]);
+          };
+          const manifest = JSON.parse(await readFile(process.env.MANIFEST_PATH, 'utf8'));
+
+          const tarEntries = await lines(process.env.TAR_LIST);
+          for (const entry of tarEntries) {
+            const parts = entry.split('/');
+            if (parts[0] !== 'package' || parts.includes('..') || entry.startsWith('/') || entry.includes('\\')) {
+              fail(`Unsafe tar entry: ${entry}`);
+            }
+          }
+          const tarFiles = tarEntries
+            .filter((entry) => !entry.endsWith('/'))
+            .map((entry) => entry.slice('package/'.length));
+          if (!sameSorted(tarFiles, manifest.npmFiles) || tarFiles.length !== 11) {
+            fail(`Tarball files do not exactly match build-manifest npmFiles: ${JSON.stringify(tarFiles)}`);
+          }
+
+          const zipEntries = await lines(process.env.ZIP_LISTING);
+          for (const entry of zipEntries) {
+            if (path.posix.basename(entry) !== entry || entry.endsWith('/') || entry.includes('\\')) {
+              fail(`Release ZIP entry is not a flat file: ${entry}`);
+            }
+          }
+          const expectedZipEntries = manifest.releaseZipFiles.map((file) => path.posix.basename(file));
+          if (!sameSorted(zipEntries, expectedZipEntries) || zipEntries.length !== 9) {
+            fail(`Release ZIP files do not exactly match build-manifest releaseZipFiles: ${JSON.stringify(zipEntries)}`);
+          }
+          NODE
+
+          (
+            cd "$ASSET_DIR"
+            sha256sum "$TGZ_NAME" "$ZIP_NAME" > "$CHECKSUMS_NAME"
+            sha256sum --check "$CHECKSUMS_NAME"
+          )
+
+          if [[ "$(find "$ASSET_DIR" -maxdepth 1 -type f | wc -l)" -ne 3 ]]; then
+            echo "Release bundle contains unexpected files." >&2
+            find "$ASSET_DIR" -maxdepth 1 -type f -printf '%f\n' >&2
+            exit 1
+          fi
+
+          {
+            printf 'tgz_name=%s\n' "$TGZ_NAME"
+            printf 'tgz=%s\n' "$ASSET_DIR/$TGZ_NAME"
+            printf 'zip_name=%s\n' "$ZIP_NAME"
+            printf 'zip=%s\n' "$ASSET_DIR/$ZIP_NAME"
+            printf 'checksums=%s\n' "$ASSET_DIR/$CHECKSUMS_NAME"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload verified release bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.release.outputs.artifact_name }}
+          path: |
+            ${{ steps.bundle.outputs.tgz }}
+            ${{ steps.bundle.outputs.zip }}
+            ${{ steps.bundle.outputs.checksums }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  publish:
+    name: Publish to npm
+    needs: verify
+    if: github.repository == 'MiszterSoul/FeatherText' && github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/feathertext
+    env:
+      ASSET_DIR: ${{ github.workspace }}/release-assets
+      CHECKSUMS_NAME: SHA256SUMS.txt
+      TGZ_NAME: ${{ needs.verify.outputs.tgz_name }}
+      VERSION: ${{ needs.verify.outputs.version }}
+      ZIP_NAME: ${{ needs.verify.outputs.zip_name }}
+    steps:
+      - name: Set up Node.js for Trusted Publishing
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Download verified release bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ needs.verify.outputs.artifact_name }}
+          path: ${{ env.ASSET_DIR }}
+
+      - name: Reverify release, toolchain, and bundle
+        shell: bash
+        env:
+          EVENT_RELEASE_ID: ${{ github.event.release.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_JSON: ${{ runner.temp }}/release-publish.json
+          TAG_COMMIT_JSON: ${{ runner.temp }}/publish-tag-commit.json
+          TAR_LIST: ${{ runner.temp }}/publish-tar-files.txt
+          ZIP_LISTING: ${{ runner.temp }}/publish-zip-files.txt
+        run: |
+          set -euo pipefail
+          export CHECKSUMS_PATH="$ASSET_DIR/$CHECKSUMS_NAME"
+          export PACKED_PACKAGE="$RUNNER_TEMP/packed-package/package/package.json"
+          NPM_VERSION="$(npm --version)"
+          export NPM_VERSION
+
+          if [[ "$GITHUB_REPOSITORY" != "$EXPECTED_REPOSITORY" ]]; then
+            echo "Refusing to publish from $GITHUB_REPOSITORY." >&2
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Release tag must be an exact stable SemVer tag (vX.Y.Z): $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_REF_TYPE" != "tag" || "$GITHUB_REF_NAME" != "$RELEASE_TAG" ]]; then
+            echo "The publish job must run from the exact release tag ref ($RELEASE_TAG)." >&2
+            exit 1
+          fi
+          if [[ "$TGZ_NAME" != "$EXPECTED_PACKAGE-$VERSION.tgz"
+                || "$ZIP_NAME" != "$EXPECTED_PACKAGE-$VERSION-dist.zip" ]]; then
+            echo "Release asset names do not match package version $VERSION." >&2
+            exit 1
+          fi
+
+          for file in "$TGZ_NAME" "$ZIP_NAME" "$CHECKSUMS_NAME"; do
+            test -f "$ASSET_DIR/$file"
+          done
+          if [[ "$(find "$ASSET_DIR" -maxdepth 1 -type f | wc -l)" -ne 3 ]]; then
+            echo "Release bundle contains unexpected files." >&2
+            find "$ASSET_DIR" -maxdepth 1 -type f -printf '%f\n' >&2
+            exit 1
+          fi
+          if [[ -n "$(find "$ASSET_DIR" -type l -print -quit)" ]]; then
+            echo "Release bundle contains a symbolic link." >&2
+            exit 1
+          fi
+
+          unzip -tq "$ASSET_DIR/$ZIP_NAME"
+          unzip -Z1 "$ASSET_DIR/$ZIP_NAME" > "$ZIP_LISTING"
+          tar -tzf "$ASSET_DIR/$TGZ_NAME" > "$TAR_LIST"
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import path from 'node:path';
+
+          const expectedNpmFiles = [
+            'README.md',
+            'CHANGELOG.md',
+            'LICENSE',
+            'index.d.ts',
+            'package.json',
+            'dist/feathertext.cjs',
+            'dist/feathertext.esm.js',
+            'dist/feathertext.js',
+            'dist/feathertext.min.js',
+            'dist/feathertext.css',
+            'dist/feathertext.min.css',
+          ];
+          const expectedZipFiles = [
+            'README.md',
+            'LICENSE',
+            'index.d.ts',
+            'feathertext.cjs',
+            'feathertext.esm.js',
+            'feathertext.js',
+            'feathertext.min.js',
+            'feathertext.css',
+            'feathertext.min.css',
+          ];
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          const lines = (file) => readFileSync(file, 'utf8').split('\n').filter(Boolean);
+          const sameSorted = (actual, expected) => {
+            const left = [...actual].sort();
+            const right = [...expected].sort();
+            return left.length === right.length && left.every((value, index) => value === right[index]);
+          };
+
+          const checksumEntries = lines(process.env.CHECKSUMS_PATH).map((line) => {
+            const match = /^([0-9a-f]{64})  (.+)$/.exec(line);
+            if (!match) fail(`Invalid checksum line: ${line}`);
+            return match[2];
+          });
+          if (!sameSorted(checksumEntries, [process.env.TGZ_NAME, process.env.ZIP_NAME])) {
+            fail(`Checksum file names are not exact: ${JSON.stringify(checksumEntries)}`);
+          }
+
+          const tarEntries = lines(process.env.TAR_LIST);
+          for (const entry of tarEntries) {
+            const parts = entry.split('/');
+            if (parts[0] !== 'package' || parts.includes('..') || entry.startsWith('/') || entry.includes('\\')) {
+              fail(`Unsafe tar entry: ${entry}`);
+            }
+          }
+          const tarFiles = tarEntries
+            .filter((entry) => !entry.endsWith('/'))
+            .map((entry) => entry.slice('package/'.length));
+          if (!sameSorted(tarFiles, expectedNpmFiles)) {
+            fail(`Tarball does not contain the exact 11-file npm package: ${JSON.stringify(tarFiles)}`);
+          }
+
+          const zipEntries = lines(process.env.ZIP_LISTING);
+          for (const entry of zipEntries) {
+            if (path.posix.basename(entry) !== entry || entry.endsWith('/') || entry.includes('\\')) {
+              fail(`Release ZIP entry is not a flat file: ${entry}`);
+            }
+          }
+          if (!sameSorted(zipEntries, expectedZipFiles)) {
+            fail(`Release ZIP does not contain the exact nine flat files: ${JSON.stringify(zipEntries)}`);
+          }
+          NODE
+
+          (
+            cd "$ASSET_DIR"
+            sha256sum --check "$CHECKSUMS_NAME"
+          )
+
+          rm -rf "$RUNNER_TEMP/packed-package"
+          mkdir -p "$RUNNER_TEMP/packed-package"
+          tar -xzf "$ASSET_DIR/$TGZ_NAME" -C "$RUNNER_TEMP/packed-package"
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const pkg = JSON.parse(readFileSync(process.env.PACKED_PACKAGE, 'utf8'));
+          const expectedRepositoryUrl = `https://github.com/${process.env.EXPECTED_REPOSITORY}.git`;
+          const repositoryUrl = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url;
+          const normalizedRepositoryUrl = repositoryUrl?.replace(/^git\+/, '');
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+
+          if (pkg.name !== process.env.EXPECTED_PACKAGE) fail(`Unexpected packed package name: ${pkg.name}`);
+          if (pkg.version !== process.env.VERSION) fail(`Unexpected packed package version: ${pkg.version}`);
+          if (normalizedRepositoryUrl !== expectedRepositoryUrl) fail('Packed repository metadata is not canonical.');
+          if (pkg.private === true || pkg.publishConfig?.access !== 'public') {
+            fail('Packed package is not configured for public publication.');
+          }
+          if (pkg.publishConfig?.registry !== 'https://registry.npmjs.org/') fail('Packed npm registry is not canonical.');
+          if (pkg.publishConfig?.provenance !== true) fail('Packed package must require provenance.');
+
+          const parse = (version) => version.replace(/^v/, '').split(/[.-]/, 3).map(Number);
+          const atLeast = (actual, minimum) => actual.some((part, index) => part > minimum[index]
+              && actual.slice(0, index).every((value, i) => value === minimum[i]))
+            || actual.every((part, index) => part === minimum[index]);
+          const nodeVersion = parse(process.version);
+          const npmVersion = parse(process.env.NPM_VERSION);
+          if (!atLeast(nodeVersion, [22, 14, 0])) fail(`Node.js ${process.version} is too old for Trusted Publishing.`);
+          if (!atLeast(npmVersion, [11, 5, 1])) fail(`npm ${npmVersion.join('.')} is too old for Trusted Publishing.`);
+          NODE
+
+          if [[ "$(npm config get registry)" != "https://registry.npmjs.org/" ]]; then
+            echo "npm registry is not the public npm registry." >&2
+            exit 1
+          fi
+
+          gh api "repos/$EXPECTED_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON"
+          gh api "repos/$EXPECTED_REPOSITORY/commits/$RELEASE_TAG" > "$TAG_COMMIT_JSON"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const release = JSON.parse(readFileSync(process.env.RELEASE_JSON, 'utf8'));
+          const taggedCommit = JSON.parse(readFileSync(process.env.TAG_COMMIT_JSON, 'utf8'));
+          const eventReleaseId = process.env.EVENT_RELEASE_ID;
+          if (release.tag_name !== process.env.RELEASE_TAG || release.name !== process.env.RELEASE_TAG
+              || release.draft || release.prerelease || !release.published_at
+              || !Array.isArray(release.assets) || release.assets.length !== 0
+              || taggedCommit.sha !== process.env.GITHUB_SHA
+              || (eventReleaseId && String(release.id) !== eventReleaseId)) {
+            console.error('The target GitHub release or immutable tag changed before publication.');
+            process.exit(1);
+          }
+          NODE
+
+      - name: Verify version is unpublished
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          npm view "$EXPECTED_PACKAGE@$VERSION" version --json > "$RUNNER_TEMP/npm-view.txt" 2>&1
+          status=$?
+          set -e
+
+          if [[ $status -eq 0 ]]; then
+            echo "$EXPECTED_PACKAGE@$VERSION is already published." >&2
+            cat "$RUNNER_TEMP/npm-view.txt" >&2
+            exit 1
+          fi
+          if ! grep -q 'E404' "$RUNNER_TEMP/npm-view.txt"; then
+            echo "Unable to prove that $EXPECTED_PACKAGE@$VERSION is unpublished." >&2
+            cat "$RUNNER_TEMP/npm-view.txt" >&2
+            exit 1
+          fi
+
+      - name: Publish with provenance
+        run: npm publish "$ASSET_DIR/$TGZ_NAME" --access public --provenance
+
+      - name: Verify registry publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in {1..12}; do
+            if published="$(npm view "$EXPECTED_PACKAGE@$VERSION" version 2>/dev/null)" \
+              && [[ "$published" == "$VERSION" ]]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "npm did not return the expected published version after 60 seconds." >&2
+          exit 1
+
+  release-assets:
+    name: Upload GitHub Release assets
+    needs: [verify, publish]
+    if: github.repository == 'MiszterSoul/FeatherText' && github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      ASSET_DIR: ${{ github.workspace }}/release-assets
+      CHECKSUMS_NAME: SHA256SUMS.txt
+      TGZ_NAME: ${{ needs.verify.outputs.tgz_name }}
+      VERSION: ${{ needs.verify.outputs.version }}
+      ZIP_NAME: ${{ needs.verify.outputs.zip_name }}
+    steps:
+      - name: Download verified release bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ needs.verify.outputs.artifact_name }}
+          path: ${{ env.ASSET_DIR }}
+
+      - name: Reverify and upload release assets
+        shell: bash
+        env:
+          EVENT_RELEASE_ID: ${{ github.event.release.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_JSON: ${{ runner.temp }}/release-assets.json
+          TAG_COMMIT_JSON: ${{ runner.temp }}/release-assets-tag-commit.json
+        run: |
+          set -euo pipefail
+          export CHECKSUMS_PATH="$ASSET_DIR/$CHECKSUMS_NAME"
+
+          if [[ "$GITHUB_REPOSITORY" != "$EXPECTED_REPOSITORY" ]]; then
+            echo "Refusing to upload assets from $GITHUB_REPOSITORY." >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_REF_TYPE" != "tag" || "$GITHUB_REF_NAME" != "$RELEASE_TAG" ]]; then
+            echo "The asset job must run from the exact release tag ref ($RELEASE_TAG)." >&2
+            exit 1
+          fi
+          if [[ "$TGZ_NAME" != "$EXPECTED_PACKAGE-$VERSION.tgz"
+                || "$ZIP_NAME" != "$EXPECTED_PACKAGE-$VERSION-dist.zip" ]]; then
+            echo "Release asset names do not match package version $VERSION." >&2
+            exit 1
+          fi
+
+          for file in "$TGZ_NAME" "$ZIP_NAME" "$CHECKSUMS_NAME"; do
+            test -f "$ASSET_DIR/$file"
+          done
+          if [[ "$(find "$ASSET_DIR" -maxdepth 1 -type f | wc -l)" -ne 3
+                || -n "$(find "$ASSET_DIR" -type l -print -quit)" ]]; then
+            echo "Downloaded release bundle is not the exact three regular files." >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const entries = readFileSync(process.env.CHECKSUMS_PATH, 'utf8')
+            .split('\n')
+            .filter(Boolean)
+            .map((line) => {
+              const match = /^([0-9a-f]{64})  (.+)$/.exec(line);
+              if (!match) throw new Error(`Invalid checksum line: ${line}`);
+              return match[2];
+            })
+            .sort();
+          const expected = [process.env.TGZ_NAME, process.env.ZIP_NAME].sort();
+          if (entries.length !== expected.length || entries.some((file, index) => file !== expected[index])) {
+            throw new Error(`Checksum file names are not exact: ${JSON.stringify(entries)}`);
+          }
+          NODE
+
+          (
+            cd "$ASSET_DIR"
+            sha256sum --check "$CHECKSUMS_NAME"
+          )
+          unzip -tq "$ASSET_DIR/$ZIP_NAME"
+          tar -tzf "$ASSET_DIR/$TGZ_NAME" >/dev/null
+
+          gh api "repos/$EXPECTED_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON"
+          gh api "repos/$EXPECTED_REPOSITORY/commits/$RELEASE_TAG" > "$TAG_COMMIT_JSON"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const release = JSON.parse(readFileSync(process.env.RELEASE_JSON, 'utf8'));
+          const taggedCommit = JSON.parse(readFileSync(process.env.TAG_COMMIT_JSON, 'utf8'));
+          const eventReleaseId = process.env.EVENT_RELEASE_ID;
+          if (release.tag_name !== process.env.RELEASE_TAG || release.name !== process.env.RELEASE_TAG
+              || release.draft || release.prerelease || !release.published_at
+              || !Array.isArray(release.assets) || release.assets.length !== 0
+              || taggedCommit.sha !== process.env.GITHUB_SHA
+              || (eventReleaseId && String(release.id) !== eventReleaseId)) {
+            throw new Error('The target GitHub release or immutable tag changed before asset upload.');
+          }
+          NODE
+
+          gh release upload "$RELEASE_TAG" \
+            "$ASSET_DIR/$TGZ_NAME" \
+            "$ASSET_DIR/$ZIP_NAME" \
+            "$ASSET_DIR/$CHECKSUMS_NAME" \
+            --repo "$EXPECTED_REPOSITORY"
+
+          gh api "repos/$EXPECTED_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON"
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { readFileSync, statSync } from 'node:fs';
+          import path from 'node:path';
+
+          const release = JSON.parse(readFileSync(process.env.RELEASE_JSON, 'utf8'));
+          const expectedNames = [process.env.TGZ_NAME, process.env.ZIP_NAME, process.env.CHECKSUMS_NAME].sort();
+          const assets = Array.isArray(release.assets) ? release.assets : [];
+          const actualNames = assets.map((asset) => asset.name).sort();
+          if (actualNames.length !== expectedNames.length
+              || actualNames.some((name, index) => name !== expectedNames[index])) {
+            throw new Error(`GitHub Release assets are not exact: ${JSON.stringify(actualNames)}`);
+          }
+          for (const asset of assets) {
+            const localPath = path.join(process.env.ASSET_DIR, asset.name);
+            const contents = readFileSync(localPath);
+            const expectedDigest = `sha256:${createHash('sha256').update(contents).digest('hex')}`;
+            if (asset.state !== 'uploaded' || asset.size !== statSync(localPath).size) {
+              throw new Error(`GitHub Release asset metadata is invalid for ${asset.name}.`);
+            }
+            if (asset.digest && asset.digest !== expectedDigest) {
+              throw new Error(`GitHub Release asset digest is invalid for ${asset.name}.`);
+            }
+          }
+          NODE

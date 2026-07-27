@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browsers and system dependencies
+        if: matrix.node == 24
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: End-to-end tests
+        if: matrix.node == 24
+        run: npm run test:e2e
+
+      - name: Accessibility tests
+        if: matrix.node == 24
+        run: npm run test:a11y
+
+      - name: Size limits
+        if: matrix.node == 24
+        run: npm run size
+
+      - name: Package contents
+        if: matrix.node == 24
+        run: npm run package:check
+
+      - name: Upload Playwright output
+        if: ${{ failure() && matrix.node == 24 }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-results-node-${{ matrix.node }}-${{ github.run_attempt }}
+          path: dist/playwright-results
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,33 +1,57 @@
 {
   "name": "feathertext",
   "version": "0.2.0",
-  "description": "A dependency-free, performance-first rich text editor with configurable themes and toolbars.",
+  "description": "A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.",
   "type": "module",
-  "main": "dist/feathertext.cjs",
-  "module": "dist/feathertext.esm.js",
-  "unpkg": "dist/feathertext.min.js",
+  "main": "./dist/feathertext.cjs",
+  "module": "./dist/feathertext.esm.js",
+  "browser": "./dist/feathertext.min.js",
+  "unpkg": "./dist/feathertext.min.js",
+  "jsdelivr": "./dist/feathertext.min.js",
+  "style": "./dist/feathertext.min.css",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./dist/feathertext.esm.js",
       "require": "./dist/feathertext.cjs"
     },
     "./css": "./dist/feathertext.css",
-    "./dist/feathertext.css": "./dist/feathertext.css"
+    "./dist/feathertext.css": "./dist/feathertext.css",
+    "./feathertext.css": "./dist/feathertext.css",
+    "./feathertext.min.css": "./dist/feathertext.min.css",
+    "./browser": "./dist/feathertext.min.js",
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist",
-    "src",
+    "dist/feathertext.cjs",
+    "dist/feathertext.esm.js",
+    "dist/feathertext.js",
+    "dist/feathertext.min.js",
+    "dist/feathertext.css",
+    "dist/feathertext.min.css",
+    "index.d.ts",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "build": "node build.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "lint": "eslint . --max-warnings=0",
     "test": "node --import ./test/test-env.mjs --test test/*.test.mjs",
-    "check": "npm test && npm run build",
-    "prepublishOnly": "npm run check",
-    "dev": "npx http-server -c-1 -p 5173",
-    "release:prepare": "npm run check && git add dist && git commit -m \"chore: build dist\" || echo \"no dist changes\""
+    "test:e2e": "playwright test --config=tests/playwright.config.mjs tests/e2e",
+    "test:a11y": "playwright test --config=tests/playwright.config.mjs tests/a11y --project=chromium --project=mobile",
+    "size": "node scripts/check-size.mjs",
+    "package:check": "node scripts/check-package.mjs",
+    "benchmark": "node benchmark/run.mjs",
+    "check:core": "npm run lint && npm test && npm run build && npm run size && npm run package:check",
+    "check": "npm run check:core && npm run test:e2e && npm run test:a11y",
+    "dev": "node scripts/serve.mjs --root . --host 127.0.0.1 --port 5173",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -37,20 +61,37 @@
   "bugs": {
     "url": "https://github.com/MiszterSoul/FeatherText/issues"
   },
-  "publishConfig": {
-    "access": "public"
+  "funding": {
+    "type": "custom",
+    "url": "https://buymeacoffee.com/devpeter"
   },
-  "devDependencies": {
-    "esbuild": "^0.23.0",
-    "jsdom": "^24.1.0"
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
-    "rich-text",
-    "editor",
-    "lightweight",
+    "rich-text-editor",
     "wysiwyg",
+    "javascript",
+    "contenteditable",
+    "text-editor",
+    "open-source",
     "dependency-free",
-    "performance"
+    "lightweight",
+    "performance",
+    "web-editor",
+    "html-editor"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.8.0",
+    "jsdom": "^29.1.1"
+  }
 }

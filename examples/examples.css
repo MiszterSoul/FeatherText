@@ -1,0 +1,335 @@
+:root {
+  --example-bg: #0a0b0f;
+  --example-panel: #13161c;
+  --example-panel-2: #1a1e26;
+  --example-line: #343b47;
+  --example-text: #f5f1e8;
+  --example-muted: #a8adb8;
+  --example-accent: #c8ff65;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--example-text);
+  background:
+    radial-gradient(
+      800px 500px at 80% -10%,
+      rgba(200, 255, 101, 0.08),
+      transparent 70%
+    ),
+    var(--example-bg);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+button,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--example-accent);
+  outline-offset: 3px;
+}
+
+.example-header {
+  display: flex;
+  min-height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px max(20px, calc((100vw - 1040px) / 2));
+  border-bottom: 1px solid var(--example-line);
+  background: rgba(10, 11, 15, 0.9);
+}
+
+.example-brand {
+  color: var(--example-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.example-brand::after {
+  color: var(--example-accent);
+  content: " ·";
+}
+
+.example-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.example-header nav a {
+  color: var(--example-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.example-header nav a:hover,
+.example-header nav a[aria-current="page"] {
+  color: var(--example-text);
+}
+
+.example-shell {
+  width: min(calc(100% - 36px), 1040px);
+  margin: 0 auto;
+  padding: clamp(56px, 9vw, 100px) 0;
+}
+
+.example-intro {
+  max-width: 750px;
+  margin-bottom: 38px;
+}
+
+.example-kicker {
+  margin: 0 0 12px;
+  color: var(--example-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.example-intro h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.example-intro p:not(.example-kicker) {
+  color: var(--example-muted);
+  font-size: 1.03rem;
+}
+
+.example-card,
+.control-card {
+  padding: clamp(20px, 4vw, 34px);
+  border: 1px solid var(--example-line);
+  border-radius: 20px;
+  background: var(--example-panel);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.28);
+}
+
+.example-index {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.example-index .example-card h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.example-index .example-card > p:not(.example-kicker) {
+  color: var(--example-muted);
+}
+
+.example-link {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--example-accent);
+  border-radius: 9px;
+  color: var(--example-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.example-link:hover {
+  background: var(--example-accent);
+  color: #172007;
+}
+
+.control-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+  gap: 32px;
+  margin-bottom: 20px;
+}
+
+.control-card h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.control-card p {
+  margin: 8px 0 0;
+  color: var(--example-muted);
+  font-size: 0.85rem;
+}
+
+.control-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.control-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--example-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.control-grid button,
+.control-grid select,
+.example-actions button,
+.example-actions a {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--example-line);
+  border-radius: 9px;
+  background: var(--example-panel-2);
+  color: var(--example-text);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.control-grid button:hover,
+.example-actions button:hover,
+.example-actions a:hover {
+  border-color: #657184;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+.field-help {
+  margin: 0 0 18px;
+  color: var(--example-muted);
+  font-size: 0.84rem;
+}
+
+.example-card > textarea {
+  width: 100%;
+  min-height: 260px;
+}
+
+.example-card .feather {
+  margin-top: 14px;
+  border: 1px solid var(--example-line);
+}
+
+.example-card .feather-toolbar {
+  position: relative;
+}
+
+.example-status {
+  margin: 14px 0 0;
+  color: #ffb58a;
+  font-size: 0.78rem;
+}
+
+.example-status.is-ready {
+  color: var(--example-accent);
+}
+
+.example-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.example-actions button {
+  border-color: var(--example-accent);
+  background: var(--example-accent);
+  color: #172007;
+}
+
+.output-card {
+  margin-top: 18px;
+  border: 1px solid var(--example-line);
+  border-radius: 12px;
+  background: #08090c;
+}
+
+.output-card summary {
+  padding: 10px 13px;
+  color: var(--example-muted);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.output-card pre {
+  max-height: 280px;
+  margin: 0;
+  overflow: auto;
+  padding: 0 13px 13px;
+  color: #e2f3c4;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.77rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .example-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .control-card,
+  .example-index {
+    grid-template-columns: 1fr;
+  }
+
+  .control-grid {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .control-grid button,
+  .control-grid label,
+  .control-grid select {
+    width: 100%;
+  }
+
+  .example-card .feather-toolbar,
+  .example-card .feather-source-toolbar {
+    position: relative;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

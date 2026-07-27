@@ -1,0 +1,140 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Prepare or create release
+    if: github.repository == 'MiszterSoul/FeatherText' && github.event.repository.fork == false && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      release_pr: ${{ steps.release.outputs.pr }}
+      prs_created: ${{ steps.release.outputs.prs_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Run Release Please
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          target-branch: main
+
+  dispatch-release-pr-ci:
+    name: Dispatch CI for release PR
+    needs: release
+    if: needs.release.outputs.prs_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: read
+    env:
+      EXPECTED_PR_BRANCH: release-please--branches--main--components--feathertext
+      EXPECTED_REPOSITORY: MiszterSoul/FeatherText
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_PR_JSON: ${{ needs.release.outputs.release_pr }}
+    steps:
+      # GITHUB_TOKEN-created PR changes do not emit pull_request workflow runs.
+      - name: Verify release PR and dispatch CI
+        shell: bash
+        env:
+          PR_API_JSON: ${{ runner.temp }}/release-pr.json
+          PR_NUMBER_FILE: ${{ runner.temp }}/release-pr-number.txt
+        run: |
+          set -euo pipefail
+
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          let pullRequest;
+          try {
+            pullRequest = JSON.parse(process.env.RELEASE_PR_JSON);
+          } catch {
+            fail('Release Please did not return valid release PR metadata.');
+          }
+          if (pullRequest.baseBranchName !== 'main') fail('Release PR must target main.');
+          if (pullRequest.headBranchName !== process.env.EXPECTED_PR_BRANCH) {
+            fail(`Unexpected Release Please branch: ${pullRequest.headBranchName}`);
+          }
+          if (!Number.isInteger(pullRequest.number) || pullRequest.number <= 0) {
+            fail(`Invalid release PR number: ${pullRequest.number}`);
+          }
+          if (pullRequest.sha && !/^[0-9a-f]{40}$/.test(pullRequest.sha)) {
+            fail(`Invalid release PR SHA: ${pullRequest.sha}`);
+          }
+          writeFileSync(process.env.PR_NUMBER_FILE, `${pullRequest.number}\n`, 'utf8');
+          NODE
+
+          read -r pr_number < "$PR_NUMBER_FILE"
+          gh api "repos/$EXPECTED_REPOSITORY/pulls/$pr_number" > "$PR_API_JSON"
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const actionPr = JSON.parse(process.env.RELEASE_PR_JSON);
+          const apiPr = JSON.parse(readFileSync(process.env.PR_API_JSON, 'utf8'));
+          const pending = apiPr.labels?.some((label) => label.name === 'autorelease: pending');
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+
+          if (apiPr.state !== 'open' || apiPr.base?.ref !== 'main') fail('Release PR is not open against main.');
+          if (apiPr.head?.ref !== process.env.EXPECTED_PR_BRANCH) fail('Release PR head branch changed.');
+          if (apiPr.head?.repo?.full_name !== process.env.EXPECTED_REPOSITORY) fail('Release PR must originate in the canonical repository.');
+          if (actionPr.sha && apiPr.head?.sha !== actionPr.sha) fail('Release PR head changed during dispatch.');
+          if (!pending) fail('Release PR is missing the autorelease: pending label.');
+          NODE
+
+          gh workflow run ci.yml \
+            --repo "$EXPECTED_REPOSITORY" \
+            --ref "$EXPECTED_PR_BRANCH"
+
+  dispatch-publish:
+    name: Dispatch protected publish
+    needs: release
+    if: needs.release.outputs.release_created == 'true' && github.repository == 'MiszterSoul/FeatherText' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ needs.release.outputs.tag_name }}
+    steps:
+      # GITHUB_TOKEN-created releases cannot emit downstream workflow runs, so dispatch the tag explicitly.
+      - name: Dispatch publish workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Unexpected release tag: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          gh workflow run publish.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$RELEASE_TAG" \
+            --field "tag=$RELEASE_TAG"

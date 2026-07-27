@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">FeatherText square launch artwork</title>
+  <desc id="desc">Square FeatherText launch artwork with a large cream and green feather, project name, and plain JavaScript positioning.</desc>
+  <defs>
+    <linearGradient id="background" x1="80" y1="40" x2="1120" y2="1180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a1f28"/>
+      <stop offset="0.5" stop-color="#0a0b0f"/>
+      <stop offset="1" stop-color="#101721"/>
+    </linearGradient>
+    <linearGradient id="feather" x1="300" y1="878" x2="880" y2="230" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8ff65"/>
+      <stop offset="1" stop-color="#fff6dc"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(770 360) rotate(130) scale(660)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8ff65" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#c8ff65" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="36" stdDeviation="34" flood-color="#000000" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1200" rx="48" fill="url(#background)"/>
+  <rect x="2" y="2" width="1196" height="1196" rx="46" fill="none" stroke="#353c48" stroke-width="4"/>
+  <circle cx="850" cy="250" r="590" fill="url(#glow)"/>
+  <circle cx="1010" cy="80" r="430" fill="none" stroke="#c8ff65" stroke-opacity="0.075" stroke-width="3"/>
+  <circle cx="1010" cy="80" r="560" fill="none" stroke="#c8ff65" stroke-opacity="0.045" stroke-width="3"/>
+
+  <g transform="translate(80 78)">
+    <rect width="76" height="76" rx="21" fill="#11141a" stroke="#3c4451" stroke-width="3"/>
+    <path d="M14 61c7-19 19-39 50-51 0 24-12 42-38 49l-12 2Z" fill="url(#feather)"/>
+    <path d="M16 65c11-19 23-34 41-50M29 48l-1-15M40 38l14 1M49 28l-1-11" fill="none" stroke="#0a0b0f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="100" y="51" fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="39" font-weight="730" letter-spacing="-1.4">FeatherText</text>
+    <circle cx="344" cy="38" r="5" fill="#c8ff65"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M236 843c86-230 229-480 600-630 0 289-147 500-466 591l-134 39Z" fill="url(#feather)"/>
+    <path d="M258 889c138-230 280-416 497-599M396 685l-16-188M516 570l178 13M612 442l-12-133" fill="none" stroke="#0a0b0f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(80 935)">
+    <text fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="58" font-weight="760" letter-spacing="-3">
+      <tspan x="0" y="0">Rich text.</tspan>
+      <tspan x="0" y="70" fill="#a8adb8">Plain JavaScript.</tspan>
+    </text>
+    <rect x="0" y="112" width="184" height="46" rx="23" fill="#c8ff65"/>
+    <text x="92" y="141" text-anchor="middle" fill="#172007" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="820" letter-spacing="1.4">MIT · PRE-1.0</text>
+    <text x="207" y="141" fill="#727986" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="650">FeatherText</text>
+  </g>
+</svg>

@@ -1,113 +1,32 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-site-theme="dark">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>FeatherText — performance-first rich text editor</title>
-  <meta name="description" content="FeatherText documentation, live playground, themes, settings, examples, and changelog.">
-  <meta name="theme-color" content="#0d1117">
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="feathertext.css">
-  <link rel="stylesheet" href="site.css">
-  <script defer src="feathertext.js"></script>
-  <script defer src="site.js"></script>
-</head>
-<body>
-  <a class="skip" href="#main">Skip to content</a>
-  <header class="topbar">
-    <a class="brand" href="#top"><span>F</span>FeatherText</a>
-    <nav aria-label="Primary"><a href="#playground">Playground</a><a href="#examples">Examples</a><a href="#themes">Themes</a><a href="#settings">Settings</a><a href="#changes">Changes</a></nav>
-    <div class="actions"><a class="btn quiet" href="https://github.com/MiszterSoul/FeatherText">GitHub</a><button class="btn" id="site-theme" type="button">Light site</button></div>
-  </header>
-
-  <main id="main">
-    <section class="section hero" id="top">
-      <div>
-        <p class="eyebrow">FeatherText v<span data-version>0.2.0</span></p>
-        <h1>Fast by default. Fancy by choice.</h1>
-        <p class="lead">A dependency-free rich text editor with ten themes, configurable toolbars, source mode, and resource-heavy decorative effects disabled by default.</p>
-        <div class="button-row"><a class="btn primary" href="#playground">Try the editor</a><a class="btn" href="#install">Install</a><a class="btn" href="CHANGELOG.md">Changelog</a></div>
-        <dl class="metrics"><div><dt>0</dt><dd>runtime dependencies</dd></div><div><dt>10</dt><dd>built-in themes</dd></div><div><dt>false</dt><dd>default fancy mode</dd></div></dl>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><strong>Default configuration</strong><span>No blur · no shadow · no animation</span></div>
-        <div class="panel-body"><textarea id="hero-editor"><h2>Write without visual overhead</h2><p>Enable <strong>fancy: true</strong> only when decorative effects are worth the additional rendering cost.</p></textarea></div>
-      </div>
-    </section>
-
-    <section class="section" id="playground">
-      <header class="section-head"><div><p class="eyebrow">Live playground</p><h2>Configure the public API.</h2></div><p>Controls rebuild the editor through <code>setConfig()</code>. The snippet updates with the selected settings.</p></header>
-      <div class="playground">
-        <aside class="panel controls">
-          <div class="panel-head"><strong>Settings</strong><span id="status">Loading…</span></div>
-          <div class="panel-body">
-            <label>Theme<select id="editor-theme"></select></label>
-            <label>Toolbar<select id="toolbar"><option value="essential">Essential</option><option value="writing" selected>Writing</option><option value="full">Full</option></select></label>
-            <label class="check"><input id="fancy" type="checkbox"><span><strong>Fancy effects</strong><small>Shadows, transitions, gradients</small></span></label>
-            <label class="check"><input id="counts" type="checkbox" checked><span><strong>Counters</strong><small>Word and character totals</small></span></label>
-            <label class="check"><input id="wrap" type="checkbox"><span><strong>Source wrapping</strong><small>Soft-wrap long source lines</small></span></label>
-            <div class="button-row compact"><button class="btn" id="source" type="button">Source</button><button class="btn" id="sample" type="button">Sample</button><button class="btn" id="clear" type="button">Clear</button><button class="btn" id="copy" type="button">Copy config</button></div>
-          </div>
-        </aside>
-        <div>
-          <textarea id="demo-editor"><h2>Try FeatherText</h2><p>Change themes, toolbar density, counters, source wrapping, or fancy mode.</p><ul><li>Performance-first defaults</li><li>Small runtime API</li><li>Source editor with syntax highlighting</li></ul></textarea>
-          <pre class="code" id="snippet"></pre>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="examples">
-      <header class="section-head"><div><p class="eyebrow">Examples</p><h2>One consistent demo system.</h2></div><p>All example URLs now use the same layout, typography, controls, and performance-first styling.</p></header>
-      <div class="cards">
-        <article><span>Default</span><h3>Quick start</h3><p>Safe paste handling and standard toolbar.</p><a href="examples/#quick">Open →</a></article>
-        <article><span>Minimal</span><h3>Basic toolbar</h3><p>Focused writing controls only.</p><a href="examples/#basic">Open →</a></article>
-        <article><span>Runtime</span><h3>API controls</h3><p>Theme, toolbar, content, and fancy toggles.</p><a href="examples/#api">Open →</a></article>
-        <article><span>Builder</span><h3>Config generator</h3><p>Generate a clean initialization snippet.</p><a href="#playground">Open →</a></article>
-      </div>
-    </section>
-
-    <section class="section" id="themes">
-      <header class="section-head"><div><p class="eyebrow">Themes</p><h2>Ten built-in palettes.</h2></div><p>Theme colors and fancy effects are separate concerns. Select a theme to apply it to the playground.</p></header>
-      <div class="theme-grid" id="theme-grid"></div>
-    </section>
-
-    <section class="section" id="settings">
-      <header class="section-head"><div><p class="eyebrow">Settings</p><h2>Important defaults.</h2></div><p>See the README for the full option and API reference.</p></header>
-      <div class="table-wrap"><table><thead><tr><th>Option</th><th>Default</th><th>Purpose</th></tr></thead><tbody>
-        <tr><td><code>fancy</code></td><td><code>false</code></td><td>Opt in to decorative shadows, gradients, transitions, and press transforms.</td></tr>
-        <tr><td><code>theme</code></td><td><code>dark</code></td><td>Built-in theme name, <code>auto</code>, or custom token object.</td></tr>
-        <tr><td><code>sanitizePaste</code></td><td><code>true</code></td><td>Use plain text for paste unless another paste mode/filter is supplied.</td></tr>
-        <tr><td><code>wordCount</code> / <code>charCount</code></td><td><code>true</code></td><td>Show debounced counts in the status bar.</td></tr>
-        <tr><td><code>sourceWrapLines</code></td><td><code>false</code></td><td>Soft-wrap long lines in source mode.</td></tr>
-        <tr><td><code>minHeight</code> / <code>maxHeight</code></td><td><code>220</code> / <code>600</code></td><td>Control editable height and scrolling.</td></tr>
-      </tbody></table></div>
-    </section>
-
-    <section class="section" id="changes">
-      <header class="section-head"><div><p class="eyebrow">Changes</p><h2>Release history.</h2></div><p>Versions follow Semantic Versioning and changes are maintained in <a href="CHANGELOG.md">CHANGELOG.md</a>.</p></header>
-      <div class="releases"><article><div><strong>v0.2.0</strong><small>July 23, 2026</small></div><ul><li>Performance-first <code>fancy: false</code> default and runtime toggle.</li><li>Fixed source rendering and configuration rebuild behavior.</li><li>Standardized Pages, examples, README, and release documentation.</li></ul></article><article><div><strong>v0.1.0</strong><small>June 18, 2026</small></div><ul><li>Initial editor, themes, toolbar, source mode, builds, and examples.</li></ul></article></div>
-    </section>
-
-    <section class="section" id="install">
-      <header class="section-head"><div><p class="eyebrow">Install</p><h2>Package or static assets.</h2></div><p>Run <code>npm test</code> and <code>npm run build</code> before publishing.</p></header>
-      <div class="install"><pre class="code"><code>npm install feathertext
-
-import FeatherText from 'feathertext';
-import 'feathertext/css';
-
-new FeatherText('#editor', {
-  theme: 'dark',
-  fancy: false
-});</code></pre><pre class="code"><code>&lt;link rel="stylesheet" href="feathertext.css"&gt;
-&lt;script src="feathertext.js"&gt;&lt;/script&gt;
-&lt;textarea id="editor"&gt;&lt;/textarea&gt;
-&lt;script&gt;
-  FeatherText.init('#editor', { fancy: false });
-&lt;/script&gt;</code></pre></div>
-    </section>
-  </main>
-
-  <footer><span>FeatherText v<span data-version>0.2.0</span> · MIT</span><nav><a href="README.md">README</a><a href="CHANGELOG.md">Changelog</a><a href="examples/">Examples</a><a href="https://github.com/MiszterSoul/FeatherText/issues">Issues</a></nav></footer>
-  <script>document.addEventListener('DOMContentLoaded',()=>{if(window.FeatherText)FeatherText.init('#hero-editor',{theme:'dark',fancy:false,toolbar:['format','bold','italic','underline','|','link','|','ul','ol','|','undo','redo'],wordCount:false,charCount:false,minHeight:200,maxHeight:300});});</script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'"
+    />
+    <meta http-equiv="refresh" content="0; url=site/" />
+    <title>Opening FeatherText</title>
+    <link rel="canonical" href="https://misztersoul.github.io/FeatherText/" />
+    <link rel="icon" href="site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="site/assets/site.css" />
+  </head>
+  <body class="redirect-page">
+    <main>
+      <img
+        src="site/assets/logo.svg"
+        width="240"
+        height="64"
+        alt="FeatherText"
+      />
+      <h1>Opening the FeatherText site…</h1>
+      <p>
+        If the redirect does not start,
+        <a href="site/">open the framework-free site</a>.
+      </p>
+    </main>
+  </body>
 </html>

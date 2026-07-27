@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Basic FeatherText textarea example using generated dist assets."
+    />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'self'"
+    />
+    <title>FeatherText basic example</title>
+    <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../dist/feathertext.css" />
+    <link rel="stylesheet" href="./examples.css" />
+    <script defer src="../dist/feathertext.min.js"></script>
+    <script defer src="./basic.js"></script>
+  </head>
+  <body>
+    <header class="example-header">
+      <a class="example-brand" href="../site/">FeatherText</a>
+      <nav aria-label="Examples">
+        <a href="./index.html">All examples</a>
+        <a href="./basic.html" aria-current="page">Basic</a>
+        <a href="./api.html">Runtime API</a>
+        <a
+          href="https://buymeacoffee.com/devpeter"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Support</a
+        >
+        <a href="https://github.com/MiszterSoul/FeatherText/issues">Issues</a>
+      </nav>
+    </header>
+
+    <main class="example-shell">
+      <section class="example-intro">
+        <p class="example-kicker">Generated-dist example</p>
+        <h1>Start with a textarea.</h1>
+        <p>
+          This page uses <code>../dist/feathertext.css</code> and
+          <code>../dist/feathertext.min.js</code>. Decorative effects use the
+          performance-first <code>fancy: false</code> default; call
+          <code>setFancy(true)</code> to opt in. Run <code>npm run build</code>
+          before opening it through the local server.
+        </p>
+      </section>
+
+      <form class="example-card" action="" method="get">
+        <label class="field-label" for="article-body">Article body</label>
+        <p class="field-help" id="article-help">
+          The original textarea stays synchronized for normal form handling.
+          HTML safety remains the application’s responsibility.
+        </p>
+        <textarea
+          id="article-body"
+          name="articleBody"
+          aria-describedby="article-help"
+        >
+<h2>Write with FeatherText</h2><p>This is a <strong>minimal toolbar</strong> example backed by a normal textarea.</p></textarea>
+        <p
+          class="example-status"
+          id="example-status"
+          role="status"
+          aria-live="polite"
+        >
+          Waiting for the generated bundle…
+        </p>
+        <div class="example-actions">
+          <button type="submit">Submit form locally</button>
+          <a
+            href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/api.md"
+            >Read the API</a
+          >
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

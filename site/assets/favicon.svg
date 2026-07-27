@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">FeatherText favicon</title>
+  <desc id="desc">A cream feather crossing a dark rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#262b35"/>
+      <stop offset="1" stop-color="#0a0b0f"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="17" y1="49" x2="49" y2="13" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8ff65"/>
+      <stop offset="1" stop-color="#fff6dc"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="17" fill="url(#bg)" stroke="#3b4351" stroke-width="2"/>
+  <path d="M16 49C22 35 31 20 49 13c1 16-8 29-25 34l-8 2Z" fill="url(#ink)"/>
+  <path d="M18 51c8-12 16-22 27-32M25 39l-1-11M31 33l10 1M36 26l-1-7" fill="none" stroke="#0a0b0f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
