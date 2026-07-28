@@ -2,6 +2,15 @@
 
 All notable project changes should be documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and release versions should follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1](https://github.com/MiszterSoul/FeatherText/compare/v0.3.0...v0.3.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* **ci:** advance Release Please baseline to v0.3.0 ([3cbdf68](https://github.com/MiszterSoul/FeatherText/commit/3cbdf6851132a67a7ae86da06e9964034fcc6d22))
+* **ci:** pass dependency review for release metadata PRs ([9ea30af](https://github.com/MiszterSoul/FeatherText/commit/9ea30afd0612f1b414a6ea2fffbaa66229086566))
+* **ci:** retire Release Please bootstrap boundary ([06b897f](https://github.com/MiszterSoul/FeatherText/commit/06b897f147f367390e1cb3317377bff85611e329))
+
 ## [0.3.0](https://github.com/MiszterSoul/FeatherText/compare/v0.2.0...v0.3.0) (2026-07-27)
 
 ### Features
