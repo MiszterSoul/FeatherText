@@ -1,120 +1,123 @@
 # Repository audit
 
-Audit date: **2026-07-27**; current release metadata and registry status reconciled **2026-07-28**. This is a completed current-state audit of the checked-out `main` repository after rebasing the production modernization onto upstream `2ecfabe`; the final integration commit is intentionally not hardcoded because validation fixes are amended before push.
+Audit date: **2026-07-28**.
 
-## Result
+## Current state
 
-The repository is now organized around the canonical tracked directories `src/`, `site/`, `examples/`, `test/`, `tests/`, `benchmark/`, `scripts/`, `docs/`, and `.github/`. Generated output is confined to ignored `dist/` and `_site/`; local dependencies, caches, reports, archives, logs, secrets, editor state, and operating-system metadata are covered by `.gitignore`.
+The repository is organized around the canonical tracked directories `src/`, `site/`, `examples/`, `test/`, `tests/`, `benchmark/`, `scripts/`, `docs/`, and `.github/`.
 
-Current package, lockfile, and Release Please manifest metadata agree on `0.3.1`. No GitHub tags or releases exist yet; the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. Open bot-created Release Please PR #6 proposes `0.3.2`; neither metadata nor that PR is evidence of publication.
+Release metadata agrees on:
 
-The former checked-in toolchain and duplicate distribution surfaces have been removed:
+- package: `@misztersoul/feathertext`;
+- version: `0.3.2`;
+- default branch: `main`;
+- license: MIT;
+- runtime dependencies: none.
 
-- `.tools/` was removed as a normal Git deletion of **2,377 tracked runtime paths**, including the platform-specific Node runtime. The parent of the removal commit still contains all 2,377 paths and the removal commit has that parent in its ordinary ancestry. **No history rewrite was performed**; the old objects remain in repository history.
-- `.vscode/` was removed; editor-specific tasks are no longer repository policy, and `.vscode/` is ignored.
-- `demo/`, generated root bundles (`feathertext.js`, `feathertext.js.map`, `feathertext.min.js`, and `feathertext.css`), legacy root site assets (`site.css` and `site.js`), the redundant performance CSS override, and five duplicate/stale example pages were removed. The maintained example surface is the six-file `examples/` directory.
-- `.cache/` is ignored local runtime/benchmark state only. It is not a source, package, site, test, or release input and **must not be committed**.
+The erroneous `0.4.0` release attempt, its temporary workflows, its tag, its release branch, and its release pull request were removed or closed. No open issue or pull request remained at the end of cleanup. Closed history is retained as normal GitHub history.
 
-## Root and hidden-path inventory
+## Release-readiness result
 
-Every current root entry and every removed unusual root/hidden surface is accounted for below.
+The current source includes:
 
-| Path                                                                                                                                                 | Tracked?    | Category                                | Required?                                           | Evidence                                                                                                                                                                                                                                                     | Action                                                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | --------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `.git/`                                                                                                                                              | No          | Local VCS metadata                      | Local checkout only                                 | Git metadata is present locally and cannot be a tracked path in its own worktree.                                                                                                                                                                            | Keep local; exclude from packages, Pages artifacts, and archives.                                |
-| `.github/`                                                                                                                                           | Yes         | Canonical automation/community metadata | Yes                                                 | Contains issue forms, pull-request template, funding metadata, and exactly six workflows: `ci.yml`, `codeql.yml`, `dependency-review.yml`, `pages.yml`, `publish.yml`, and `release-please.yml`.                                                             | Keep canonical; review pinned action SHAs and least-privilege permissions with workflow changes. |
-| `.gitignore`                                                                                                                                         | Yes         | Repository hygiene policy               | Yes                                                 | Covers dependencies; `dist/` and `_site/`; archives/checksums; coverage, browser-test, benchmark, and Lighthouse output; caches; server state; logs; temporary files; environment/key files; OS metadata; IDE/editor/agent state; `.tools/`; and `.vscode/`. | Keep comprehensive; generated and local-only paths must remain untracked.                        |
-| `.gitattributes`                                                                                                                                     | Yes         | Git normalization/export policy         | Yes                                                 | Enforces LF text normalization, preserves CRLF for Windows scripts, marks common binary formats, and export-ignores CI, benchmarks, docs, examples, site, tests, and development configuration.                                                              | Keep; update export rules only when the source-archive contract changes.                         |
-| `.editorconfig`                                                                                                                                      | Yes         | Cross-editor formatting policy          | Yes                                                 | Sets UTF-8, LF, final newline, trailing-whitespace handling, and two-space indentation, with Markdown and Makefile exceptions.                                                                                                                               | Keep as the editor-neutral replacement for repository-specific IDE tasks.                        |
-| `.nvmrc`                                                                                                                                             | Yes         | Toolchain selector                      | Yes                                                 | Contains `24`; CI, Pages, and release jobs use the current Node 24 path, while package metadata declares Node `>=20.19.0` and CI also tests Node 22.                                                                                                         | Keep synchronized with CI and release tooling.                                                   |
-| `.release-please-manifest.json`                                                                                                                      | Yes         | Release state                           | Yes                                                 | Root package baseline is `0.3.1`.                                                                                                                                                                                                                            | Keep managed by Release Please; do not hand-edit during normal releases.                         |
-| `.tools/`                                                                                                                                            | No; removed | Former vendored runtime                 | No                                                  | Removal commit deletes 2,377 paths; its parent contains 2,377 tracked `.tools` paths and current `HEAD` contains zero. `.gitignore` excludes `.tools/`.                                                                                                      | Removal complete. Do not recommit. History was not rewritten.                                    |
-| `.vscode/`                                                                                                                                           | No; removed | Former editor-specific state            | No                                                  | `.vscode/tasks.json` is deleted from current `HEAD`; `.gitignore` excludes `.vscode/`.                                                                                                                                                                       | Removal complete. Keep editor tasks local.                                                       |
-| `.cache/`                                                                                                                                            | No; ignored | Local runtime/benchmark cache           | Local only                                          | Current local contents include `runtime/` and `benchmark-final.json`; `.gitignore` excludes the entire directory and Git tracks no content below it.                                                                                                         | Never commit. Delete freely when resetting local runtime or benchmark state.                     |
-| `_site/`                                                                                                                                             | No; ignored | Generated Pages artifact                | Generated, required only for deployment/testing     | `scripts/build-site.mjs` rebuilds it from `site/`, `examples/`, and `dist/`; `pages.yml` uploads `_site` rather than the source tree.                                                                                                                        | Regenerate; never commit.                                                                        |
-| `benchmark/`                                                                                                                                         | Yes         | Canonical benchmark source              | Yes for performance checks                          | Contains tracked `run.mjs`; result JSON and `benchmark/results/` are ignored.                                                                                                                                                                                | Keep runner tracked and measurements generated/local.                                            |
-| `build.mjs`                                                                                                                                          | Yes         | Distribution build entry point          | Yes                                                 | Builds deterministic ESM, CJS, browser, minified, CSS, source-map, release-ZIP supplement, and manifest artifacts under `dist/`; version comes from `package.json`.                                                                                          | Keep as the only distribution producer; do not restore generated root bundles.                   |
-| `CHANGELOG.md`                                                                                                                                       | Yes         | Release documentation                   | Yes                                                 | Included in the exact npm package and maintained by the Release Please Node strategy.                                                                                                                                                                        | Keep synchronized through the release PR.                                                        |
-| `CODE_OF_CONDUCT.md`                                                                                                                                 | Yes         | Community policy                        | Yes                                                 | Provides repository conduct expectations without entering package or Pages output.                                                                                                                                                                           | Keep at root for GitHub discovery.                                                               |
-| `CONTRIBUTING.md`                                                                                                                                    | Yes         | Contributor documentation               | Yes                                                 | Documents setup, validation, generated-file policy, and contribution expectations.                                                                                                                                                                           | Keep synchronized with scripts and CI.                                                           |
-| `demo/`                                                                                                                                              | No; removed | Former duplicate demo                   | No                                                  | `demo/index.html` is deleted; the maintained demo is `site/index.html`, staged with canonical examples.                                                                                                                                                      | Removal complete; do not recreate a second demo source.                                          |
-| `dist/`                                                                                                                                              | No; ignored | Generated distribution                  | Generated, required for package/site/release output | `build.mjs` recreates the directory; package exports resolve to its ESM/CJS/browser/CSS files. Git tracks zero `dist/` paths.                                                                                                                                | Build from `src/`; never commit or treat local output as release evidence.                       |
-| `docs/`                                                                                                                                              | Yes         | Canonical project documentation         | Yes                                                 | Holds architecture, API, accessibility, security, browser, performance, release, migration, launch, baseline, and audit material.                                                                                                                            | Keep canonical and update with behavior or pipeline changes.                                     |
-| `eslint.config.js`                                                                                                                                   | Yes         | Static-analysis configuration           | Yes                                                 | Defines project globals/rules and ignores generated, dependency, legacy-bundle, and report paths; `npm run lint` is in CI and release verification.                                                                                                          | Keep synchronized with supported source and test paths.                                          |
-| `examples/`                                                                                                                                          | Yes         | Canonical runnable examples             | Yes                                                 | Exactly six maintained files: `index.html`, basic HTML/JS, API HTML/JS, and shared `examples.css`; `build-site.mjs` stages this directory.                                                                                                                   | Keep this single example surface.                                                                |
-| `examples/config-generator.html`, `examples/example-api.html`, `examples/example-basic.html`, `examples/example-ocean.html`, `examples/example.html` | No; removed | Former duplicate/stale examples         | No                                                  | All five are deleted in the cleanup commit and replaced by the six-file canonical example set.                                                                                                                                                               | Removal complete.                                                                                |
-| `feathertext.js`, `feathertext.js.map`, `feathertext.min.js`, `feathertext.css`                                                                      | No; removed | Former generated root artifacts         | No                                                  | All four are absent from current `HEAD`; equivalent products are generated only under ignored `dist/`.                                                                                                                                                       | Removal complete; publish and serve only verified `dist/` output.                                |
-| `index.d.ts`                                                                                                                                         | Yes         | Public type declarations                | Yes                                                 | Declared by `package.json`, included in both release allowlists, and checked as an installed-package entry point.                                                                                                                                            | Keep synchronized with the public API.                                                           |
-| `index.html`                                                                                                                                         | Yes         | Repository-root fallback                | Yes for direct root browsing                        | A CSP-restricted, `noindex` redirect to `site/`; it does not compete with the Pages source or load generated root bundles.                                                                                                                                   | Keep as a thin fallback only; `site/` remains canonical.                                         |
-| `LICENSE`                                                                                                                                            | Yes         | Legal metadata                          | Yes                                                 | MIT license; included in npm and release ZIP allowlists.                                                                                                                                                                                                     | Keep at root and in release artifacts.                                                           |
-| `node_modules/`                                                                                                                                      | No; ignored | Local dependency installation           | Local build/test only                               | Excluded by `.gitignore`; CI and release jobs recreate dependencies with `npm ci`.                                                                                                                                                                           | Never commit or package.                                                                         |
-| `package-lock.json`                                                                                                                                  | Yes         | Reproducible dependency lock            | Yes                                                 | Lockfile v3 records package/root version `0.3.1`, Node engine metadata, and the exact development dependency graph used by `npm ci`.                                                                                                                         | Keep synchronized with `package.json`; Release Please updates root version metadata.             |
-| `package.json`                                                                                                                                       | Yes         | Package/build contract                  | Yes                                                 | Package `feathertext` is version `0.3.1`; defines exports, Node engine, scripts, canonical repository metadata, public npm registry/access, provenance, and the explicit package file allowlist.                                                             | Keep as the authoritative package version and entry-point contract.                              |
-| `playwright.config.mjs`                                                                                                                              | Yes         | Root browser-test convenience config    | Developer convenience                               | Supports direct default Playwright runs against generated `_site`; package scripts use the more targeted `tests/playwright.config.mjs`.                                                                                                                      | Keep only as the documented root convenience configuration; it is excluded from exports.         |
-| `README.md`                                                                                                                                          | Yes         | Primary project/package documentation   | Yes                                                 | Root project entry point and one of the exact npm package files.                                                                                                                                                                                             | Keep claims aligned with tested `0.3.1` behavior.                                                |
-| `release-please-config.json`                                                                                                                         | Yes         | Release automation configuration        | Yes                                                 | Configures stable Node releases, `vX.Y.Z` tags/names, and Conventional Commit changelog sections.                                                                                                                                                            | Keep reviewed with release workflow changes.                                                     |
-| `scripts/`                                                                                                                                           | Yes         | Canonical project automation            | Yes                                                 | Four tracked scripts build the site, verify the package, enforce size limits, and serve local files.                                                                                                                                                         | Keep scripts as pipeline-owned automation; generated output remains ignored.                     |
-| `SECURITY.md`                                                                                                                                        | Yes         | Vulnerability policy                    | Yes                                                 | Root GitHub-discoverable reporting and support policy; detailed implementation guidance remains in `docs/security.md`.                                                                                                                                       | Keep reporting instructions current and free of credential values.                               |
-| `site/`                                                                                                                                              | Yes         | Canonical Pages source/demo             | Yes                                                 | Contains `index.html` and tracked assets; `build-site.mjs` copies it into `_site` and adds examples plus generated distribution files.                                                                                                                       | Keep as the only Pages source of truth.                                                          |
-| `site.css`, `site.js`                                                                                                                                | No; removed | Former duplicate root site assets       | No                                                  | Current references use `site/assets/site.css` and `site/assets/site.js`; neither legacy root file was packaged or staged by `build-site.mjs`.                                                                                                                | Removal complete; maintain site assets only under `site/assets/`.                                |
-| `src/`                                                                                                                                               | Yes         | Canonical implementation source         | Yes                                                 | Sixteen tracked implementation/style modules feed `build.mjs`; performance-first CSS now has one source in `src/feathertext.css`.                                                                                                                            | Keep as the sole implementation source of truth.                                                 |
-| `test/`                                                                                                                                              | Yes         | Canonical Node/JSDOM unit tests         | Yes                                                 | Unit tests and shared test environment/helpers are selected by `npm test`.                                                                                                                                                                                   | Keep for fast behavioral and architecture regression coverage.                                   |
-| `tests/`                                                                                                                                             | Yes         | Canonical browser/accessibility tests   | Yes                                                 | Contains Playwright E2E, accessibility specs, fixtures, Axe helpers, and the targeted Playwright configuration used by package scripts.                                                                                                                      | Keep for Chromium/Firefox/WebKit and responsive/accessibility coverage.                          |
+- a null-safe tooltip pointer handler;
+- a permanent status footer with word and character counts;
+- icon-only canonical GitHub and Buy Me a Coffee links with accessible labels and hover tooltips;
+- English and Hungarian interface dictionaries;
+- `language: "en" | "hu"` configuration and runtime `setLanguage()` support;
+- updated TypeScript declarations, README, changelog, localization documentation, and regression coverage.
 
-## Generated and local-only policy
+The complete project check passed after these changes. That check includes linting, unit tests, production builds, size checks, exact package checks, Playwright browser tests, and accessibility tests.
 
-`dist/` and `_site/` may exist in a working tree after builds, but they are reproducible, ignored generated directories and are not repository sources. `dist/` is recreated by `build.mjs`; `_site/` is recreated by `scripts/build-site.mjs`. CI and release automation build both from tracked inputs.
+This audit does not claim npm publication. Registry publication must be verified independently after the publish workflow completes.
 
-`.cache/` is different from those deliverables: it is **local ignored runtime state only**. Its current `runtime/` data and benchmark JSON are not valid build, package, test, release, or benchmark-source inputs. No `.cache/` path may be committed. The same non-commit rule applies to `node_modules/`, reports, coverage, logs, temporary files, archives, environment files, private keys, and IDE/agent directories covered by `.gitignore`.
+## Canonical root inventory
 
-## Current six-workflow pipeline
+| Path | Purpose | Policy |
+| --- | --- | --- |
+| `.github/` | Workflows and community metadata | Keep only permanent reviewed workflows and templates |
+| `.gitignore` | Generated/local-file policy | Keep dependencies, builds, reports, secrets, caches, and editor state ignored |
+| `.release-please-manifest.json` | Release baseline | Must match package and lockfile version |
+| `CHANGELOG.md` | Version history | Keep current patch sequence and release notes accurate |
+| `README.md` | Package landing page | Keep install/CDN examples synchronized with the release version |
+| `build.mjs` | Distribution build | Sole producer of package bundles under `dist/` |
+| `docs/` | Maintainer and user documentation | Update with every public API, release, security, or workflow change |
+| `examples/` | Maintained runnable examples | Keep one canonical example surface |
+| `index.d.ts` | Public TypeScript contract | Keep synchronized with runtime configuration and methods |
+| `package.json` | Package contract | Authoritative package name, version, exports, files, scripts, and publish settings |
+| `package-lock.json` | Reproducible dependency graph | Root name/version must match `package.json` |
+| `scripts/` | Project automation | Keep only maintained build/check/serve scripts |
+| `site/` | GitHub Pages source | Build into ignored `_site/` |
+| `src/` | Runtime source | Sole implementation source of truth |
+| `test/` | Node/JSDOM tests | Fast unit and regression coverage |
+| `tests/` | Browser/accessibility tests | Chromium, Firefox, WebKit, responsive, and axe coverage |
 
-1. **`ci.yml`** runs on `main` pushes, pull requests, and manual dispatch. Node 22 and 24 run `npm ci`, lint, unit tests, and build; Node 24 additionally runs Chromium/Firefox/WebKit E2E, accessibility, size, and exact package-content checks.
-2. **`dependency-review.yml`** runs on pull requests and rejects moderate-or-higher runtime or development dependency changes.
-3. **`codeql.yml`** analyzes JavaScript/TypeScript on pushes, pull requests, weekly schedule, and manual dispatch with `security-extended` queries.
-4. **`pages.yml`** runs `check:core`, builds `site/` plus `examples/` and `dist/` into ignored `_site/`, uploads that artifact, and deploys it through the protected `github-pages` environment.
-5. **`release-please.yml`** maintains the stable Node release PR from the `0.3.1` manifest baseline, explicitly dispatches CI for the automation-created release PR, creates the exact stable `vX.Y.Z` release after merge, and dispatches publishing at that tag.
-6. **`publish.yml`** verifies the canonical repository, published stable release, immutable tag/main ancestry, clean checkout, package/version identity, tests, builds, size, and package contents. It creates verified tarball/ZIP/checksum assets, publishes the tarball through npm Trusted Publishing OIDC in the protected `npm` environment, and uploads release assets in a separately permissioned job. It does not use a long-lived npm token.
+## Generated and local-only paths
 
-All current `uses:` references are pinned to full commit SHAs. Permissions are read-only or empty by default and elevated per job: CodeQL writes security events, Pages deploys with Pages/OIDC permissions, Release Please writes release/PR state, npm publication receives OIDC, and the final release-asset job alone receives release-content write access.
+The following are not source and must remain untracked:
 
-The local script pipeline is:
+- `node_modules/`;
+- `dist/`;
+- `_site/`;
+- coverage and Playwright reports;
+- benchmark results;
+- caches and temporary files;
+- logs, archives, checksums, environment files, and private keys;
+- IDE, editor, and agent state.
 
-- `npm run check:core`: lint → unit tests → build → size limits → package verification;
-- `npm run check`: `check:core` → E2E → accessibility;
-- `npm run build:site`: rebuild distribution and stage validated Pages output in `_site/`;
-- `npm run prepack`: rebuild distribution before ordinary npm packing.
+`dist/` and `_site/` are reproducible outputs. Delete and regenerate them rather than committing them.
 
-## Exact npm package contents
+## Permanent workflow inventory
 
-Version **`0.3.1`** is recorded in `package.json`, the root of `package-lock.json`, and `.release-please-manifest.json`. Current validation produced an npm tarball of exactly **159,373 bytes** containing exactly **11 files**. `build.mjs`, `scripts/check-package.mjs`, `package.json`, and `publish.yml` enforce this file list:
+The release-ready workflow set is:
 
-```text
-README.md
-CHANGELOG.md
-LICENSE
-index.d.ts
-package.json
-dist/feathertext.cjs
-dist/feathertext.esm.js
-dist/feathertext.js
-dist/feathertext.min.js
-dist/feathertext.css
-dist/feathertext.min.css
+| Workflow | Purpose |
+| --- | --- |
+| `ci.yml` | Lint, unit, build, browser, accessibility, size, and package verification |
+| `codeql.yml` | JavaScript/TypeScript security analysis |
+| `dependency-review.yml` | Dependency-change review on pull requests |
+| `pages.yml` | Build and deploy the generated documentation site |
+| `publish.yml` | Verify and publish the exact public scoped package from a stable tag |
+| `release-please.yml` | Manually prepare or create a reviewed stable release |
+
+Release Please is manual by design. This prevents routine pushes from creating unwanted release branches and pull requests.
+
+All temporary maintenance, diagnostic, cleanup, and one-off release workflows were deleted after use.
+
+## Branch, issue, and pull-request hygiene
+
+Release-ready policy:
+
+- keep `main` as the only long-lived branch;
+- close stale generated release pull requests;
+- delete their remote branches after closure;
+- close resolved diagnostic issues;
+- do not delete historical closed issues or merged/closed pull-request records, because GitHub retains those records as project history;
+- do not leave temporary workflow files in `.github/workflows/`.
+
+At the completion of this audit, searches returned no open issue and no open pull request, and the stale Release Please branch no longer resolved.
+
+## Package surface
+
+The package exports:
+
+- ESM: `dist/feathertext.esm.js`;
+- CommonJS: `dist/feathertext.cjs`;
+- browser global: `dist/feathertext.min.js`;
+- CSS: `@misztersoul/feathertext/css` and the documented CSS subpaths;
+- TypeScript declarations: `index.d.ts`.
+
+The exact npm file allowlist contains generated distribution files plus `index.d.ts`, `README.md`, `CHANGELOG.md`, and `LICENSE`.
+
+## Ongoing checks
+
+Before every release:
+
+```bash
+npm ci
+npm run check
+npm run package:check
+npm pack --dry-run
 ```
 
-Source maps, implementation source, tests, examples, site files, workflow files, development configuration, `dist/build-manifest.json`, and ZIP-only copies under `dist/` are excluded. Package verification also checks metadata and installed ESM, CJS, browser-global, CSS, type, README, changelog, and license entry points. The release ZIP is a separate nine-file flat distribution and is not the npm tarball.
-
-## Credential and history review
-
-A targeted scan of the current tracked tree found **no credential values** matching common private-key, AWS access-key, GitHub token, npm token, Slack token, Google API key, or live/test secret-key forms. Workflow occurrences such as `${{ secrets.GITHUB_TOKEN }}` are symbolic GitHub-provided references, not embedded credential values. Environment files, PEM files, and key files are ignored.
-
-`gitleaks` and `trufflehog` were unavailable in the audit environment, so no claim is made that their full current-tree or history scanners passed. Before a public release, run both tools (or equivalent organization-approved secret scanning) over the current tree and reachable history. Do not print findings containing live values into logs or this document.
-
-No history rewrite was requested or performed. The `.tools/` cleanup is an ordinary single-parent commit deletion: current `HEAD` has zero tracked `.tools` paths, while its direct parent has all 2,377. This removes the runtime from current checkouts and future snapshots but does not remove its objects from reachable history. A future history rewrite would be a separate coordinated operation requiring maintainer approval, force-push planning, fresh clones, and release/tag impact review.
-
-## Audit validation and limits
-
-The original audit used current file inspection, `git ls-files`, `git ls-tree`, `git diff-tree`, `git log`, `git check-ignore`, and a targeted `git grep` credential-pattern scan. The repository already contained unrelated worktree edits; they were not changed or reverted.
-
-Subsequent current validation records 71 Node/JSDOM unit tests; 18 E2E cases across each of five Playwright projects (90 executions); 12 axe checks; 27.90 KiB JavaScript gzip; 4.57 KiB CSS gzip; and an exact 159,373-byte npm tarball containing the 11 files listed above. These are current repository artifacts and bounded validation evidence, not evidence of npm publication.
+Also confirm that package, lockfile, manifest, README markers, changelog, tag, and intended npm version all agree. A failed or incorrect release must be corrected with a new verified patch version rather than by moving an already published version.
