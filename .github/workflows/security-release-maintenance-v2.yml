@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           cat .github/scripts/security-release-maintenance.py.part* > "$RUNNER_TEMP/maintenance.py"
-          echo "858ab3c7fc9c73e7857f61b13603ee362333df87468ac5cb3c38c0a1f3c3aa97  $RUNNER_TEMP/maintenance.py" | sha256sum --check
+          echo "fa23b4ff3c3d245ce433046679d42b05cc304876f66b4418021cfca19802d30e  $RUNNER_TEMP/maintenance.py" | sha256sum --check
           python "$RUNNER_TEMP/maintenance.py"
           rm -f .github/scripts/security-release-maintenance.py.part*
           rm -f .github/workflows/security-release-maintenance.yml
@@ -139,7 +139,7 @@ jobs:
           gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
           grep -v 'security-release-maintenance.py.part' "$RUNNER_TEMP/log.txt" > "$RUNNER_TEMP/filtered.txt" || true
           {
-            echo "Security release maintenance v3 failed."
+            echo "Security release maintenance v4 failed."
             echo
             echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             echo
@@ -147,4 +147,4 @@ jobs:
             tail -n 120 "$RUNNER_TEMP/filtered.txt"
             echo '```'
           } > "$RUNNER_TEMP/body.md"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v3 failed" --body-file "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v4 failed" --body-file "$RUNNER_TEMP/body.md"
