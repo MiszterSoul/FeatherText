@@ -1,0 +1,234 @@
+name: Release v0.4.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-v0.4.0.yml
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-v0.4.0
+  cancel-in-progress: false
+
+env:
+  EXPECTED_PACKAGE: '@misztersoul/feathertext'
+  RELEASE_TAG: v0.4.0
+  RELEASE_VERSION: 0.4.0
+
+jobs:
+  release:
+    name: Verify, tag, release, and publish
+    if: github.repository == 'MiszterSoul/FeatherText' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      security-events: read
+    steps:
+      - name: Checkout exact dispatcher commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Select release target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_sha="$(git rev-parse "${GITHUB_SHA}^")"
+          git checkout --detach "$target_sha"
+          echo "sha=$target_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Verify package and repository state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'));
+          const fail = (message) => {
+            console.error(message);
+            process.exit(1);
+          };
+          if (pkg.name !== process.env.EXPECTED_PACKAGE) fail(`Unexpected package: ${pkg.name}`);
+          if (pkg.version !== process.env.RELEASE_VERSION) fail(`Unexpected version: ${pkg.version}`);
+          if (lock.name !== pkg.name || lock.version !== pkg.version) fail('Lockfile root metadata mismatch.');
+          if (lock.packages?.['']?.name !== pkg.name || lock.packages?.['']?.version !== pkg.version) {
+            fail('Lockfile package metadata mismatch.');
+          }
+          if (pkg.private === true || pkg.publishConfig?.access !== 'public') fail('Package is not configured as public.');
+          NODE
+
+          if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1 || gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "$RELEASE_TAG already exists; refusing to overwrite a release." >&2
+            exit 1
+          fi
+          if [[ "$(npm view "$EXPECTED_PACKAGE@$RELEASE_VERSION" version 2>/dev/null || true)" == "$RELEASE_VERSION" ]]; then
+            echo "$EXPECTED_PACKAGE@$RELEASE_VERSION already exists; refusing to overwrite it." >&2
+            exit 1
+          fi
+
+      - name: Remove every branch except main
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t branches < <(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)
+          for branch in "${branches[@]}"; do
+            [[ "$branch" == "main" ]] && continue
+            git push origin --delete "$branch"
+          done
+          remaining="$(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)"
+          if [[ "$remaining" != "main" ]]; then
+            echo "Unexpected remaining branches:" >&2
+            printf '%s\n' "$remaining" >&2
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Verify release source
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run lint
+          npm run test
+          npm run build
+          npm run size
+          npm run package:check
+
+      - name: Require zero open high or critical CodeQL alerts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          high_count="$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" \
+            --jq '[.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical")] | length')"
+          if [[ "$high_count" != "0" ]]; then
+            echo "CodeQL still reports $high_count open high/critical alerts on main." >&2
+            gh api \
+              -H "Accept: application/vnd.github+json" \
+              "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" \
+              --jq '.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical") | [.number, .rule.id, .most_recent_instance.location.path, .most_recent_instance.location.start_line] | @tsv' >&2
+            exit 1
+          fi
+
+      - name: Create immutable GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git tag -a "$RELEASE_TAG" "$TARGET_SHA" -m "FeatherText $RELEASE_TAG"
+          git push origin "$RELEASE_TAG"
+          gh release create "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$TARGET_SHA" \
+            --title "$RELEASE_TAG" \
+            --verify-tag \
+            --generate-notes
+
+      - name: Dispatch and verify npm publication
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run publish.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$RELEASE_TAG" \
+            --field "tag=$RELEASE_TAG"
+
+          run_id=""
+          for _ in {1..45}; do
+            run_id="$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow publish.yml \
+              --event workflow_dispatch \
+              --created ">=$before" \
+              --limit 10 \
+              --json databaseId,headBranch \
+              --jq ".[] | select(.headBranch == \"$RELEASE_TAG\") | .databaseId" \
+              | head -n 1)"
+            [[ -n "$run_id" ]] && break
+            sleep 2
+          done
+          if [[ -z "$run_id" ]]; then
+            echo "Unable to locate the publish workflow run." >&2
+            exit 1
+          fi
+          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+
+          for _ in {1..30}; do
+            published="$(npm view "$EXPECTED_PACKAGE@$RELEASE_VERSION" version 2>/dev/null || true)"
+            if [[ "$published" == "$RELEASE_VERSION" ]]; then
+              echo "Published $EXPECTED_PACKAGE@$RELEASE_VERSION"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "npm did not return $EXPECTED_PACKAGE@$RELEASE_VERSION." >&2
+          exit 1
+
+      - name: Record successful release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "FeatherText 0.4.0 release completed" \
+            --body "Published public package \`@misztersoul/feathertext@0.4.0\` from tag \`v0.4.0\`. All non-main branches were removed, release checks passed, and no open high/critical CodeQL alerts remained on main."
+
+  report-failure:
+    name: Report release failure
+    needs: release
+    if: ${{ always() && needs.release.result != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Create diagnostic issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 10
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
+          {
+            echo "FeatherText 0.4.0 release failed."
+            echo
+            echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo '```text'
+            tail -n 180 "$RUNNER_TEMP/log.txt"
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "FeatherText 0.4.0 release failed" \
+            --body-file "$RUNNER_TEMP/body.md"
