@@ -26,8 +26,8 @@ jobs:
           sleep 5
           gh run view "$TARGET_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt"
           {
-            printf 'Completed failed-step log:\n\n```text\n'
-            tail -c 50000 "$RUNNER_TEMP/log.txt"
+            printf 'Failure tail:\n\n```text\n'
+            tail -n 80 "$RUNNER_TEMP/log.txt"
             printf '\n```\n'
           } > "$RUNNER_TEMP/comment.md"
           gh issue comment "$TARGET_ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
