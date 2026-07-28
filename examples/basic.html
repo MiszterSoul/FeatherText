@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Basic FeatherText textarea example using generated dist assets."
+      content="Basic FeatherText textarea and form integration example."
     />
     <meta name="robots" content="noindex" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'self'"
     />
-    <title>FeatherText basic example</title>
+    <title>FeatherText textarea and form example</title>
     <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../dist/feathertext.css" />
     <link rel="stylesheet" href="./examples.css" />
@@ -24,7 +24,7 @@
       <a class="example-brand" href="../site/">FeatherText</a>
       <nav aria-label="Examples">
         <a href="./index.html">All examples</a>
-        <a href="./basic.html" aria-current="page">Basic</a>
+        <a href="./basic.html" aria-current="page">Basic form</a>
         <a href="./api.html">Runtime API</a>
         <a
           href="https://buymeacoffee.com/devpeter"
@@ -38,29 +38,28 @@
 
     <main class="example-shell">
       <section class="example-intro">
-        <p class="example-kicker">Generated-dist example</p>
-        <h1>Start with a textarea.</h1>
+        <p class="example-kicker">Textarea and form</p>
+        <h1>Enhance a normal form field.</h1>
         <p>
-          This page uses <code>../dist/feathertext.css</code> and
-          <code>../dist/feathertext.min.js</code>. Decorative effects use the
-          performance-first <code>fancy: false</code> default; call
-          <code>setFancy(true)</code> to opt in. Run <code>npm run build</code>
-          before opening it through the local server.
+          FeatherText builds the editing interface around an existing textarea.
+          The original field keeps its <code>name</code>, stays synchronized with
+          the editor HTML, and participates in normal browser form handling.
         </p>
       </section>
 
       <form class="example-card" action="" method="get">
         <label class="field-label" for="article-body">Article body</label>
         <p class="field-help" id="article-help">
-          The original textarea stays synchronized for normal form handling.
-          HTML safety remains the application’s responsibility.
+          Edit the document and submit the form. The query string receives the
+          synchronized HTML from the original textarea.
         </p>
         <textarea
           id="article-body"
           name="articleBody"
           aria-describedby="article-help"
         >
-<h2>Write with FeatherText</h2><p>This is a <strong>minimal toolbar</strong> example backed by a normal textarea.</p></textarea>
+<h2>Write with FeatherText</h2><p>This rich-text editor is backed by a normal HTML textarea.</p><ul><li>Edit content visually</li><li>Open source mode</li><li>Submit the synchronized field</li></ul></textarea
+        >
         <p
           class="example-status"
           id="example-status"
