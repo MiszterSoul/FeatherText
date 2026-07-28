@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="FeatherText local draft autosave and restore example."
+    />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>FeatherText autosave example</title>
+    <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../dist/feathertext.css" />
+    <link rel="stylesheet" href="./examples.css" />
+    <script defer src="../dist/feathertext.min.js"></script>
+    <script defer src="./autosave.js"></script>
+  </head>
+  <body>
+    <header class="example-header">
+      <a class="example-brand" href="../site/">FeatherText</a>
+      <nav aria-label="Examples">
+        <a href="./index.html">All examples</a>
+        <a href="./autosave.html" aria-current="page">Autosave</a>
+        <a
+          href="https://buymeacoffee.com/devpeter"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Support</a
+        >
+        <a href="https://github.com/MiszterSoul/FeatherText/issues">Issues</a>
+      </nav>
+    </header>
+
+    <main class="example-shell">
+      <section class="example-intro">
+        <p class="example-kicker">Local draft persistence</p>
+        <h1>Autosave a draft in the browser.</h1>
+        <p>
+          This example stores one draft in <code>localStorage</code> after a short
+          debounce. Reload the page to test the restore dialog. This is local
+          draft persistence, not a server save, collaboration system, or encrypted
+          storage.
+        </p>
+      </section>
+
+      <section class="control-card" aria-labelledby="autosave-controls-title">
+        <div>
+          <h2 id="autosave-controls-title">Draft controls</h2>
+          <p>The example uses a fixed key only for this demonstration.</p>
+        </div>
+        <div class="control-grid">
+          <button type="button" id="autosave-reload">Reload and test restore</button>
+          <button type="button" id="autosave-clear">Clear saved draft</button>
+        </div>
+      </section>
+
+      <section class="example-card">
+        <label class="field-label" for="autosave-editor">Draft editor</label>
+        <p class="field-help">
+          Type something, wait for the footer to report a saved draft, then reload.
+        </p>
+        <textarea id="autosave-editor">
+<h2>Autosave example</h2><p>Edit this content and wait briefly. The draft is stored only in this browser.</p></textarea
+        >
+        <p
+          class="example-status"
+          id="autosave-status"
+          role="status"
+          aria-live="polite"
+        >
+          Waiting for the generated bundle…
+        </p>
+        <details class="output-card">
+          <summary>Inspect autosave state</summary>
+          <pre><code id="autosave-output"></code></pre>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>
