@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="FeatherText English and Hungarian localization example."
+    />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>FeatherText localization example</title>
+    <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../dist/feathertext.css" />
+    <link rel="stylesheet" href="./examples.css" />
+    <script defer src="../dist/feathertext.min.js"></script>
+    <script defer src="./localization.js"></script>
+  </head>
+  <body>
+    <header class="example-header">
+      <a class="example-brand" href="../site/">FeatherText</a>
+      <nav aria-label="Examples">
+        <a href="./index.html">All examples</a>
+        <a href="./localization.html" aria-current="page">Localization</a>
+        <a
+          href="https://buymeacoffee.com/devpeter"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Support</a
+        >
+        <a href="https://github.com/MiszterSoul/FeatherText/issues">Issues</a>
+      </nav>
+    </header>
+
+    <main class="example-shell">
+      <section class="example-intro">
+        <p class="example-kicker">Localization</p>
+        <h1>Switch the built-in interface language.</h1>
+        <p>
+          Configure <code>language: "en"</code> or <code>language: "hu"</code>,
+          then change it at runtime with <code>setLanguage()</code>. Content is
+          preserved while built-in tooltips, dialogs, counters, and status text
+          are rebuilt in the selected language.
+        </p>
+      </section>
+
+      <section class="control-card" aria-labelledby="language-controls-title">
+        <div>
+          <h2 id="language-controls-title">Language control</h2>
+          <p>Application-provided text remains under application control.</p>
+        </div>
+        <div class="control-grid">
+          <label for="localization-language">
+            Interface language
+            <select id="localization-language">
+              <option value="en" selected>English</option>
+              <option value="hu">Magyar</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="example-card">
+        <label class="field-label" for="localization-editor">Localized editor</label>
+        <p class="field-help">
+          Open a toolbar tooltip or dialog after switching languages to see the
+          localized built-in interface.
+        </p>
+        <textarea id="localization-editor">
+<h2>Localized FeatherText</h2><p>The document content stays unchanged when the interface language changes.</p></textarea
+        >
+        <p
+          class="example-status"
+          id="localization-status"
+          role="status"
+          aria-live="polite"
+        >
+          Waiting for the generated bundle…
+        </p>
+        <details class="output-card">
+          <summary>Inspect current language and HTML</summary>
+          <pre><code id="localization-output"></code></pre>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>
