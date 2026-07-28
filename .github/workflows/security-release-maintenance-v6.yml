@@ -1,4 +1,4 @@
-name: Security release maintenance v6
+name: Security release maintenance v7
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
   security-events: read
 
 concurrency:
-  group: security-release-maintenance-v6
+  group: security-release-maintenance-v7
   cancel-in-progress: false
 
 jobs:
@@ -30,17 +30,19 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply staged changes
+      - name: Apply staged non-workflow changes
         run: |
           set -euo pipefail
           cat .github/scripts/security-release-maintenance.py.part* > "$RUNNER_TEMP/maintenance.py"
           python -m py_compile "$RUNNER_TEMP/maintenance.py"
           python "$RUNNER_TEMP/maintenance.py"
+
+          git checkout HEAD -- .github/workflows/publish.yml
+          git checkout HEAD -- .github/workflows/security-release-maintenance.yml
+          git checkout HEAD -- .github/workflows/security-release-maintenance-v2.yml
+          git checkout HEAD -- .github/workflows/security-release-maintenance-v6.yml
+          git checkout HEAD -- .github/workflows/fetch-maintenance-log.yml
           rm -f .github/scripts/security-release-maintenance.py.part*
-          rm -f .github/workflows/security-release-maintenance.yml
-          rm -f .github/workflows/security-release-maintenance-v2.yml
-          rm -f .github/workflows/security-release-maintenance-v6.yml
-          rm -f .github/workflows/fetch-maintenance-log.yml
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -129,10 +131,10 @@ jobs:
           sleep 10
           gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
           {
-            echo "Security release maintenance v6 failed."
+            echo "Security release maintenance v7 failed."
             echo
             echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             echo
             tail -n 160 "$RUNNER_TEMP/log.txt"
           } > "$RUNNER_TEMP/body.txt"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v6 failed" --body-file "$RUNNER_TEMP/body.txt"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v7 failed" --body-file "$RUNNER_TEMP/body.txt"
