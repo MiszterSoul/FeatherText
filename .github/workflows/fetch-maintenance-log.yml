@@ -25,9 +25,8 @@ jobs:
           sleep 5
           gh run view "$TARGET_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt"
           {
-            printf 'Filtered failure tail:\n\n```text\n'
+            echo "Filtered failure tail:"
+            echo
             tail -n 140 "$RUNNER_TEMP/log.txt"
-            printf '\n```
-'
-          } > "$RUNNER_TEMP/body.md"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v3 traceback" --body-file "$RUNNER_TEMP/body.md"
+          } > "$RUNNER_TEMP/body.txt"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v3 traceback" --body-file "$RUNNER_TEMP/body.txt"
