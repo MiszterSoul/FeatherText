@@ -1,0 +1,33 @@
+name: Fetch maintenance log
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fetch-maintenance-log.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Post completed failure log
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_RUN_ID: '30342757730'
+          TARGET_ISSUE: '7'
+        run: |
+          set -euo pipefail
+          sleep 5
+          gh run view "$TARGET_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt"
+          {
+            printf 'Completed failed-step log:\n\n```text\n'
+            tail -c 50000 "$RUNNER_TEMP/log.txt"
+            printf '\n```\n'
+          } > "$RUNNER_TEMP/comment.md"
+          gh issue comment "$TARGET_ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
