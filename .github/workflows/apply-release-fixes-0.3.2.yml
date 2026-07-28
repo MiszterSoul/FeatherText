@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  actions: read
 
 concurrency:
   group: apply-release-fixes-0.3.2
@@ -72,3 +74,30 @@ jobs:
             printf '%s\n' "$remaining" >&2
             exit 1
           fi
+
+  report-failure:
+    needs: apply
+    if: ${{ always() && needs.apply.result != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Create diagnostic issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          sleep 10
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
+          {
+            echo "The 0.3.2 correction workflow failed."
+            echo
+            echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo '```text'
+            tail -n 160 "$RUNNER_TEMP/log.txt"
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "0.3.2 correction workflow failed" --body-file "$RUNNER_TEMP/body.md"
