@@ -134,7 +134,14 @@ test("toolbar controls expose local tooltips while editor surfaces do not", () =
     assert.equal(editor.getTooltipTarget(editor.editor), null);
     assert.equal(editor.getTooltipTarget(button), button);
     editor.showTooltip(button);
-    assert.equal(editor.tooltipEl.parentElement, editor.wrapper);
+    assert.equal(editor.tooltipEl.parentElement, fixture.document.body);
+    assert.equal(editor.tooltipEl.dataset.featherTheme, "dark");
+    assert.equal(
+      editor.tooltipEl.style.getPropertyValue("--feather-panel"),
+      editor.wrapper.style.getPropertyValue("--feather-panel"),
+    );
+    editor.setTheme("lavender");
+    assert.equal(editor.tooltipEl.dataset.featherTheme, "lavender");
     editor.destroy();
   } finally {
     fixture.cleanup();

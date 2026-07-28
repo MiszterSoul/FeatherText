@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import FeatherText from "../src/feathertext.js";
-import { PROJECT_URL, SUPPORT_URL } from "../src/config.js";
+import { PROJECT_URL, SUPPORT_URL, themes } from "../src/config.js";
 import { installDom, installMatchMedia } from "./helpers.mjs";
 
 test("themes are isolated per wrapper and never mutate host documentElement state", () => {
@@ -37,6 +37,43 @@ test("themes are isolated per wrapper and never mutate host documentElement stat
     light.destroy();
   } finally {
     fixture.cleanup();
+  }
+});
+
+test("built-in themes expose complete tokens including the expanded palettes", () => {
+  const expected = [
+    "dark",
+    "light",
+    "ocean",
+    "forest",
+    "dark-b",
+    "aurora",
+    "dawn",
+    "rose",
+    "graphite",
+    "canyon",
+    "midnight",
+    "solarized",
+    "lavender",
+    "mint",
+    "ember",
+    "high-contrast",
+  ];
+  const tokenKeys = [
+    "bg",
+    "panel",
+    "border",
+    "accent",
+    "text",
+    "muted",
+    "hover",
+    "shadow",
+  ];
+
+  assert.deepEqual(Object.keys(themes), expected);
+  for (const [name, tokens] of Object.entries(themes)) {
+    assert.deepEqual(Object.keys(tokens), tokenKeys, `${name} tokens changed`);
+    for (const token of Object.values(tokens)) assert.ok(token.trim());
   }
 });
 

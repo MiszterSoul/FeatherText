@@ -1,10 +1,10 @@
-# Migration toward 0.3
+# Migration within the 0.3 series
 
 ## Status
 
-This is a **provisional migration guide for the current repository implementation**, not evidence that `0.3.0` has been released. `package.json` declares `0.2.0`, and npm publication of that version is not verified by repository evidence.
+This guide describes the current `0.3` repository implementation. `package.json`, the root package metadata in `package-lock.json`, and `.release-please-manifest.json` declare `0.3.1`; the open bot-created Release Please PR #6 proposes `0.3.2`.
 
-The source and tests already contain behavior that older documentation described as future work. This guide records those current implementation differences so integrations can prepare, while release notes/versioning remain authoritative for any eventual package.
+Repository metadata and a release PR are not publication evidence. No GitHub tags or releases exist yet, and the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. The source and tests contain behavior that older documentation described as future work; this guide records those implementation differences while an eventual tagged release and its release notes remain authoritative for consumers.
 
 ## Current implementation changes to account for
 
@@ -214,7 +214,7 @@ Compile against the exact candidate package because the project is still pre-1.0
 
 ## Release-note completion gate
 
-Before an actual `0.3.0` release:
+Before the first published `0.3.x` release:
 
 - [ ] Confirm every behavior above against the tagged source, tests, declarations, and package tarball.
 - [ ] Add exact breaking/deprecation notes and before/after examples.

@@ -4,12 +4,11 @@ All notable project changes should be documented here. The format follows [Keep 
 
 ## [0.3.1](https://github.com/MiszterSoul/FeatherText/compare/v0.3.0...v0.3.1) (2026-07-28)
 
-
 ### Bug Fixes
 
-* **ci:** advance Release Please baseline to v0.3.0 ([3cbdf68](https://github.com/MiszterSoul/FeatherText/commit/3cbdf6851132a67a7ae86da06e9964034fcc6d22))
-* **ci:** pass dependency review for release metadata PRs ([9ea30af](https://github.com/MiszterSoul/FeatherText/commit/9ea30afd0612f1b414a6ea2fffbaa66229086566))
-* **ci:** retire Release Please bootstrap boundary ([06b897f](https://github.com/MiszterSoul/FeatherText/commit/06b897f147f367390e1cb3317377bff85611e329))
+- **ci:** advance Release Please baseline to v0.3.0 ([3cbdf68](https://github.com/MiszterSoul/FeatherText/commit/3cbdf6851132a67a7ae86da06e9964034fcc6d22))
+- **ci:** pass dependency review for release metadata PRs ([9ea30af](https://github.com/MiszterSoul/FeatherText/commit/9ea30afd0612f1b414a6ea2fffbaa66229086566))
+- **ci:** retire Release Please bootstrap boundary ([06b897f](https://github.com/MiszterSoul/FeatherText/commit/06b897f147f367390e1cb3317377bff85611e329))
 
 ## [0.3.0](https://github.com/MiszterSoul/FeatherText/compare/v0.2.0...v0.3.0) (2026-07-27)
 
@@ -26,6 +25,7 @@ All notable project changes should be documented here. The format follows [Keep 
 
 ### Added
 
+- Five additional built-in themes: `midnight`, `solarized`, `lavender`, `mint`, and `ember`.
 - Typed public configuration, autosave, find/replace, plugin, event, upload, theme, paste, and security utility declarations in `index.d.ts`.
 - Local labelled dialogs for links, images, videos, tables, draft restoration, and find/replace; browser `prompt()` is no longer used.
 - Visual/source find and replace with case/whole-word options, cyclic navigation, replace-current, replace-all, and undoable transactions.
@@ -50,6 +50,11 @@ All notable project changes should be documented here. The format follows [Keep 
 - History uses bounded transactions shared by visual edits, source edits, API changes, media/table operations, and find/replace.
 - Public documentation and site copy now use the current implementation, exact automated evidence, and the canonical positioning: “A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.”
 - Support actions now use <https://buymeacoffee.com/devpeter>; GitHub issues remain available separately for bugs and feature proposals.
+- Release Please now owns annotated README version references and forces release-tag creation.
+
+### Fixed
+
+- Toolbar tooltips are rendered in a body-level portal and remain anchored to their controls inside transformed or overflow-clipped host layouts.
 
 ### Security
 
@@ -57,7 +62,7 @@ All notable project changes should be documented here. The format follows [Keep 
 - Source mode remains an explicit trusted-author path and does not sanitize raw source when applying it to the visual editor.
 - Link, image, video, upload-result, project, and support URLs use purpose-specific validation; unsafe external attribution links are omitted.
 
-The following sections preserve verified upstream repository release history. They do not assert npm publication: the current rebased `package.json` and Release Please manifest declare `0.2.0`, while the npm `latest` endpoint returned `404 Not Found` when checked on 2026-07-27.
+The following sections preserve verified upstream repository release history. They do not assert npm publication: current source metadata declares `0.3.1`, no GitHub release tags exist yet, and the npm registry returned `404 Not Found` for `feathertext` on 2026-07-28.
 
 ## [0.2.0] - 2026-07-23
 

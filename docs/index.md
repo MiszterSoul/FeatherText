@@ -20,7 +20,7 @@ This documentation separates current source behavior, historical measurements, r
 - [`baseline.md`](baseline.md) — supplied pre-change measurements
 - [`repository-audit.md`](repository-audit.md) — root/hidden-path evidence and actions
 - [`releasing.md`](releasing.md) — npm OIDC, release channels, emergencies, rollback, and verification
-- [`migration-0.3.md`](migration-0.3.md) — provisional 0.3 migration contract
+- [`migration-0.3.md`](migration-0.3.md) — current 0.3-series migration contract
 - [`launch-kit.md`](launch-kit.md) — launch checklist, channel copy, article, directory copy, and real-asset capture plan
 
 ## Project policies

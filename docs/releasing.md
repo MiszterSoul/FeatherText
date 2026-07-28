@@ -1,8 +1,11 @@
 # Releasing FeatherText
 
-This runbook describes the release automation committed in this repository and the owner-managed settings it depends on. The repository baseline is `0.2.0`: `package.json`, the root package metadata in `package-lock.json`, and `.release-please-manifest.json` all record `0.2.0`. That baseline tells Release Please where to calculate the next release; it does **not** prove that `v0.2.0` exists on GitHub or npm.
+This runbook describes the release automation committed in this repository and the owner-managed settings it depends on. `package.json`, the root package metadata in `package-lock.json`, and `.release-please-manifest.json` currently agree on the `0.3.1` baseline. No GitHub tags or releases existed, and the public npm registry returned `404 Not Found` for `feathertext` when checked on 2026-07-28. At that same observation point, bot-created Release Please PR #6 was open and proposed `0.3.2`; Release Please can update that proposal when later Conventional Commits reach `main`, so review its current head and version rather than relying on this historical observation. The metadata baseline and release PR tell Release Please what to propose; neither proves a GitHub or npm release.
 
-This documentation implementation changed only `docs/releasing.md`. **No GitHub or npm settings were changed, and no npm publish occurred.** Repository files cannot prove account-side configuration, so a repository or package owner must verify every item in [Owner-managed configuration](#owner-managed-configuration) before approving a publish.
+This documentation update does not publish a package. Account-side configuration still requires owner verification before publication, although the successful retry that created PR #6 is direct evidence that this repository can now create the Release Please pull request.
+
+> [!IMPORTANT]
+> For the reported Release Please pull-request creation error, open **Settings > Actions > General > Workflow permissions** and enable **Allow GitHub Actions to create and approve pull requests**. The current retry successfully created PR #6, so this repository permission is now working. Human review remains required; enabling the setting does not approve the PR or prove any npm configuration.
 
 ## Current release model
 
@@ -17,6 +20,8 @@ FeatherText uses a stable-only, manifest-driven Release Please flow:
 7. `publish.yml` verifies, tests, builds, and packages without write permission.
 8. The `Publish to npm` job waits for approval in the protected `npm` environment and publishes through npm Trusted Publishing (OIDC).
 9. A separate `contents: write` job uploads the already verified tarball, distribution ZIP, and checksums to the same GitHub Release.
+
+`release-please-config.json` uses the Node strategy and updates the README as a generic extra file: the two current values adjacent to `<!-- x-release-please-version -->` are managed through those generic markers. The same config sets `force-tag-creation: true`, which forces the Git tag to be created immediately with the release rather than relying on GitHub's lazy tag creation. These settings describe intended automation; no tag or GitHub Release exists yet.
 
 The publish workflow does not run on `pull_request`, `pull_request_target`, `workflow_run`, or repository dispatch events. Fork jobs are rejected, manual runs must execute from the exact requested tag ref, and only a published stable release in `MiszterSoul/FeatherText` is eligible.
 
@@ -47,7 +52,7 @@ The permissions are job-scoped; a write permission in one job is not inherited b
 
 ## Owner-managed configuration
 
-These are one-time owner settings followed by release-time verification. They cannot be changed or proven by repository files alone. Treat them as required preflight checks, not completed work.
+These are one-time owner settings followed by release-time verification. Most cannot be proven by repository files alone and remain required preflight checks. The exception currently evidenced by repository activity is pull-request creation permission: the successful retry created PR #6.
 
 ### GitHub Actions and repository policy
 
@@ -55,7 +60,7 @@ Verify in repository and, where applicable, organization settings:
 
 - Actions is allowed to use the pinned actions in `.github/workflows/`.
 - The repository policy permits the job-scoped `GITHUB_TOKEN` writes requested by `release-please.yml` and `publish.yml`.
-- **Allow GitHub Actions to create and approve pull requests** is enabled so Release Please can create/update its PR. Human review must still be required; the automation does not approve its own PR.
+- In **Settings > Actions > General > Workflow permissions**, enable **Allow GitHub Actions to create and approve pull requests** so Release Please can create/update its PR. The successful retry created PR #6, confirming this repository permission now works. Human review must still be required; the automation does not approve its own PR.
 - Default workflow permissions are kept as restrictive as practical. The workflows declare their required permissions explicitly.
 - Revoke obsolete npm automation tokens in npm and remove any obsolete copies from GitHub repository, organization, and environment secret scopes. The current `publish.yml` does not consume such a token, but repository files cannot prove revocation or secret deletion.
 - Actions from forks require approval as appropriate for the project, but no fork run receives a path to npm publication.
@@ -149,22 +154,49 @@ For an eligible public package published from an eligible GitHub-hosted runner, 
 
 ## First-publication bootstrap
 
-The `0.2.0` repository baseline does not establish whether the unscoped `feathertext` package already exists on npm. An owner must check the live registry and npm package settings immediately before the first release.
+The public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28, so the unscoped package was not publicly visible at that observation point and could not be treated as an existing package. Recheck immediately before release because package-name availability can change. If `feathertext` still does not exist, npm owner `@misztersoul` must perform one authenticated first publish that creates it; npm exposes package-scoped Trusted Publisher settings only after that bootstrap. This bootstrap has not occurred, and this runbook does not claim publication.
 
-If npm allows the exact Trusted Publisher to be configured before first publication, configure it and use the normal workflow. If the package must exist before npm exposes Trusted Publisher settings, the owner must define and record a one-time interactive bootstrap outside `publish.yml`; do not weaken or add token authentication to the workflow. At minimum:
+The bootstrap version is the single no-provenance exception. It is published interactively from a trusted owner machine rather than from a supported cloud CI provenance environment. Its immutable version cannot be republished or reused to add provenance later. Every subsequent version must use the normal `publish.yml` Trusted Publishing OIDC path and carry verifiable provenance.
 
-1. Confirm control of the unscoped package name, owner 2FA/passkeys, the exact unused version, and the reviewed immutable tag.
-2. Use the verified `.tgz` from the one-day `release-assets-vX.Y.Z` workflow artifact, verify `SHA256SUMS.txt` and the archive allowlist, and publish once from a trusted owner machine using npm's then-current interactive authentication requirements.
-3. Record that the bootstrap did not have workflow OIDC provenance; do not republish or reuse the immutable version merely to add provenance.
-4. Configure the exact Trusted Publisher immediately, apply the package security setting that requires 2FA and disallows tokens when appropriate, and revoke any obsolete token or session used during bootstrap.
-5. Cancel any waiting workflow npm job for a version already published. Attach only the same verified three assets to its GitHub Release, preserving checksums and audit evidence.
-6. Prove the normal OIDC path with a new patch release before declaring bootstrap complete.
+Use this one-time sequence:
 
-This exception is owner-operated and is not evidence that a bootstrap or npm publication occurred during this documentation change.
+1. Before merging the release PR, create and protect the GitHub `npm` environment with required reviewers and stable-tag restrictions. This ensures the `Publish to npm` job waits for approval after the verification job instead of attempting publication before bootstrap is complete. Do not store an npm credential in the environment.
+2. `@misztersoul` confirms control of the unscoped name, strong 2FA/passkeys, the exact unused version, the reviewed immutable `vX.Y.Z` tag, and a fresh `E404` result for both `feathertext` and `feathertext@X.Y.Z` from the public registry.
+3. Merge the reviewed Release Please PR. Let Release Please create the exact stable tag and published GitHub Release, and let `publish.yml` finish `Verify, test, and package`. Keep the `Publish to npm` environment job waiting; do not approve it.
+4. Download the one-day `release-assets-vX.Y.Z` workflow artifact. Confirm that it contains exactly `feathertext-X.Y.Z.tgz`, `feathertext-X.Y.Z-dist.zip`, and `SHA256SUMS.txt`; run `sha256sum --check SHA256SUMS.txt` and verify both archive allowlists documented below.
+5. On a trusted owner machine, authenticate interactively to `https://registry.npmjs.org/`, confirm `npm whoami` returns the intended owner, and publish the verified tarball exactly once:
+
+   ```bash
+   npm publish ./feathertext-X.Y.Z.tgz \
+     --access public \
+     --registry=https://registry.npmjs.org/ \
+     --provenance=false \
+     --ignore-scripts
+   ```
+
+   The explicit `--provenance=false` overrides the tarball's routine-release `publishConfig.provenance: true`. Local owner-machine publication cannot generate the supported workflow provenance required for routine releases. Let npm prompt for interactive authentication or 2FA; do not place a token or one-time code in the command, repository, workflow, or shell history.
+
+6. Verify the exact registry version, dist-tag, integrity, bytes, repository metadata, and 11-file package allowlist. Record that this first version used the documented owner-authenticated no-provenance bootstrap. Never republish it or reuse its version to add provenance retroactively.
+7. Immediately configure the package Trusted Publisher with owner `MiszterSoul`, repository `FeatherText`, workflow `publish.yml`, environment `npm`, and allowed action `npm publish` (the exact table above). Then apply **Require two-factor authentication and disallow tokens**, revoke obsolete bootstrap or automation tokens, and audit active owners and sessions.
+8. Cancel or reject the still-waiting `Publish to npm` environment job for the bootstrap version. Do not approve or rerun it: the version now exists, and the workflow's unpublished-version guard must prevent a second publication. Because the dependent release-assets job will not run, upload only the same verified files to the existing GitHub Release without clobbering or rebuilding them:
+
+   ```bash
+   gh release upload vX.Y.Z \
+     feathertext-X.Y.Z.tgz \
+     feathertext-X.Y.Z-dist.zip \
+     SHA256SUMS.txt \
+     --repo MiszterSoul/FeatherText
+   ```
+
+   Verify the three uploaded assets against `SHA256SUMS.txt` and preserve the workflow run, owner-authentication record, and checksum evidence.
+
+9. Publish the next new version through `publish.yml` with the protected `npm` environment and the configured Trusted Publisher. Verify that npm accepted OIDC, attached provenance for the exact repository/workflow/tag/commit, and required no long-lived publish credential. Use this OIDC path for every later publication; do not perform another routine interactive publish.
+
+This is a narrowly scoped owner-operated exception for creating the package. No first publish, npm package creation, Trusted Publisher configuration, or OIDC publication is claimed here.
 
 ## Conventional Commits and version selection
 
-Release Please reads commits after the manifest baseline (`0.2.0`) on `main` and updates `package.json`, `package-lock.json`, `CHANGELOG.md`, and `.release-please-manifest.json` through its Node strategy. Normal development does not manually bump those files: merge Conventional Commits, review the generated release PR, and let that PR carry the next version and changelog.
+Release Please reads commits after the manifest baseline (`0.3.1`) on `main` and updates `package.json`, `package-lock.json`, `CHANGELOG.md`, `.release-please-manifest.json`, and the README values identified by the generic `<!-- x-release-please-version -->` markers. As observed on 2026-07-28, open PR #6 proposed `0.3.2`, but that proposal can change when Release Please processes later commits. Normal development does not manually bump those files: merge Conventional Commits, review the generated release PR's current head, and let that PR carry the next version, changelog, and marker updates.
 
 Use messages such as:
 
@@ -183,7 +215,7 @@ Version intent:
 - other recognized Conventional Commit types may still produce a patch proposal even when hidden from the changelog;
 - `Release-As: X.Y.Z` can force a reviewed exact version, but should be reserved for recovery or an intentional emergency version and must be valid SemVer.
 
-Review the generated version rather than assuming the prefix had the intended effect. For squash merges, make the final squash title/body conventional. Do not manually edit the manifest during normal releases; it records the last released version for Release Please.
+Review the generated version rather than assuming the prefix had the intended effect. For squash merges, make the final squash title/body conventional. Do not manually edit the manifest during normal releases; it records Release Please's version baseline. In this repository, the current `0.3.1` manifest value is not proof of a corresponding tag, GitHub Release, or npm publication.
 
 ## Standard stable release
 
@@ -400,15 +432,15 @@ npm audit signatures
 gh release view vX.Y.Z --repo MiszterSoul/FeatherText
 ```
 
-Verify npm:
+Verify npm for every publication:
 
 - package name/version and intended dist-tag are exact;
 - repository links to `MiszterSoul/FeatherText`;
 - the registry tarball matches the recorded release candidate integrity/bytes and exact 11-file allowlist;
 - clean ESM import, CJS require, browser-global, CSS, and types smoke tests pass from the registry package;
-- npm displays a provenance attestation for the exact version; inspect its source repository, workflow path `.github/workflows/publish.yml`, tag/commit, and run identity, and ensure they match the approved run in `MiszterSoul/FeatherText`;
-- in a clean project where the exact package version is installed, `npm audit signatures` validates registry signatures and provenance attestations without an unexplained failure;
-- the approved run's npm job obtained OIDC through `id-token: write` and did not consume a long-lived npm publish credential.
+- in a clean project where the exact package version is installed, `npm audit signatures` validates the registry signatures and any expected attestations without an unexplained failure.
+
+For the one-time first-publication bootstrap, verify and record that owner authentication was used and that provenance is absent by design; do not republish that immutable version to change this result. For every subsequent routine publication, additionally verify that npm displays a provenance attestation for the exact version, inspect its source repository, workflow path `.github/workflows/publish.yml`, tag/commit, and run identity, and ensure they match the approved run in `MiszterSoul/FeatherText`. Confirm that the approved npm job obtained OIDC through `id-token: write` and did not consume a long-lived npm publish credential.
 
 Verify the GitHub Release:
 
@@ -417,7 +449,7 @@ Verify the GitHub Release:
 - it is published, stable, and has the expected notes/migration warnings;
 - the three custom assets are exact, non-empty, and match `SHA256SUMS.txt`;
 - the tarball and ZIP lists match the allowlists above;
-- the publish run shows environment approval before `npm publish` and a separate asset-write job after registry verification.
+- for the one-time bootstrap, the verification job passed, the waiting npm job was canceled or rejected, and the same verified assets were uploaded manually; for every later routine release, the publish run shows environment approval before OIDC `npm publish` and a separate asset-write job after registry verification.
 
 Verify Pages:
 
@@ -436,12 +468,13 @@ Treat any unexplained mismatch in identity, tag, bytes, checksums, or provenance
 - [ ] Conventional commits and proposed SemVer reviewed.
 - [ ] Release Please PR versions/changelog agree and required checks pass.
 - [ ] GitHub Actions, branch/tag rulesets, and `npm`/`github-pages` environments verified by an owner.
-- [ ] Exact npm Trusted Publisher identity verified; obsolete npm automation tokens revoked and removed by an owner.
 - [ ] Package owners, 2FA/passkeys, recovery, and token/session inventory reviewed.
 - [ ] Exact protected tag and published stable GitHub Release point to reviewed `main` commit.
 - [ ] Verify job passes lint, unit, build, E2E, accessibility, size, package, clean-tree, and archive checks.
-- [ ] `npm` environment approval recorded before direct OIDC `npm publish`.
-- [ ] npm version, dist-tag, registry tarball, ESM/CJS/browser/CSS/types smoke tests, signatures, and provenance verified.
+- [ ] For the one-time bootstrap only: owner-authenticated publication used the exact verified tarball with `--provenance=false --ignore-scripts`; absence of provenance was recorded; the immutable version was not republished; the waiting npm job was canceled; and the same verified assets were uploaded manually.
+- [ ] After bootstrap: exact npm Trusted Publisher identity verified, obsolete npm automation tokens revoked and removed, and publishing access configured to require 2FA and disallow tokens.
+- [ ] For every version after bootstrap: `npm` environment approval recorded before direct OIDC `npm publish`, no long-lived publish credential used, and exact provenance verified.
+- [ ] npm version, dist-tag, registry tarball, ESM/CJS/browser/CSS/types smoke tests, and signatures verified for every publication.
 - [ ] GitHub Release has exactly the three custom assets with valid checksums.
 - [ ] Pages generated-artifact deployment and live site verified.
 - [ ] Announcement occurs only after all post-publish checks pass.

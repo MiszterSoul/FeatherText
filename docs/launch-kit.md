@@ -4,21 +4,24 @@
 
 Use this section as the source of truth when adapting any copy below.
 
-| Requirement                        | Approved fact or status                                                                                                                                                                                                            |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| One-sentence pitch                 | FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects that enhances textareas with a ready-made visual and source-editing interface.                                                        |
-| Tagline (46 characters)            | `Rich-text editing without runtime dependencies`                                                                                                                                                                                   |
-| Short description (224 characters) | `FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances textareas with a configurable toolbar, 11 themes, visual and source modes, counters, history, and an HTML-focused API.` |
-| Runtime dependencies               | None declared in `package.json`; do not imply that build or development tooling has no dependencies.                                                                                                                               |
-| Current build size                 | 27.45 KiB JavaScript gzip and 4.28 KiB CSS gzip. State both assets and compression explicitly; do not combine them into a single package-size number.                                                                              |
-| License/status                     | MIT; pre-1.0; package metadata version `0.2.0`.                                                                                                                                                                                    |
-| Live site                          | <https://misztersoul.github.io/FeatherText/>                                                                                                                                                                                       |
-| Source                             | <https://github.com/MiszterSoul/FeatherText>                                                                                                                                                                                       |
-| Bug reports                        | <https://github.com/MiszterSoul/FeatherText/issues>                                                                                                                                                                                |
-| Support development                | <https://buymeacoffee.com/devpeter>                                                                                                                                                                                                |
-| Security boundary                  | <https://github.com/MiszterSoul/FeatherText/blob/main/docs/security.md>                                                                                                                                                            |
+| Requirement                        | Approved fact or status                                                                                                                                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One-sentence pitch                 | FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects that enhances textareas with a ready-made visual and source-editing interface.                                                                 |
+| Tagline (46 characters)            | `Rich-text editing without runtime dependencies`                                                                                                                                                                                            |
+| Short description (233 characters) | `FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances textareas with a configurable toolbar, 16 built-in themes, visual and source modes, counters, history, and an HTML-focused API.` |
+| Runtime dependencies               | None declared in `package.json`; do not imply that build or development tooling has no dependencies.                                                                                                                                        |
+| Current build size                 | 27.90 KiB JavaScript gzip and 4.57 KiB CSS gzip. State both assets and compression explicitly; do not combine them into a single package-size number.                                                                                       |
+| Current automated evidence         | 71 Node/JSDOM unit tests; 18 E2E cases in each of five Playwright projects (90 executions); 12 axe checks.                                                                                                                                  |
+| Validated package artifact         | Exact 159,373-byte npm tarball containing 11 files; this local artifact is not evidence of npm publication.                                                                                                                                 |
+| License/status                     | MIT; pre-1.0; package metadata version `0.3.1`.                                                                                                                                                                                             |
+| Release/registry status            | No GitHub tags or releases exist yet; the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. Do not claim publication.                                                                                           |
+| Live site                          | <https://misztersoul.github.io/FeatherText/>                                                                                                                                                                                                |
+| Source                             | <https://github.com/MiszterSoul/FeatherText>                                                                                                                                                                                                |
+| Bug reports                        | <https://github.com/MiszterSoul/FeatherText/issues>                                                                                                                                                                                         |
+| Support development                | <https://buymeacoffee.com/devpeter>                                                                                                                                                                                                         |
+| Security boundary                  | <https://github.com/MiszterSoul/FeatherText/blob/main/docs/security.md>                                                                                                                                                                     |
 
-The short description above is 224 characters including spaces. The tagline is 46 characters including spaces. Recount if either is edited for a platform.
+The short description above is 233 characters including spaces. The tagline is 46 characters including spaces. Recount if either is edited for a platform.
 
 ## Mandatory owner preflight
 
@@ -31,11 +34,11 @@ Before launch:
 - [ ] Confirm the live demo and repository URLs resolve anonymously.
 - [ ] Run the current tests, build, size check, and package smoke check from the intended release commit.
 - [ ] Confirm the displayed version, release tag, Pages deployment, and downloadable source agree.
-- [ ] Reproduce the current build sizes before posting them; approved copy is **27.45 KiB JS gzip and 4.28 KiB CSS gzip**.
+- [ ] Reproduce the current build sizes before posting them; approved copy is **27.90 KiB JS gzip and 4.57 KiB CSS gzip**.
 - [ ] Check site canonical, Open Graph, GitHub, bug-report, and support links.
 - [ ] Verify the live textarea demo in the exact browsers actually represented in launch-day evidence.
 - [ ] Keep pre-1.0, security, privacy, and compatibility limitations visible.
-- [ ] Make no npm availability or publication claim.
+- [ ] Make no npm availability or publication claim; the latest recorded check returned `404 Not Found` for `feathertext` on 2026-07-28.
 - [ ] Make no Lighthouse, assistive-technology, WCAG-conformance, physical-device, or latest-two-browser claim.
 - [ ] Capture real release-artifact screenshots using the plan below; do not imply that screenshots or GIFs already exist.
 - [ ] Re-check each target community’s current rules immediately before posting.
@@ -46,10 +49,10 @@ Before launch:
 
 - lightweight, dependency-free rich-text editing for plain JavaScript, where “dependency-free” means no declared runtime dependencies;
 - textarea enhancement with synchronized form values;
-- configurable toolbar and 11 current built-in themes;
+- configurable toolbar and 16 current built-in themes; `auto` is a separate adaptive choice;
 - visual and source editing with an HTML-focused API;
 - browser-global, ESM, CommonJS, CSS, and TypeScript declaration build outputs;
-- 27.45 KiB minified JavaScript gzip and 4.28 KiB minified CSS gzip from the current build;
+- 27.90 KiB minified JavaScript gzip and 4.57 KiB minified CSS gzip from the current build;
 - MIT licensed, pre-1.0, and open to technical feedback.
 
 ### Current limitations that must not be hidden
@@ -91,7 +94,7 @@ Show HN: FeatherText – a lightweight, dependency-free rich-text editor
 ```text
 Hi HN — I built FeatherText, a lightweight, dependency-free rich-text editor for plain JavaScript projects.
 
-It enhances a textarea and keeps its value synchronized for forms. The current pre-1.0 build includes a configurable toolbar, 11 themes, visual and source modes, history, counters, local draft autosave, and an HTML-focused API. package.json declares no runtime dependencies. The current minified build measures 27.45 KiB for JavaScript gzip and 4.28 KiB for CSS gzip.
+It enhances a textarea and keeps its value synchronized for forms. The current pre-1.0 build includes a configurable toolbar, 16 built-in themes, visual and source modes, history, counters, local draft autosave, and an HTML-focused API. package.json declares no runtime dependencies. The current minified build measures 27.90 KiB for JavaScript gzip and 4.57 KiB for CSS gzip.
 
 Demo: https://misztersoul.github.io/FeatherText/
 Source: https://github.com/MiszterSoul/FeatherText
@@ -119,10 +122,10 @@ FeatherText
 Rich-text editing without runtime dependencies
 ```
 
-**Short description — 224 characters**
+**Short description — 233 characters**
 
 ```text
-FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances textareas with a configurable toolbar, 11 themes, visual and source modes, counters, history, and an HTML-focused API.
+FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances textareas with a configurable toolbar, 16 built-in themes, visual and source modes, counters, history, and an HTML-focused API.
 ```
 
 **Topics — confirm the current taxonomy before submission**
@@ -136,7 +139,7 @@ Developer Tools · Open Source · Writing · Productivity
 ```text
 FeatherText gives plain JavaScript projects a ready-made rich-text editing surface without requiring a UI framework or declared runtime dependencies.
 
-It enhances an existing textarea, keeps the textarea synchronized for forms and application code, and adds a configurable toolbar, 11 built-in themes, visual and source editing, history, counters, find/replace, opt-in local draft autosave, and an HTML-focused runtime API. Build outputs cover browser-global, ESM, CommonJS, CSS, and TypeScript declarations. The current minified build measures 27.45 KiB for JavaScript gzip and 4.28 KiB for CSS gzip.
+It enhances an existing textarea, keeps the textarea synchronized for forms and application code, and adds a configurable toolbar, 16 built-in themes, visual and source editing, history, counters, find/replace, opt-in local draft autosave, and an HTML-focused runtime API. Build outputs cover browser-global, ESM, CommonJS, CSS, and TypeScript declarations. The current minified build measures 27.90 KiB for JavaScript gzip and 4.57 KiB for CSS gzip.
 
 FeatherText is MIT licensed and pre-1.0. It deliberately remains an HTML-string editor rather than a schema or collaboration platform. Its untrusted-HTML helper is a conservative baseline, not a complete sanitizer, and several formatting operations still use document.execCommand through a compatibility adapter. Integrating applications remain responsible for sanitization, storage, authorization, upload handling, output encoding, and end-to-end accessibility validation.
 
@@ -148,7 +151,7 @@ Try the live demo, inspect the source, and share the browser, input-method, API,
 ```text
 Hi Product Hunt — I’m Peter, the maker of FeatherText. I built it for plain JavaScript projects that need a ready-made HTML editor without adopting a UI framework.
 
-The current pre-1.0 build enhances a textarea and includes a configurable toolbar, 11 themes, visual and source modes, counters, history, find/replace, opt-in local drafts, and methods for reading or updating HTML. package.json declares no runtime dependencies, and the project is MIT licensed. The current minified build is 27.45 KiB JavaScript gzip plus 4.28 KiB CSS gzip.
+The current pre-1.0 build enhances a textarea and includes a configurable toolbar, 16 built-in themes, visual and source modes, counters, history, find/replace, opt-in local drafts, and methods for reading or updating HTML. package.json declares no runtime dependencies, and the project is MIT licensed. The current minified build is 27.90 KiB JavaScript gzip plus 4.57 KiB CSS gzip.
 
 I’m launching with the boundaries visible: FeatherText is not a complete HTML sanitizer, collaboration system, or file host, and some formatting commands remain behind a document.execCommand compatibility adapter.
 
@@ -176,7 +179,7 @@ package.json declares no runtime dependencies. The repository does use developme
 **How large is it?**
 
 ```text
-The current minified build measures 27.45 KiB for JavaScript gzip and 4.28 KiB for CSS gzip. Those are separate compressed assets, not an npm tarball or network-transfer benchmark.
+The current minified build measures 27.90 KiB for JavaScript gzip and 4.57 KiB for CSS gzip. Those are separate compressed assets; the validated npm tarball is exactly 159,373 bytes and 11 files, not a network-transfer benchmark or evidence of publication.
 ```
 
 **Does it sanitize HTML?**
@@ -194,7 +197,7 @@ It does not provide collaboration or host files. An application can supply an im
 **What is the project status?**
 
 ```text
-FeatherText is MIT licensed and pre-1.0. The current package metadata version is 0.2.0; no public npm availability or publication claim is being made.
+FeatherText is MIT licensed and pre-1.0. The current package metadata version is 0.3.1. No GitHub tags or releases exist yet, and the public npm registry returned 404 for feathertext on 2026-07-28; no publication claim is being made.
 ```
 
 **Where can I get help or report a bug?**
@@ -232,7 +235,7 @@ The repository records bounded exact-version automation, not a latest-two or uni
 **“Where is the npm package?”**
 
 ```text
-I’m not claiming public npm availability in this launch. The demo and source are available now, and the repository documents how to build the project from a checkout.
+I’m not claiming public npm availability in this launch. The public registry returned 404 for feathertext on 2026-07-28; the demo and source are available now, and the repository documents how to build the project from a checkout.
 ```
 
 **“Can I support the project?”**
@@ -269,9 +272,9 @@ I built a dependency-free, textarea-backed rich-text editor in plain JavaScript
 ```text
 Creator disclosure: I built FeatherText.
 
-It is a pre-1.0 rich-text editor for plain JavaScript projects. It enhances a textarea, keeps the value synchronized for forms, and provides browser-global, ESM, and CommonJS build outputs. The current UI includes a configurable toolbar, 11 themes, visual/source modes, history, counters, find/replace, and local draft autosave. package.json declares no runtime dependencies.
+It is a pre-1.0 rich-text editor for plain JavaScript projects. It enhances a textarea, keeps the value synchronized for forms, and provides browser-global, ESM, and CommonJS build outputs. The current UI includes a configurable toolbar, 16 built-in themes, visual/source modes, history, counters, find/replace, and local draft autosave. package.json declares no runtime dependencies.
 
-Current minified build: 27.45 KiB JS gzip and 4.28 KiB CSS gzip.
+Current minified build: 27.90 KiB JS gzip and 4.57 KiB CSS gzip.
 
 Demo: https://misztersoul.github.io/FeatherText/
 Source: https://github.com/MiszterSoul/FeatherText
@@ -294,7 +297,7 @@ I made a lightweight rich-text editor for plain JavaScript forms
 ```text
 Creator disclosure: I’m the maker of FeatherText.
 
-I wanted a ready-made rich-text surface that could enhance an ordinary textarea without requiring a UI framework. FeatherText keeps the textarea synchronized, adds a configurable toolbar, 11 themes, visual/source editing, counters, history, and an HTML-focused API, and declares no runtime dependencies.
+I wanted a ready-made rich-text surface that could enhance an ordinary textarea without requiring a UI framework. FeatherText keeps the textarea synchronized, adds a configurable toolbar, 16 built-in themes, visual/source editing, counters, history, and an HTML-focused API, and declares no runtime dependencies.
 
 Demo: https://misztersoul.github.io/FeatherText/
 Code: https://github.com/MiszterSoul/FeatherText
@@ -337,7 +340,7 @@ Re-check X’s current post length, link-card, media, disclosure, and automation
 ```text
 I built FeatherText: a lightweight, dependency-free rich-text editor for plain JavaScript.
 
-Textarea-backed, 11 themes, visual/source modes, MIT, and pre-1.0. Current build: 27.45 KiB JS gzip + 4.28 KiB CSS gzip.
+Textarea-backed, 16 built-in themes, visual/source modes, MIT, and pre-1.0. Current build: 27.90 KiB JS gzip + 4.57 KiB CSS gzip.
 
 https://misztersoul.github.io/FeatherText/
 ```
@@ -352,11 +355,11 @@ Source: https://github.com/MiszterSoul/FeatherText
 ```
 
 ```text
-2/5 It enhances a textarea and keeps its value synchronized for forms. The current UI includes a configurable toolbar, 11 themes, visual/source modes, counters, history, find/replace, and opt-in local drafts.
+2/5 It enhances a textarea and keeps its value synchronized for forms. The current UI includes a configurable toolbar, 16 built-in themes, visual/source modes, counters, history, find/replace, and opt-in local drafts.
 ```
 
 ```text
-3/5 package.json declares no runtime dependencies. The current minified build measures 27.45 KiB for JavaScript gzip and 4.28 KiB for CSS gzip.
+3/5 package.json declares no runtime dependencies. The current minified build measures 27.90 KiB for JavaScript gzip and 4.57 KiB for CSS gzip.
 ```
 
 ```text
@@ -409,7 +412,7 @@ A small editor can offer a useful ready-made interface without pretending to be 
    - Isolating deprecated `document.execCommand()` behavior behind an adapter.
    - Why containment helps testing but does not erase browser differences.
 7. **Size, with a reproducible definition**
-   - Current minified artifacts: 27.45 KiB JS gzip and 4.28 KiB CSS gzip.
+   - Current minified artifacts: 27.90 KiB JS gzip and 4.57 KiB CSS gzip.
    - Keep JS and CSS separate; document gzip settings and commit when publishing measurements.
    - Avoid speed, competitor, network, or package-size conclusions from asset bytes.
 8. **Evidence without overclaiming**
@@ -428,7 +431,7 @@ A small editor can offer a useful ready-made interface without pretending to be 
 License: MIT
 Status: pre-1.0
 Runtime dependencies: none declared
-Current minified assets: 27.45 KiB JavaScript gzip; 4.28 KiB CSS gzip
+Current minified assets: 27.90 KiB JavaScript gzip; 4.57 KiB CSS gzip
 Demo: https://misztersoul.github.io/FeatherText/
 Source: https://github.com/MiszterSoul/FeatherText
 Bugs: https://github.com/MiszterSoul/FeatherText/issues
@@ -448,13 +451,13 @@ A dependency-free, textarea-backed rich-text editor for plain JavaScript project
 ### Short listing
 
 ```text
-FeatherText is an MIT-licensed, pre-1.0 rich-text editor for plain JavaScript. It enhances textareas with a configurable toolbar, 11 themes, visual and source modes, counters, history, and an HTML-focused API, with no declared runtime dependencies.
+FeatherText is an MIT-licensed, pre-1.0 rich-text editor for plain JavaScript. It enhances textareas with a configurable toolbar, 16 built-in themes, visual and source modes, counters, history, and an HTML-focused API, with no declared runtime dependencies.
 ```
 
 ### Long listing
 
 ```text
-FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances a textarea while keeping its value synchronized for normal forms and application code. The pre-1.0 editor includes a configurable toolbar, 11 built-in themes, visual and source modes, counters, history, find/replace, opt-in local drafts, and an HTML-focused runtime API. Current build outputs cover browser-global, ESM, CommonJS, CSS, and TypeScript declarations; the minified assets measure 27.45 KiB JavaScript gzip and 4.28 KiB CSS gzip. FeatherText is MIT licensed. It is an HTML-string editor, not a complete sanitizer, schema engine, collaboration service, or file host.
+FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScript projects. It enhances a textarea while keeping its value synchronized for normal forms and application code. The pre-1.0 editor includes a configurable toolbar, 16 built-in themes, visual and source modes, counters, history, find/replace, opt-in local drafts, and an HTML-focused runtime API. Current build outputs cover browser-global, ESM, CommonJS, CSS, and TypeScript declarations; the minified assets measure 27.90 KiB JavaScript gzip and 4.57 KiB CSS gzip. FeatherText is MIT licensed. It is an HTML-string editor, not a complete sanitizer, schema engine, collaboration service, or file host.
 ```
 
 ### Structured fields
@@ -468,7 +471,7 @@ FeatherText is a lightweight, dependency-free rich-text editor for plain JavaScr
 | Platforms            | Web; do not state latest-two or universal browser support                 |
 | Frameworks           | Plain JavaScript core; no official framework wrappers claimed             |
 | Runtime dependencies | None declared                                                             |
-| Size                 | 27.45 KiB minified JavaScript gzip; 4.28 KiB minified CSS gzip            |
+| Size                 | 27.90 KiB minified JavaScript gzip; 4.57 KiB minified CSS gzip            |
 | Repository           | `https://github.com/MiszterSoul/FeatherText`                              |
 | Demo                 | `https://misztersoul.github.io/FeatherText/`                              |
 | Bug reports          | `https://github.com/MiszterSoul/FeatherText/issues`                       |
@@ -563,7 +566,7 @@ FeatherText is not a complete HTML sanitizer. Its conservative untrusted-HTML he
 ### Size
 
 ```text
-The current minified build measures 27.45 KiB for JavaScript gzip and 4.28 KiB for CSS gzip. These are separate compressed asset measurements, not a package, load-time, or competitor-performance claim.
+The current minified build measures 27.90 KiB for JavaScript gzip and 4.57 KiB for CSS gzip. These are separate compressed asset measurements, not a package, load-time, or competitor-performance claim.
 ```
 
 ### Accessibility and browsers
@@ -575,7 +578,7 @@ The repository has bounded exact-version browser automation and automated axe ch
 ### Availability
 
 ```text
-The live demo and source repository are available now. This launch makes no public npm availability or publication claim.
+The live demo and source repository are available now. The public npm registry returned 404 for feathertext on 2026-07-28, so this launch makes no public npm availability or publication claim.
 ```
 
 ### Support versus bugs

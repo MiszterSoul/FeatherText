@@ -9,7 +9,14 @@
       "include-v-in-tag": true,
       "include-v-in-release-name": true,
       "draft": false,
+      "force-tag-creation": true,
       "prerelease": false,
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "README.md"
+        }
+      ],
       "changelog-sections": [
         {
           "type": "feat",

@@ -1,6 +1,6 @@
 # API reference
 
-Status: current repository source and `index.d.ts`, package metadata `0.2.0`, reconciled 2026-07-27. FeatherText is pre-1.0; pin an exact commit/build and retest before production adoption.
+Status: current repository source and `index.d.ts`, package metadata `0.3.1`, reconciled 2026-07-28. No GitHub tags or releases exist yet, and the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. FeatherText is pre-1.0; pin an exact commit/build and retest before production adoption.
 
 **A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.**
 
@@ -17,7 +17,7 @@ A successful build creates the package-facing outputs configured in `package.jso
 | `feathertext/feathertext.min.css`        | `dist/feathertext.min.css` |
 | package types                            | `index.d.ts`               |
 
-The browser bundle exposes `globalThis.FeatherText`. npm publication is not verified by repository evidence, so build locally until an exact registry release and its provenance are verified.
+The browser bundle exposes `globalThis.FeatherText`. Because the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28, build locally until an exact registry release and its provenance are verified.
 
 ### ESM
 
@@ -183,10 +183,10 @@ Unknown toolbar names are ignored unless a matching custom definition exists in 
 | `fancy`            | `boolean`                                | `false`  | Adds shadows, pressed-button motion, enhanced tooltip/dialog presentation |
 | `themeTransitions` | `boolean`                                | `false`  | Adds short color/background/border theme transitions                      |
 
-Built-in fixed names:
+Built-in fixed names (16 total; `auto` is separate):
 
 ```text
-dark light ocean forest dark-b aurora dawn rose graphite canyon high-contrast
+dark light ocean forest dark-b aurora dawn rose graphite canyon midnight solarized lavender mint ember high-contrast
 ```
 
 Custom token keys:
@@ -907,7 +907,7 @@ The implementation does not use browser `prompt()`.
 
 ## Browser and accessibility evidence
 
-Current automated evidence is 17 Playwright E2E tests each on Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile (85 total), plus 12 full-document axe checks.
+Current automated evidence is 18 Playwright E2E tests each on Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile (90 total), plus 12 full-document axe checks.
 
 That is bounded exact-version automation, not latest-two browser certification, manual assistive-technology evidence, WCAG conformance, physical-device certification, or a Lighthouse result. See [`browser-support.md`](browser-support.md) and [`accessibility.md`](accessibility.md).
 

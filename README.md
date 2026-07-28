@@ -5,18 +5,18 @@
 [Live site](https://misztersoul.github.io/FeatherText/) · [Documentation](docs/index.md) · [API](docs/api.md) · [Bug reports](https://github.com/MiszterSoul/FeatherText/issues) · [Support development](https://buymeacoffee.com/devpeter) · [Security](SECURITY.md) · [MIT License](LICENSE)
 
 > [!IMPORTANT]
-> FeatherText is pre-1.0, and the current package metadata is `0.2.0`. npm publication is not verified by repository evidence, so this documentation does not claim that `0.2.0` is available from the registry. Build from a checkout until an exact registry release and its provenance have been verified.
+> FeatherText is pre-1.0, and the current package metadata is `0.3.1`. <!-- x-release-please-version --> The public npm registry still returned `404 Not Found` for `feathertext` on 2026-07-28, so build from a checkout until the first authenticated registry publish and its provenance are verified.
 
 ## Status
 
 | Area                    | Current evidence                                                                                                                              |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Package metadata        | `0.2.0`; ESM, CommonJS, browser-global, CSS, and TypeScript declaration entries                                                               |
+| Package metadata        | `0.3.1`; ESM, CommonJS, browser-global, CSS, and TypeScript declaration entries <!-- x-release-please-version -->                             |
 | License                 | MIT                                                                                                                                           |
 | Runtime dependencies    | None declared                                                                                                                                 |
 | Runtime/build floor     | Node `>=20.19.0`; esbuild target ES2020                                                                                                       |
-| Unit tests              | 70 Node/JSDOM tests under `test/`                                                                                                             |
-| Browser automation      | 17 Playwright E2E tests on each of Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile: 85 total         |
+| Unit tests              | 71 Node/JSDOM tests under `test/`                                                                                                             |
+| Browser automation      | 18 Playwright E2E tests on each of Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile: 90 total         |
 | Automated accessibility | 12 full-document axe checks across Chromium and the Mobile Chrome profile                                                                     |
 | Not claimed             | Latest-two-browser certification, manual assistive-technology results, WCAG conformance, Lighthouse results, or physical-device certification |
 
@@ -26,7 +26,7 @@ The browser numbers are exact-version automated evidence, not a blanket compatib
 
 - Enhances one or many `<textarea>` controls while keeping their values synchronized for form submission and reset.
 - Configurable toolbar with formatting, links, images, application-provided image upload, safe YouTube/Vimeo embeds, bounded tables, lists, alignment, colors, history, fullscreen, source mode, copy, and paste actions.
-- Eleven built-in themes, `auto`, custom token objects, optional `fancy` presentation, and independently themed instances. Theme state is scoped to each editor wrapper and does not mutate `document.documentElement`.
+- Sixteen built-in themes, `auto`, custom token objects, optional `fancy` presentation, and independently themed instances. Theme state is scoped to each editor wrapper and does not mutate `document.documentElement`.
 - Visual and source editing with line numbers, lightweight syntax coloring, wrapping, smart indentation, bracket pairs, and tag closing.
 - Local, labelled dialogs for links, images, videos, tables, autosave restore, and find/replace. The implementation does not use browser `prompt()`.
 - Find/replace in visual and source modes, including next/previous navigation, case matching, whole-word matching, replace-current, and replace-all.
@@ -193,7 +193,7 @@ Link, image, video, and table actions use local modal dialogs. The image dialog 
 
 ## Themes and presentation
 
-Built-in themes are `dark`, `light`, `ocean`, `forest`, `dark-b`, `aurora`, `dawn`, `rose`, `graphite`, `canyon`, and `high-contrast`.
+Built-in themes are `dark`, `light`, `ocean`, `forest`, `dark-b`, `aurora`, `dawn`, `rose`, `graphite`, `canyon`, `midnight`, `solarized`, `lavender`, `mint`, `ember`, and `high-contrast`.
 
 `theme: "auto"` follows color-scheme preferences and chooses `high-contrast` when forced colors or increased contrast is reported. Custom objects merge over the dark token set. Theme attributes and `--feather-*` variables are applied to the instance wrapper only.
 

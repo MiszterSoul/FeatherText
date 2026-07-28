@@ -126,7 +126,7 @@ It does **not** destroy and reconstruct the instance. The wrapper, visual editor
 
 `ThemeController` writes `data-theme`, `data-feather-theme`, and eight `--feather-*` tokens to its instance wrapper. It never mutates `document.documentElement`.
 
-Fixed built-ins are `dark`, `light`, `ocean`, `forest`, `dark-b`, `aurora`, `dawn`, `rose`, `graphite`, `canyon`, and `high-contrast`. Custom objects merge over dark defaults. Unknown names fall back to dark.
+The 16 fixed built-ins are `dark`, `light`, `ocean`, `forest`, `dark-b`, `aurora`, `dawn`, `rose`, `graphite`, `canyon`, `midnight`, `solarized`, `lavender`, `mint`, `ember`, and `high-contrast`. `auto` is separate from the built-in count. Custom objects merge over dark defaults. Unknown names fall back to dark.
 
 `auto` listens on that wrapper’s owner window for:
 
@@ -200,9 +200,11 @@ Built-in/custom button definitions live in a shared exported registry. `addButto
 
 Automated layers are:
 
-- 70 Node/JSDOM unit/regression tests in `test/`;
-- 17 Playwright E2E tests per Chromium, Firefox, WebKit, Mobile Chrome, and Tablet WebKit project (85 executions);
+- 71 Node/JSDOM unit/regression tests in `test/`;
+- 18 Playwright E2E tests per Chromium, Firefox, WebKit, Mobile Chrome, and Tablet WebKit project (90 executions);
 - six axe scenarios per Chromium and Mobile Chrome project (12 checks).
+
+Current artifact validation measures 27.90 KiB JavaScript gzip and 4.57 KiB CSS gzip, and produces an exact 159,373-byte npm tarball containing 11 files.
 
 Exact current engine evidence is Chromium 151, Firefox 153, and WebKit 26.5. This is bounded automation, not latest-two, manual assistive-technology, WCAG, Lighthouse, or physical-device certification.
 

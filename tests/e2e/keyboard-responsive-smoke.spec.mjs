@@ -26,7 +26,10 @@ test.describe("keyboard, responsive, and internationalization smoke", () => {
       attribution: false,
     });
 
-    const bold = page.getByRole("button", { name: "Bold (Ctrl+B)", exact: true });
+    const bold = page.getByRole("button", {
+      name: "Bold (Ctrl+B)",
+      exact: true,
+    });
     const italic = page.getByRole("button", {
       name: "Italic (Ctrl+I)",
       exact: true,
@@ -49,12 +52,65 @@ test.describe("keyboard, responsive, and internationalization smoke", () => {
     await expect(bold).toBeFocused();
   });
 
+  test("toolbar tooltip stays anchored to View Source inside transformed hosts", async ({
+    page,
+  }) => {
+    await loadBuiltFixture(page, {
+      body: `
+        <main style="margin-top: 180px; transform: translateZ(0); overflow: hidden">
+          <label for="tooltip-editor">Tooltip editor</label>
+          <textarea id="tooltip-editor">Tooltip content</textarea>
+        </main>
+      `,
+    });
+    await initializeEditors(page, "#tooltip-editor", {
+      ariaLabel: "Tooltip editor",
+      theme: "lavender",
+      toolbar: ["bold", "source"],
+      wordCount: false,
+      charCount: false,
+      attribution: false,
+    });
+
+    const source = page.getByRole("button", {
+      name: "View Source",
+      exact: true,
+    });
+    const tooltip = page.locator("body > .feather-tooltip");
+    await source.hover();
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("View Source");
+
+    const geometry = await page.evaluate(() => {
+      const button = document.querySelector('[data-command="source"]');
+      const tip = document.querySelector("body > .feather-tooltip");
+      const buttonRect = button.getBoundingClientRect();
+      const tooltipRect = tip.getBoundingClientRect();
+      const gap =
+        tooltipRect.bottom <= buttonRect.top
+          ? buttonRect.top - tooltipRect.bottom
+          : tooltipRect.top - buttonRect.bottom;
+      return {
+        gap,
+        parent: tip.parentElement.tagName,
+        theme: tip.dataset.featherTheme,
+      };
+    });
+
+    expect(geometry.parent).toBe("BODY");
+    expect(geometry.theme).toBe("lavender");
+    expect(geometry.gap).toBeGreaterThanOrEqual(0);
+    expect(geometry.gap).toBeLessThanOrEqual(24);
+  });
+
   test("the generated demo has no page-level horizontal overflow at 320px", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("/", { waitUntil: "load" });
-    await expect(page.locator("#demo-state")).toContainText("Live editor ready");
+    await expect(page.locator("#demo-state")).toContainText(
+      "Live editor ready",
+    );
 
     const overflow = await page.evaluate(() => {
       const viewportWidth = globalThis.innerWidth;
@@ -93,7 +149,9 @@ test.describe("keyboard, responsive, and internationalization smoke", () => {
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/", { waitUntil: "load" });
-    await expect(page.locator("#demo-state")).toContainText("Live editor ready");
+    await expect(page.locator("#demo-state")).toContainText(
+      "Live editor ready",
+    );
 
     expect(
       await page.evaluate(() => ({

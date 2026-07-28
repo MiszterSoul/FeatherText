@@ -2110,9 +2110,16 @@ export default class FeatherText {
     tooltip.className = "feather-tooltip";
     tooltip.setAttribute("role", "tooltip");
     tooltip.hidden = true;
-    this.wrapper.appendChild(tooltip);
+    (this.document.body || this.wrapper).appendChild(tooltip);
     this.tooltipEl = tooltip;
+    this.syncTooltipTheme();
     return tooltip;
+  }
+
+  syncTooltipTheme() {
+    if (!this.tooltipEl) return;
+    this.themeController?.copyTo(this.tooltipEl);
+    this.tooltipEl.classList.toggle("feather-fancy", !!this.config.fancy);
   }
 
   handleTooltipPointer(event, entering) {
@@ -2158,16 +2165,22 @@ export default class FeatherText {
       const tooltip = this.tooltipEl.getBoundingClientRect();
       const offset = Number(this.config.tooltipOffset) || 14;
       const width = this.window.innerWidth || 1024;
+      const height = this.window.innerHeight || 768;
       const left = Math.min(
         Math.max(8, anchor.left + anchor.width / 2 - tooltip.width / 2),
         Math.max(8, width - tooltip.width - 8),
       );
-      let top = anchor.top - tooltip.height - offset;
-      let side = "top";
-      if (top < 8) {
-        top = anchor.bottom + offset;
-        side = "bottom";
-      }
+      const fitsAbove = anchor.top >= tooltip.height + offset + 8;
+      const fitsBelow = height - anchor.bottom >= tooltip.height + offset + 8;
+      const side = fitsAbove || !fitsBelow ? "top" : "bottom";
+      let top =
+        side === "top"
+          ? anchor.top - tooltip.height - offset
+          : anchor.bottom + offset;
+      top = Math.min(
+        Math.max(8, top),
+        Math.max(8, height - tooltip.height - 8),
+      );
       this.tooltipEl.style.left = `${left}px`;
       this.tooltipEl.style.top = `${top}px`;
       this.tooltipEl.dataset.side = side;
@@ -2309,6 +2322,7 @@ export default class FeatherText {
 
   applyTheme(theme) {
     this.themeController?.set(theme);
+    this.syncTooltipTheme();
     return this;
   }
 
@@ -2339,6 +2353,7 @@ export default class FeatherText {
       "feather-theme-transitions",
       !!this.config.themeTransitions,
     );
+    this.syncTooltipTheme();
     return this;
   }
 
@@ -2406,7 +2421,7 @@ export default class FeatherText {
     this.transactionHistory.flush();
     this.config = next;
 
-    if (changed.includes("theme")) this.themeController.set(this.config.theme);
+    if (changed.includes("theme")) this.applyTheme(this.config.theme);
     if (changed.includes("fancy") || changed.includes("themeTransitions"))
       this.applyPresentationOptions();
     if (changed.some((key) => STATEFUL_TOOLBAR_KEYS.has(key)))

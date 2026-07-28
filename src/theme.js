@@ -80,6 +80,20 @@ export class ThemeController {
     }
   }
 
+  copyTo(element) {
+    if (!this.wrapper || !element) return;
+    const themeName = this.wrapper.getAttribute("data-feather-theme") || "dark";
+    element.setAttribute("data-theme", themeName);
+    element.setAttribute("data-feather-theme", themeName);
+    for (const key of THEME_KEYS) {
+      element.style.setProperty(
+        `--feather-${key}`,
+        this.wrapper.style.getPropertyValue(`--feather-${key}`) ||
+          themes.dark[key],
+      );
+    }
+  }
+
   destroyListeners() {
     for (const cleanup of this.cleanups) cleanup();
     this.cleanups = [];

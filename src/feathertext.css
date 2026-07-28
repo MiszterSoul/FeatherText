@@ -127,6 +127,61 @@
   --feather-shadow: 0 14px 36px rgba(20, 9, 5, 0.42);
 }
 
+.feather[data-theme="midnight"] {
+  --feather-bg: #0b1020;
+  --feather-panel: #131a2e;
+  --feather-border: #2b3760;
+  --feather-accent: #9d8cff;
+  --feather-text: #f1efff;
+  --feather-muted: #a9b1cf;
+  --feather-hover: #1c2642;
+  --feather-shadow: 0 14px 38px rgba(4, 7, 18, 0.46);
+}
+
+.feather[data-theme="solarized"] {
+  --feather-bg: #002b36;
+  --feather-panel: #073642;
+  --feather-border: #586e75;
+  --feather-accent: #d6a900;
+  --feather-text: #eee8d5;
+  --feather-muted: #a7b7b7;
+  --feather-hover: #0d4653;
+  --feather-shadow: 0 14px 36px rgba(0, 23, 29, 0.42);
+}
+
+.feather[data-theme="lavender"] {
+  --feather-bg: #f6f2ff;
+  --feather-panel: #fff;
+  --feather-border: #d9ccef;
+  --feather-accent: #6941c6;
+  --feather-text: #2d2440;
+  --feather-muted: #6f6282;
+  --feather-hover: #eee7fb;
+  --feather-shadow: 0 12px 30px rgba(85, 61, 128, 0.16);
+}
+
+.feather[data-theme="mint"] {
+  --feather-bg: #effaf5;
+  --feather-panel: #fff;
+  --feather-border: #b8decf;
+  --feather-accent: #087a55;
+  --feather-text: #153d30;
+  --feather-muted: #56766b;
+  --feather-hover: #dcf3e9;
+  --feather-shadow: 0 12px 30px rgba(29, 103, 77, 0.16);
+}
+
+.feather[data-theme="ember"] {
+  --feather-bg: #21120e;
+  --feather-panel: #2d1812;
+  --feather-border: #5e3327;
+  --feather-accent: #ff9a62;
+  --feather-text: #fff0e8;
+  --feather-muted: #d3a18f;
+  --feather-hover: #3b2119;
+  --feather-shadow: 0 14px 38px rgba(22, 8, 4, 0.46);
+}
+
 .feather[data-theme="high-contrast"] {
   --feather-bg: #000;
   --feather-panel: #000;
@@ -653,14 +708,14 @@
 .feather-tooltip.is-visible {
   opacity: 1;
 }
-.feather-fancy .feather-tooltip {
+.feather-tooltip.feather-fancy {
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   transform: translateY(4px) scale(0.98);
   transition:
     opacity 0.14s ease,
     transform 0.14s ease;
 }
-.feather-fancy .feather-tooltip.is-visible {
+.feather-tooltip.feather-fancy.is-visible {
   transform: translateY(0) scale(1);
 }
 .feather-tooltip::after {
@@ -1059,7 +1114,10 @@
 @media (prefers-reduced-motion: reduce) {
   .feather *,
   .feather *::before,
-  .feather *::after {
+  .feather *::after,
+  .feather-tooltip,
+  .feather-tooltip::before,
+  .feather-tooltip::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;

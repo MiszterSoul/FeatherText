@@ -9,6 +9,11 @@ export type BuiltInThemeName =
   | "rose"
   | "graphite"
   | "canyon"
+  | "midnight"
+  | "solarized"
+  | "lavender"
+  | "mint"
+  | "ember"
   | "high-contrast"
   | "auto";
 

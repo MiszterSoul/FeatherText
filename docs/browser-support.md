@@ -2,16 +2,16 @@
 
 ## Current automated evidence
 
-The repository has an executed Playwright harness. Its current E2E inventory is **17 tests each on Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile (85 total), plus 12 axe checks**.
+The repository has an executed Playwright harness. Its current E2E inventory is **18 tests each on Chromium 151, Firefox 153, WebKit 26.5, Mobile Chrome profile, and Tablet WebKit profile (90 total), plus 12 axe checks**.
 
 | Playwright project | Engine/profile evidence                                   | E2E executions |
 | ------------------ | --------------------------------------------------------- | -------------: |
-| `chromium`         | Chromium 151                                              |             17 |
-| `firefox`          | Firefox 153                                               |             17 |
-| `webkit`           | WebKit 26.5                                               |             17 |
-| `mobile`           | Mobile Chrome / Pixel 5 device profile on Chromium 151    |             17 |
-| `tablet`           | Tablet WebKit / iPad Pro 11 device profile on WebKit 26.5 |             17 |
-| **Total**          | Five configured projects                                  |         **85** |
+| `chromium`         | Chromium 151                                              |             18 |
+| `firefox`          | Firefox 153                                               |             18 |
+| `webkit`           | WebKit 26.5                                               |             18 |
+| `mobile`           | Mobile Chrome / Pixel 5 device profile on Chromium 151    |             18 |
+| `tablet`           | Tablet WebKit / iPad Pro 11 device profile on WebKit 26.5 |             18 |
+| **Total**          | Five configured projects                                  |         **90** |
 
 The separate accessibility command runs six full-document axe scenarios under `chromium` and the Mobile Chrome profile, for **12 axe checks**. See [`accessibility.md`](accessibility.md) for their scope.
 
@@ -26,7 +26,7 @@ This table is exact-version automated evidence. It is **not**:
 
 ## Automated scenario scope
 
-The 17 E2E cases cover:
+The 18 E2E cases cover:
 
 - generated site and browser-global package initialization;
 - original-textarea synchronization, `FormData`, input events, and native form reset;

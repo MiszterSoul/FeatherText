@@ -4,7 +4,7 @@ FeatherText edits and returns HTML. Integrating applications remain responsible 
 
 ## Supported versions
 
-`package.json` currently declares `0.2.0`. npm publication is not verified by repository evidence, so security fixes currently target the default branch on a best-effort basis.
+`package.json` currently declares `0.3.1`. The public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28, and no GitHub tags or releases exist yet. Because no public release line is verified, security fixes currently target the default branch on a best-effort basis.
 
 | Version                          | Security support                                                  |
 | -------------------------------- | ----------------------------------------------------------------- |
