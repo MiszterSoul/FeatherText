@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">FeatherText social launch artwork</title>
-  <desc id="desc">Landscape artwork reading FeatherText, rich text with less surface area, and the project positioning sentence.</desc>
+  <title id="title">FeatherText rich-text editor artwork</title>
+  <desc id="desc">Landscape artwork describing FeatherText as a rich-text editor for HTML textareas.</desc>
   <defs>
     <linearGradient id="background" x1="80" y1="20" x2="1110" y2="650" gradientUnits="userSpaceOnUse">
       <stop stop-color="#171b22"/>
@@ -35,20 +35,20 @@
   </g>
 
   <g transform="translate(76 211)">
-    <text fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="72" font-weight="760" letter-spacing="-4">
-      <tspan x="0" y="0">Rich text.</tspan>
-      <tspan x="0" y="82" fill="#a8adb8">Less surface area.</tspan>
+    <text fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="68" font-weight="760" letter-spacing="-4">
+      <tspan x="0" y="0">Textarea in.</tspan>
+      <tspan x="0" y="82" fill="#a8adb8">Rich-text editor out.</tspan>
     </text>
     <text x="0" y="176" fill="#c6cad2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="520">
-      <tspan x="0" dy="0">A lightweight, free, framework-independent rich-text editor</tspan>
-      <tspan x="0" dy="34">focused on speed, clarity, and practical customization.</tspan>
+      <tspan x="0" dy="0">Form synchronization, source mode, themes, localization,</tspan>
+      <tspan x="0" dy="34">autosave, and a direct JavaScript API.</tspan>
     </text>
   </g>
 
   <g transform="translate(72 520)">
-    <rect width="164" height="42" rx="21" fill="#c8ff65"/>
-    <text x="82" y="27" text-anchor="middle" fill="#172007" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="800" letter-spacing="1.2">MIT · PRE-1.0</text>
-    <text x="184" y="27" fill="#727986" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="650">github.com/MiszterSoul/FeatherText</text>
+    <rect width="154" height="42" rx="21" fill="#c8ff65"/>
+    <text x="77" y="27" text-anchor="middle" fill="#172007" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="800" letter-spacing="1.2">MIT · v0.3.2</text>
+    <text x="174" y="27" fill="#727986" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="650">github.com/MiszterSoul/FeatherText</text>
   </g>
 
   <g filter="url(#shadow)">
