@@ -1,0 +1,74 @@
+name: Apply 0.3.2 release corrections
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-release-fixes-0.3.2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-release-fixes-0.3.2
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Apply corrections
+        run: |
+          set -euo pipefail
+          node scripts/apply-release-fixes-0.3.2.mjs
+          rm scripts/apply-release-fixes-0.3.2.mjs
+
+      - name: Verify project
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run lint
+          npm run test
+          npm run build
+          npm run size
+          npm run package:check
+
+      - name: Commit verified corrections
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: prepare FeatherText 0.3.2"
+          git push origin HEAD:main
+
+      - name: Remove non-main branches
+        run: |
+          set -euo pipefail
+          mapfile -t branches < <(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)
+          for branch in "${branches[@]}"; do
+            [[ "$branch" == "main" ]] && continue
+            git push origin --delete "$branch"
+          done
+          remaining="$(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)"
+          if [[ "$remaining" != "main" ]]; then
+            echo "Unexpected remaining branches:" >&2
+            printf '%s\n' "$remaining" >&2
+            exit 1
+          fi
