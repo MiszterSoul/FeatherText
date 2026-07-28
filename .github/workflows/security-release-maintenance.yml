@@ -1,0 +1,196 @@
+name: Security release maintenance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/security-release-maintenance.yml
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  security-events: read
+
+concurrency:
+  group: security-release-maintenance
+  cancel-in-progress: false
+
+env:
+  PACKAGE_NAME: '@misztersoul/feathertext'
+  RELEASE_TAG: v0.4.0
+  RELEASE_VERSION: 0.4.0
+
+jobs:
+  maintain:
+    name: Fix, verify, release, and publish
+    if: github.repository == 'MiszterSoul/FeatherText' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply security and release changes
+        env:
+          MAINTENANCE_SCRIPT_GZIP_BASE64: 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
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64
+          import gzip
+          import os
+          from pathlib import Path
+
+          payload = base64.b64decode(os.environ["MAINTENANCE_SCRIPT_GZIP_BASE64"])
+          path = Path(os.environ["RUNNER_TEMP"]) / "security-release-maintenance.py"
+          path.write_bytes(gzip.decompress(payload))
+          PY
+          python "$RUNNER_TEMP/security-release-maintenance.py"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Verify core project and package
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run lint
+          npm run test
+          npm run build
+          npm run size
+          npm run package:check
+
+      - name: Commit verified changes to main
+        id: commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "release: prepare @misztersoul/feathertext 0.4.0"
+          git push origin HEAD:main
+          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Remove every branch except main
+        env:
+          MAIN_BRANCH: main
+        run: |
+          set -euo pipefail
+          mapfile -t branches < <(
+            git ls-remote --heads origin \
+              | awk '{sub("refs/heads/", "", $2); print $2}' \
+              | sort -u
+          )
+          for branch in "${branches[@]}"; do
+            if [[ "$branch" == "$MAIN_BRANCH" ]]; then
+              continue
+            fi
+            git push origin --delete "$branch"
+          done
+          remaining="$(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)"
+          if [[ "$remaining" != "$MAIN_BRANCH" ]]; then
+            echo "Unexpected remaining branches:" >&2
+            printf '%s\n' "$remaining" >&2
+            exit 1
+          fi
+
+      - name: Dispatch and verify CI and CodeQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          before="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run ci.yml --ref main
+          gh workflow run codeql.yml --ref main
+
+          wait_for_workflow() {
+            local workflow="$1"
+            local run_id=""
+            for _ in {1..30}; do
+              run_id="$(gh run list --workflow "$workflow" --branch main --event workflow_dispatch --created ">=$before" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+              [[ -n "$run_id" ]] && break
+              sleep 2
+            done
+            if [[ -z "$run_id" ]]; then
+              echo "Unable to locate dispatched workflow: $workflow" >&2
+              exit 1
+            fi
+            gh run watch "$run_id" --exit-status
+          }
+
+          wait_for_workflow ci.yml
+          wait_for_workflow codeql.yml
+
+          for _ in {1..12}; do
+            high_count="$(gh api               -H "Accept: application/vnd.github+json"               "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100"               --jq '[.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical")] | length')"
+            if [[ "$high_count" == "0" ]]; then
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$high_count" != "0" ]]; then
+            echo "CodeQL still reports $high_count open high/critical alerts on main." >&2
+            gh api               -H "Accept: application/vnd.github+json"               "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100"               --jq '.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical") | [.number, .rule.id, .most_recent_instance.location.path, .most_recent_instance.location.start_line] | @tsv' >&2
+            exit 1
+          fi
+
+      - name: Create immutable GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1 || gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "$RELEASE_TAG already exists; refusing to overwrite a release." >&2
+            exit 1
+          fi
+          git tag -a "$RELEASE_TAG" "$RELEASE_SHA" -m "FeatherText $RELEASE_TAG"
+          git push origin "$RELEASE_TAG"
+          gh release create "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$RELEASE_TAG" \
+            --verify-tag \
+            --generate-notes
+
+      - name: Dispatch and verify npm publication
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          before="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run publish.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$RELEASE_TAG" \
+            --field "tag=$RELEASE_TAG"
+
+          run_id=""
+          for _ in {1..30}; do
+            run_id="$(gh run list --workflow publish.yml --branch "$RELEASE_TAG" --event workflow_dispatch --created ">=$before" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+            [[ -n "$run_id" ]] && break
+            sleep 2
+          done
+          if [[ -z "$run_id" ]]; then
+            echo "Unable to locate the publish workflow run." >&2
+            exit 1
+          fi
+          gh run watch "$run_id" --exit-status
+
+          for _ in {1..24}; do
+            published="$(npm view "$PACKAGE_NAME@$RELEASE_VERSION" version 2>/dev/null || true)"
+            if [[ "$published" == "$RELEASE_VERSION" ]]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "npm did not return $PACKAGE_NAME@$RELEASE_VERSION after publication." >&2
+          exit 1
