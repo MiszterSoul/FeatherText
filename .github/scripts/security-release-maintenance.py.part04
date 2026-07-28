@@ -91,4 +91,4 @@ unit = unit.replace(
     '      supportLink: false,\n'
     '      supportUrl: "https://example.com/support",\n'
     '      wordCount: false,\n'
-    '    });\n',
+    '    });\n'
