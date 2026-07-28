@@ -1,8 +1,6 @@
 name: Release Please
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions: {}
@@ -52,7 +50,6 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       RELEASE_PR_JSON: ${{ needs.release.outputs.release_pr }}
     steps:
-      # GITHUB_TOKEN-created PR changes do not emit pull_request workflow runs.
       - name: Verify release PR and dispatch CI
         shell: bash
         env:
@@ -125,7 +122,6 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       RELEASE_TAG: ${{ needs.release.outputs.tag_name }}
     steps:
-      # GITHUB_TOKEN-created releases cannot emit downstream workflow runs, so dispatch the tag explicitly.
       - name: Dispatch publish workflow
         shell: bash
         run: |
