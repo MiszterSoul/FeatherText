@@ -19,7 +19,7 @@ jobs:
       - name: Create filtered failure issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_RUN_ID: '30345002093'
+          TARGET_RUN_ID: '30345357839'
         run: |
           set -euo pipefail
           sleep 5
@@ -29,4 +29,4 @@ jobs:
             echo
             tail -n 100 "$RUNNER_TEMP/log.txt"
           } > "$RUNNER_TEMP/body.txt"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v5 traceback" --body-file "$RUNNER_TEMP/body.txt"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v6 traceback" --body-file "$RUNNER_TEMP/body.txt"
