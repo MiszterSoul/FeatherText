@@ -16,11 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Post completed failure log
+      - name: Create concise failure issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_RUN_ID: '30343484676'
-          TARGET_ISSUE: '8'
         run: |
           set -euo pipefail
           sleep 5
@@ -29,5 +28,5 @@ jobs:
             printf 'Failure tail:\n\n```text\n'
             tail -n 80 "$RUNNER_TEMP/log.txt"
             printf '\n```\n'
-          } > "$RUNNER_TEMP/comment.md"
-          gh issue comment "$TARGET_ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
+          } > "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v2 concise failure" --body-file "$RUNNER_TEMP/body.md"
