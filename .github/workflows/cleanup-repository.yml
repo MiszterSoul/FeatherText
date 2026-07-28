@@ -1,0 +1,58 @@
+name: Final repository cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cleanup-repository.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Remove stale release artifacts and branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r number; do
+            [[ -z "$number" ]] && continue
+            gh pr close "$number" --repo "$GITHUB_REPOSITORY" --delete-branch || true
+          done < <(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number --jq '.[].number')
+
+          while IFS= read -r number; do
+            [[ -z "$number" ]] && continue
+            gh issue close "$number" --repo "$GITHUB_REPOSITORY" --reason completed
+          done < <(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number --jq '.[].number')
+
+          if gh release view v0.4.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete v0.4.0 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+          elif git ls-remote --exit-code --tags origin refs/tags/v0.4.0 >/dev/null 2>&1; then
+            git push origin :refs/tags/v0.4.0
+          fi
+
+          mapfile -t branches < <(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)
+          for branch in "${branches[@]}"; do
+            [[ "$branch" == "main" ]] && continue
+            git push origin --delete "$branch"
+          done
+
+          remaining_branches="$(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)"
+          [[ "$remaining_branches" == "main" ]]
+          [[ "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 1 --json number --jq 'length')" == "0" ]]
+          [[ "$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 1 --json number --jq 'length')" == "0" ]]
