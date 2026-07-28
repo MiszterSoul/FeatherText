@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
-  <title id="title">FeatherText square launch artwork</title>
-  <desc id="desc">Square FeatherText launch artwork with a large cream and green feather, project name, and plain JavaScript positioning.</desc>
+  <title id="title">FeatherText textarea editor artwork</title>
+  <desc id="desc">Square FeatherText artwork with a large feather and textarea-backed rich-text editor message.</desc>
   <defs>
     <linearGradient id="background" x1="80" y1="40" x2="1120" y2="1180" gradientUnits="userSpaceOnUse">
       <stop stop-color="#1a1f28"/>
@@ -40,12 +40,12 @@
   </g>
 
   <g transform="translate(80 935)">
-    <text fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="58" font-weight="760" letter-spacing="-3">
-      <tspan x="0" y="0">Rich text.</tspan>
-      <tspan x="0" y="70" fill="#a8adb8">Plain JavaScript.</tspan>
+    <text fill="#f5f1e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="54" font-weight="760" letter-spacing="-3">
+      <tspan x="0" y="0">Textarea in.</tspan>
+      <tspan x="0" y="70" fill="#a8adb8">Rich-text editor out.</tspan>
     </text>
-    <rect x="0" y="112" width="184" height="46" rx="23" fill="#c8ff65"/>
-    <text x="92" y="141" text-anchor="middle" fill="#172007" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="820" letter-spacing="1.4">MIT · PRE-1.0</text>
-    <text x="207" y="141" fill="#727986" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="650">FeatherText</text>
+    <rect x="0" y="112" width="174" height="46" rx="23" fill="#c8ff65"/>
+    <text x="87" y="141" text-anchor="middle" fill="#172007" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="820" letter-spacing="1.4">MIT · v0.3.2</text>
+    <text x="197" y="141" fill="#727986" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="650">FeatherText</text>
   </g>
 </svg>
