@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="FeatherText runtime API example using generated dist assets."
+      content="FeatherText runtime API example for controlling a textarea-backed editor."
     />
     <meta name="robots" content="noindex" />
     <meta
@@ -24,7 +24,7 @@
       <a class="example-brand" href="../site/">FeatherText</a>
       <nav aria-label="Examples">
         <a href="./index.html">All examples</a>
-        <a href="./basic.html">Basic</a>
+        <a href="./basic.html">Basic form</a>
         <a href="./api.html" aria-current="page">Runtime API</a>
         <a
           href="https://buymeacoffee.com/devpeter"
@@ -38,22 +38,21 @@
 
     <main class="example-shell">
       <section class="example-intro">
-        <p class="example-kicker">Generated-dist example</p>
-        <h1>Use focused runtime methods.</h1>
+        <p class="example-kicker">Runtime API</p>
+        <h1>Control the editor from JavaScript.</h1>
         <p>
-          This example uses focused runtime methods for content, themes,
-          toolbars, disabled state, decorative effects, and lifecycle.
-          FeatherText defaults to <code>fancy: false</code>; use
-          <code>setFancy()</code> to change it without recreating the editor.
+          Change the toolbar and theme, replace HTML, insert source content,
+          disable or enable editing, and recreate the editor while preserving the
+          textarea content explicitly.
         </p>
       </section>
 
       <section class="control-card" aria-labelledby="controls-title">
         <div>
-          <h2 id="controls-title">Controls</h2>
+          <h2 id="controls-title">Editor controls</h2>
           <p>
-            Actions operate on the current instance and preserve content across
-            the explicit destroy/recreate example.
+            Every action below operates on the current textarea-backed editor
+            instance.
           </p>
         </div>
         <div class="control-grid">
@@ -76,20 +75,20 @@
           <button type="button" id="api-minimal">Minimal toolbar</button>
           <button type="button" id="api-full">Full toolbar</button>
           <button type="button" id="api-content">Replace HTML</button>
-          <button type="button" id="api-source">Insert source</button>
-          <button type="button" id="api-fancy">Enable fancy effects</button>
-          <button type="button" id="api-disable">Disable</button>
-          <button type="button" id="api-enable">Enable</button>
-          <button type="button" id="api-recreate">Destroy + recreate</button>
+          <button type="button" id="api-source">Insert source content</button>
+          <button type="button" id="api-disable">Disable editing</button>
+          <button type="button" id="api-enable">Enable editing</button>
+          <button type="button" id="api-recreate">Destroy and recreate</button>
         </div>
       </section>
 
       <section class="example-card">
         <label class="field-label" for="api-editor"
-          >Runtime-controlled content</label
+          >Runtime-controlled textarea</label
         >
         <textarea id="api-editor" name="apiEditor">
-<p>Use the controls above, then inspect the current HTML below.</p></textarea>
+<h2>Runtime-controlled editor</h2><p>Use the controls above, then inspect the synchronized HTML below.</p></textarea
+        >
         <p
           class="example-status"
           id="api-status"
@@ -99,7 +98,7 @@
           Waiting for the generated bundle…
         </p>
         <details class="output-card" open>
-          <summary>Current HTML</summary>
+          <summary>Current synchronized HTML</summary>
           <pre><code id="api-output"></code></pre>
         </details>
       </section>
