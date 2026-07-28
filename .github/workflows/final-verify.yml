@@ -1,0 +1,91 @@
+name: Final release verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/final-verify.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  actions: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update icon-only footer browser assertion
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("tests/e2e/security-dialogs-attribution.spec.mjs")
+          source = path.read_text(encoding="utf-8")
+          old = '    await expect(project).toHaveText("FeatherText");'
+          new = '    await expect(project).toHaveText("");'
+          if source.count(old) != 1:
+              raise SystemExit("Expected exactly one legacy footer-text assertion.")
+          path.write_text(source.replace(old, new), encoding="utf-8")
+          PY
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies and browsers
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run full verification
+        run: npm run check
+
+      - name: Commit verified browser coverage
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/e2e/security-dialogs-attribution.spec.mjs
+          git commit -m "test: verify icon-only footer in browsers"
+          git push origin HEAD:main
+
+  report-failure:
+    needs: verify
+    if: ${{ always() && needs.verify.result != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Create diagnostic issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          sleep 10
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
+          {
+            echo "Final FeatherText release verification failed."
+            echo
+            echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo '```text'
+            tail -n 180 "$RUNNER_TEMP/log.txt"
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Final release verification failed" --body-file "$RUNNER_TEMP/body.md"
