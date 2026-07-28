@@ -1,0 +1,35 @@
+name: Capture release v0.4.0 log
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-log-v0.4.0.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  issues: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Post completed failed-step log
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_RUN_ID: '30346573080'
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run view "$TARGET_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt"
+          {
+            echo "Completed release failure log:"
+            echo
+            tail -n 120 "$RUNNER_TEMP/log.txt"
+          } > "$RUNNER_TEMP/body.txt"
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "FeatherText 0.4.0 release traceback" \
+            --body-file "$RUNNER_TEMP/body.txt"
