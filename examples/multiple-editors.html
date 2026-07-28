@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="FeatherText multiple independent editor instances example."
+    />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>FeatherText multiple editors example</title>
+    <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../dist/feathertext.css" />
+    <link rel="stylesheet" href="./examples.css" />
+    <script defer src="../dist/feathertext.min.js"></script>
+    <script defer src="./multiple-editors.js"></script>
+  </head>
+  <body>
+    <header class="example-header">
+      <a class="example-brand" href="../site/">FeatherText</a>
+      <nav aria-label="Examples">
+        <a href="./index.html">All examples</a>
+        <a href="./multiple-editors.html" aria-current="page">Multiple editors</a>
+        <a
+          href="https://buymeacoffee.com/devpeter"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Support</a
+        >
+        <a href="https://github.com/MiszterSoul/FeatherText/issues">Issues</a>
+      </nav>
+    </header>
+
+    <main class="example-shell">
+      <section class="example-intro">
+        <p class="example-kicker">Instance isolation</p>
+        <h1>Run independent editors on one page.</h1>
+        <p>
+          Each FeatherText instance owns its theme, language, history, content,
+          and runtime configuration. Changing one editor does not modify the other.
+        </p>
+      </section>
+
+      <section class="control-card" aria-labelledby="multiple-controls-title">
+        <div>
+          <h2 id="multiple-controls-title">Independent controls</h2>
+          <p>Change themes and the second editor language separately.</p>
+        </div>
+        <div class="control-grid">
+          <label for="first-theme">
+            First theme
+            <select id="first-theme">
+              <option value="ocean" selected>Ocean</option>
+              <option value="forest">Forest</option>
+              <option value="graphite">Graphite</option>
+            </select>
+          </label>
+          <label for="second-theme">
+            Second theme
+            <select id="second-theme">
+              <option value="dawn" selected>Dawn</option>
+              <option value="lavender">Lavender</option>
+              <option value="rose">Rose</option>
+            </select>
+          </label>
+          <label for="second-language">
+            Second language
+            <select id="second-language">
+              <option value="hu" selected>Magyar</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="example-index" aria-label="Independent editors">
+        <article class="example-card">
+          <label class="field-label" for="first-editor">English article</label>
+          <p class="field-help">Ocean theme with an English interface.</p>
+          <textarea id="first-editor">
+<h2>First editor</h2><p>This instance keeps its own theme, content, and undo history.</p></textarea
+          >
+        </article>
+        <article class="example-card">
+          <label class="field-label" for="second-editor">Magyar jegyzet</label>
+          <p class="field-help">Dawn theme with a Hungarian interface.</p>
+          <textarea id="second-editor">
+<h2>Második szerkesztő</h2><p>Ez a példány külön nyelvet és témát használ.</p></textarea
+          >
+        </article>
+      </section>
+
+      <p
+        class="example-status"
+        id="multiple-status"
+        role="status"
+        aria-live="polite"
+      >
+        Waiting for the generated bundle…
+      </p>
+    </main>
+  </body>
+</html>
