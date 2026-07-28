@@ -1,0 +1,97 @@
+    '    assert.ok(editor.statusBar);\n'
+    '    assert.ok(editor.wordCountEl);\n'
+    '    assert.ok(editor.charCountEl);\n'
+    '    assert.equal(\n'
+    '      editor.statusBar.querySelector(".feather-attribution-project").href,\n'
+    '      PROJECT_URL,\n'
+    '    );\n'
+    '    assert.equal(\n'
+    '      editor.statusBar.querySelector(".feather-attribution-support").href,\n'
+    '      SUPPORT_URL,\n'
+    '    );\n',
+    1,
+)
+unit = unit.replace(
+    'test("unsafe custom attribution URLs are omitted", () => {',
+    'test("custom attribution URLs are ignored in favor of canonical links", () => {',
+    1,
+)
+unit = unit.replace(
+    '    assert.equal(editor.statusBar.querySelector("a"), null);\n',
+    '    assert.equal(\n'
+    '      editor.statusBar.querySelector(".feather-attribution-project").href,\n'
+    '      PROJECT_URL,\n'
+    '    );\n'
+    '    assert.equal(\n'
+    '      editor.statusBar.querySelector(".feather-attribution-support").href,\n'
+    '      SUPPORT_URL,\n'
+    '    );\n',
+    1,
+)
+write(unit_path, unit)
+
+# Update the browser test to prove hide/redirect attempts are ignored.
+e2e_path = "tests/e2e/security-dialogs-attribution.spec.mjs"
+e2e = read(e2e_path)
+e2e = e2e.replace(
+    '  test("attribution exposes exact external links and honors support/attribution toggles", async ({',
+    '  test("footer always exposes counters and canonical support links", async ({',
+    1,
+)
+old_e2e = '''    await page.evaluate(() => {
+      globalThis.__featherTextTest.editors[0].setConfig({ supportLink: false });
+    });
+    await expect(project).toBeVisible();
+    await expect(support).toHaveCount(0);
+
+    await page.evaluate(() => {
+      globalThis.__featherTextTest.editors[0].setAttribution(false);
+    });
+    await expect(wrapper.locator('[role="status"]')).toHaveCount(0);
+
+    await page.evaluate(() => {
+      globalThis.__featherTextTest.editors[0].setAttribution(true, false);
+    });
+    await expect(project).toBeVisible();
+    await expect(support).toHaveCount(0);
+
+    await page.evaluate(() => {
+      globalThis.__featherTextTest.editors[0].setAttribution(true, true);
+    });
+    await expectExternalLink(support, {
+      href: "https://buymeacoffee.com/devpeter",
+      label: "Support FeatherText on Buy Me a Coffee",
+    });
+'''
+new_e2e = '''    await page.evaluate(() => {
+      const editor = globalThis.__featherTextTest.editors[0];
+      editor.setConfig({
+        attribution: false,
+        charCount: false,
+        projectUrl: "https://example.com/project",
+        supportLink: false,
+        supportUrl: "https://example.com/support",
+        wordCount: false,
+      });
+      editor.setAttribution(false, false);
+    });
+    await expect(wrapper.locator(".feather-word-count")).toBeVisible();
+    await expect(wrapper.locator(".feather-char-count")).toBeVisible();
+    await expectExternalLink(project, {
+      href: "https://github.com/MiszterSoul/FeatherText",
+      label: "FeatherText on GitHub",
+    });
+    await expectExternalLink(support, {
+      href: "https://buymeacoffee.com/devpeter",
+      label: "Support FeatherText on Buy Me a Coffee",
+    });
+'''
+if old_e2e not in e2e:
+    raise RuntimeError("E2E footer block did not match")
+write(e2e_path, e2e.replace(old_e2e, new_e2e, 1))
+
+# Trusted release README: concise installation, usage, immutable footer contract, security boundary, and release process.
+readme = f'''# FeatherText
+
+A lightweight, dependency-free rich-text editor for browser applications.
+
