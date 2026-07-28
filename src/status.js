@@ -24,13 +24,8 @@ function externalLink(documentRef, className, url, label, icon, text = "") {
   return link;
 }
 
-export function shouldBuildStatus(config) {
-  return !!(
-    config.wordCount ||
-    config.charCount ||
-    config.attribution ||
-    isAutosaveEnabled(config.autosave)
-  );
+export function shouldBuildStatus() {
+  return true;
 }
 
 export function buildStatus(editor) {
@@ -88,6 +83,7 @@ export function buildStatus(editor) {
         editor.config.supportUrl,
         "Support FeatherText on Buy Me a Coffee",
         iconMarkup.coffee,
+        "Buy Me a Coffee",
       );
       if (support) attribution.appendChild(support);
     }

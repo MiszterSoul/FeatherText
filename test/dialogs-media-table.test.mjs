@@ -107,9 +107,9 @@ test("image, video, and table dialogs expose labels and insert bounded markup", 
     field(editor, "url").value = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     await submit(editor);
     assert.equal(await videoResult, true);
-    assert.match(
+    assert.equal(
       fixture.commands.at(-1).value,
-      /youtube-nocookie\.com\/embed\/dQw4w9WgXcQ/,
+      '<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" width="560" height="315" title="Embedded video" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',
     );
 
     const tableResult = editor.insertTable();

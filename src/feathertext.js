@@ -23,9 +23,11 @@ import { FindReplaceManager } from "./find-replace.js";
 import { AutosaveManager, isAutosaveEnabled } from "./autosave.js";
 import {
   escapeHTML,
+  htmlToText,
   isSafeUrl,
   normalizeSafeUrl,
   normalizeUserLink,
+  replaceElementHTML,
   sanitizeUntrustedHTML,
   toSafeVideoEmbedUrl,
 } from "./security.js";
@@ -200,12 +202,12 @@ export default class FeatherText {
 
   readOriginalValue() {
     if ("value" in this.element) return String(this.element.value ?? "");
-    return this.element.innerHTML || "";
+    return this.element.textContent || "";
   }
 
   writeOriginalValue(value) {
     if ("value" in this.element) this.element.value = value;
-    else this.element.innerHTML = value;
+    else replaceElementHTML(this.element, value, { document: this.document });
   }
 
   resolveDimension(value, fallback) {
@@ -1026,7 +1028,11 @@ export default class FeatherText {
         this.source.selectionEnd,
         "end",
       );
-      this.editor.innerHTML = this.source.value;
+      replaceElementHTML(
+        this.editor,
+        this.renderSourceToHTML(this.source.value),
+        { document: this.document },
+      );
       this.sourceMutated(label);
       return true;
     }
@@ -1410,11 +1416,16 @@ export default class FeatherText {
       this.renderGutter(true);
       this.highlightSource();
     } else {
-      this.editor.innerHTML = this.renderSourceToHTML(this.source.value);
+      const applied = replaceElementHTML(
+        this.editor,
+        this.renderSourceToHTML(this.source.value),
+        { document: this.document },
+      );
+      this.source.value = applied;
       this.sourceWrap.classList.add("feather-hidden");
       this.editor.classList.remove("feather-hidden");
       this.isSource = false;
-      this.syncOriginal(this.editor.innerHTML);
+      this.syncOriginal(applied);
       this.flushCountsUpdate();
       if (options.history !== false)
         this.transactionHistory?.commit("source:apply");
@@ -1847,9 +1858,7 @@ export default class FeatherText {
     if (!this.statusBar) return;
     let text;
     if (this.isSource) {
-      const template = this.document.createElement("template");
-      template.innerHTML = this.source.value;
-      text = template.content.textContent || "";
+      text = htmlToText(this.source.value, { document: this.document });
     } else text = this.getText();
     if (this.wordCountEl)
       this.wordCountEl.textContent = String(
@@ -2246,9 +2255,13 @@ export default class FeatherText {
 
   setContent(value, { history = true, notify = true } = {}) {
     const html = value == null ? "" : String(value);
-    this.editor.innerHTML = this.renderSourceToHTML(html);
-    this.source.value = html;
-    this.syncOriginal(html);
+    const applied = replaceElementHTML(
+      this.editor,
+      this.renderSourceToHTML(html),
+      { document: this.document },
+    );
+    this.source.value = applied;
+    this.syncOriginal(applied);
     this.flushCountsUpdate();
     this.scheduleSourceRefresh(true);
     if (history && this.transactionHistory)
@@ -2282,7 +2295,11 @@ export default class FeatherText {
         ? this.source.value.length
         : end;
     this.source.setRangeText(value, insertStart, insertEnd, "end");
-    this.editor.innerHTML = this.renderSourceToHTML(this.source.value);
+    replaceElementHTML(
+      this.editor,
+      this.renderSourceToHTML(this.source.value),
+      { document: this.document },
+    );
     this.sourceMutated("api:paste-source");
     return this;
   }
@@ -2357,11 +2374,8 @@ export default class FeatherText {
     return this;
   }
 
-  setAttribution(attribution, supportLink = this.config.supportLink) {
-    return this.setConfig({
-      attribution: !!attribution,
-      supportLink: !!supportLink,
-    });
+  setAttribution() {
+    return this.setConfig({ attribution: true, supportLink: true });
   }
 
   openFindReplace() {

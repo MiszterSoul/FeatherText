@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/MiszterSoul/FeatherText/releases/tag/v0.4.0) - 2026-07-28
+
+### Security
+
+- Removed uncontrolled `innerHTML` writes from editor content paths and replaced them with parsed DOM node updates.
+- Replaced the encoded-markup regular expressions with bounded scanners.
+- Removed the package-verification file-system race and anchored the video markup assertion.
+
+### Changed
+
+- Published as the public scoped package `@misztersoul/feathertext`.
+- Made the GitHub, Buy Me a Coffee, word-count, and character-count footer permanent.
+- Replaced the repository README with release-focused installation and usage guidance.
+
 All notable project changes should be documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and release versions should follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.1](https://github.com/MiszterSoul/FeatherText/compare/v0.3.0...v0.3.1) (2026-07-28)

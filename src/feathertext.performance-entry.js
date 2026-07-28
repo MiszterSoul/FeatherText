@@ -1,7 +1,5 @@
 import FeatherTextCore, { buttons, iconMarkup, themes, version } from "./feathertext.js";
-
-const ENCODED_TAG_START = /&(lt|#0*60|#x0*3c);/i;
-const HTML_TAG = /<\/?[a-z][^>]*>/i;
+import { containsHTMLTag, decodeHTMLEntities } from "./security.js";
 
 function normalizeConfig(config) {
   const normalized = config && typeof config === "object" ? { ...config } : {};
@@ -11,12 +9,9 @@ function normalizeConfig(config) {
 
 function decodeEncodedMarkup(sourceText) {
   const nextValue = typeof sourceText === "string" ? sourceText : "";
-  if (!nextValue || !ENCODED_TAG_START.test(nextValue) || HTML_TAG.test(nextValue)) return nextValue;
-
-  const decoder = document.createElement("textarea");
-  decoder.innerHTML = nextValue;
-  const decoded = decoder.value;
-  return HTML_TAG.test(decoded) ? decoded : nextValue;
+  if (!nextValue || containsHTMLTag(nextValue)) return nextValue;
+  const decoded = decodeHTMLEntities(nextValue);
+  return containsHTMLTag(decoded) ? decoded : nextValue;
 }
 
 export default class FeatherText extends FeatherTextCore {

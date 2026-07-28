@@ -194,7 +194,7 @@ test.describe("security, dialogs, and attribution", () => {
     expect(nativeDialogs).toEqual([]);
   });
 
-  test("attribution exposes exact external links and honors support/attribution toggles", async ({
+  test("footer always exposes counters and canonical support links", async ({
     page,
   }) => {
     await loadBuiltFixture(page, {
@@ -234,24 +234,22 @@ test.describe("security, dialogs, and attribution", () => {
     });
 
     await page.evaluate(() => {
-      globalThis.__featherTextTest.editors[0].setConfig({ supportLink: false });
+      const editor = globalThis.__featherTextTest.editors[0];
+      editor.setConfig({
+        attribution: false,
+        charCount: false,
+        projectUrl: "https://example.com/project",
+        supportLink: false,
+        supportUrl: "https://example.com/support",
+        wordCount: false,
+      });
+      editor.setAttribution(false, false);
     });
-    await expect(project).toBeVisible();
-    await expect(support).toHaveCount(0);
-
-    await page.evaluate(() => {
-      globalThis.__featherTextTest.editors[0].setAttribution(false);
-    });
-    await expect(wrapper.locator('[role="status"]')).toHaveCount(0);
-
-    await page.evaluate(() => {
-      globalThis.__featherTextTest.editors[0].setAttribution(true, false);
-    });
-    await expect(project).toBeVisible();
-    await expect(support).toHaveCount(0);
-
-    await page.evaluate(() => {
-      globalThis.__featherTextTest.editors[0].setAttribution(true, true);
+    await expect(wrapper.locator(".feather-word-count")).toBeVisible();
+    await expect(wrapper.locator(".feather-char-count")).toBeVisible();
+    await expectExternalLink(project, {
+      href: "https://github.com/MiszterSoul/FeatherText",
+      label: "FeatherText on GitHub",
     });
     await expectExternalLink(support, {
       href: "https://buymeacoffee.com/devpeter",

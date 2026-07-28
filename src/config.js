@@ -307,6 +307,12 @@ export function createConfig(overrides = {}, base = defaultConfig) {
     for (const [key, value] of Object.entries(overrides))
       result[key] = cloneConfigValue(key, value);
   }
+  result.wordCount = true;
+  result.charCount = true;
+  result.attribution = true;
+  result.supportLink = true;
+  result.projectUrl = PROJECT_URL;
+  result.supportUrl = SUPPORT_URL;
   return result;
 }
 

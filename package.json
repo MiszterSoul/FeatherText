@@ -1,6 +1,6 @@
 {
-  "name": "feathertext",
-  "version": "0.3.1",
+  "name": "@misztersoul/feathertext",
+  "version": "0.4.0",
   "description": "A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.",
   "type": "module",
   "main": "./dist/feathertext.cjs",

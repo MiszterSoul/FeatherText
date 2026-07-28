@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 import { gunzipSync } from "node:zlib";
 
 const ROOT_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const EXPECTED_NAME = "feathertext";
+const EXPECTED_NAME = "@misztersoul/feathertext";
 const EXPECTED_LICENSE = "MIT";
 const EXPECTED_REPOSITORY = Object.freeze({
   type: "git",
@@ -129,8 +129,6 @@ async function main() {
     const npm = await resolveNpmInvocation();
     const packResult = await runNpmPack(npm, packDirectory, temporaryRoot);
     const archivePath = path.join(packDirectory, packResult.filename);
-    await access(archivePath);
-
     assert.equal(
       packResult.name,
       EXPECTED_NAME,
@@ -148,7 +146,7 @@ async function main() {
     );
     assert.equal(
       packResult.filename,
-      `${EXPECTED_NAME}-${rootPackage.version}.tgz`,
+      `misztersoul-feathertext-${rootPackage.version}.tgz`,
       "npm pack produced an unexpected archive name",
     );
 
@@ -473,7 +471,7 @@ async function validatePackedContents(installedPackageDirectory) {
   );
   assert.match(
     readme,
-    /npm install feathertext/,
+    /npm install @misztersoul\/feathertext/,
     "package README is missing installation guidance",
   );
   assert.match(
@@ -584,7 +582,7 @@ async function verifyEsmConsumer(consumerDirectory, version) {
   await writeFile(
     checkPath,
     `import assert from "node:assert/strict";
-import FeatherText, { themes, version } from "feathertext";
+import FeatherText, { themes, version } from "@misztersoul/feathertext";
 assert.equal(typeof FeatherText, "function");
 assert.equal(typeof FeatherText.init, "function");
 assert.equal(typeof themes.dark, "object");
@@ -601,7 +599,7 @@ async function verifyCjsConsumer(consumerDirectory, version) {
   await writeFile(
     checkPath,
     `const assert = require("node:assert/strict");
-const loaded = require("feathertext");
+const loaded = require("@misztersoul/feathertext");
 const FeatherText = loaded.default || loaded;
 assert.equal(typeof FeatherText, "function");
 assert.equal(typeof FeatherText.init, "function");

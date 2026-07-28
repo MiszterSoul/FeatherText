@@ -3,7 +3,6 @@ const FORBIDDEN_ELEMENTS = new Set([
   "button",
   "embed",
   "form",
-  "iframe",
   "input",
   "link",
   "math",
@@ -29,6 +28,7 @@ const ALLOWED_ELEMENTS = new Set([
   "em",
   "figcaption",
   "figure",
+  "font",
   "h1",
   "h2",
   "h3",
@@ -37,6 +37,7 @@ const ALLOWED_ELEMENTS = new Set([
   "h6",
   "hr",
   "i",
+  "iframe",
   "img",
   "li",
   "ol",
@@ -62,6 +63,16 @@ const ALLOWED_ELEMENTS = new Set([
 const GLOBAL_ATTRIBUTES = new Set(["dir", "lang", "title"]);
 const ELEMENT_ATTRIBUTES = Object.freeze({
   a: new Set(["href", "rel", "target"]),
+  iframe: new Set([
+    "allow",
+    "allowfullscreen",
+    "height",
+    "loading",
+    "referrerpolicy",
+    "src",
+    "title",
+    "width",
+  ]),
   img: new Set(["alt", "height", "src", "width"]),
   ol: new Set(["reversed", "start", "type"]),
   td: new Set(["colspan", "rowspan"]),
@@ -193,7 +204,10 @@ function sanitizeAttributes(element) {
       if (safe) element.setAttribute("href", safe);
       else element.removeAttribute(attribute.name);
     } else if (name === "src") {
-      const safe = normalizeSafeUrl(attribute.value, { kind: "image" });
+      const safe =
+        tag === "iframe"
+          ? toSafeVideoEmbedUrl(attribute.value)
+          : normalizeSafeUrl(attribute.value, { kind: "image" });
       if (safe) element.setAttribute("src", safe);
       else element.removeAttribute(attribute.name);
     } else if (name === "width" || name === "height") {
@@ -218,7 +232,8 @@ function sanitizeAttributes(element) {
 
   if (tag === "a" && element.getAttribute("target") === "_blank")
     element.setAttribute("rel", "noopener noreferrer");
-  if (tag === "img" && !element.hasAttribute("src")) element.remove();
+  if ((tag === "img" || tag === "iframe") && !element.hasAttribute("src"))
+    element.remove();
 }
 
 function cleanTree(root, documentRef) {
@@ -246,6 +261,89 @@ function cleanTree(root, documentRef) {
   }
 }
 
+function createHTMLFragment(html, documentRef) {
+  const DOMParserRef = documentRef?.defaultView?.DOMParser || globalThis.DOMParser;
+  if (typeof DOMParserRef !== "function") {
+    const fragment = documentRef.createDocumentFragment();
+    fragment.appendChild(documentRef.createTextNode(String(html ?? "")));
+    return fragment;
+  }
+  const parsed = new DOMParserRef().parseFromString(String(html ?? ""), "text/html");
+  const fragment = documentRef.createDocumentFragment();
+  for (const node of [...parsed.body.childNodes]) {
+    fragment.appendChild(documentRef.importNode(node, true));
+  }
+  return fragment;
+}
+
+function serializeFragment(fragment, documentRef) {
+  const container = documentRef.createElement("div");
+  container.appendChild(fragment);
+  return container.innerHTML;
+}
+
+export function replaceElementHTML(element, html, options = {}) {
+  const documentRef = options.document || element?.ownerDocument || globalThis.document;
+  if (!element || !documentRef) return "";
+  const fragment = createHTMLFragment(html, documentRef);
+  if (options.sanitize === true) cleanTree(fragment, documentRef);
+  element.replaceChildren(fragment);
+  return element.innerHTML;
+}
+
+export function htmlToText(html, options = {}) {
+  const documentRef = options.document || globalThis.document;
+  if (!documentRef || typeof documentRef.createDocumentFragment !== "function")
+    return String(html ?? "");
+  return createHTMLFragment(html, documentRef).textContent || "";
+}
+
+export function containsHTMLTag(value) {
+  const source = String(value ?? "");
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] !== "<") continue;
+    let cursor = index + 1;
+    if (source[cursor] === "/") cursor += 1;
+    const code = source.charCodeAt(cursor);
+    const isAsciiLetter =
+      (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+    if (isAsciiLetter && source.indexOf(">", cursor + 1) !== -1) return true;
+  }
+  return false;
+}
+
+export function decodeHTMLEntities(value) {
+  const source = String(value ?? "");
+  let output = "";
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] !== "&") {
+      output += source[index];
+      continue;
+    }
+    const end = source.indexOf(";", index + 1);
+    if (end === -1 || end - index > 16) {
+      output += source[index];
+      continue;
+    }
+    const entity = source.slice(index + 1, end).toLowerCase();
+    const named = { amp: "&", apos: "'", gt: ">", lt: "<", quot: '"' };
+    let decoded = named[entity];
+    if (decoded === undefined && entity.startsWith("#x")) {
+      const point = Number.parseInt(entity.slice(2), 16);
+      if (Number.isInteger(point) && point >= 0 && point <= 0x10ffff)
+        decoded = String.fromCodePoint(point);
+    } else if (decoded === undefined && entity.startsWith("#")) {
+      const point = Number.parseInt(entity.slice(1), 10);
+      if (Number.isInteger(point) && point >= 0 && point <= 0x10ffff)
+        decoded = String.fromCodePoint(point);
+    }
+    if (decoded === undefined) output += source.slice(index, end + 1);
+    else output += decoded;
+    index = end;
+  }
+  return output;
+}
+
 /**
  * Applies a deliberately conservative built-in baseline policy for untrusted HTML.
  * This small allowlist is not a complete sanitizer or a replacement for a reviewed,
@@ -255,8 +353,7 @@ export function sanitizeUntrustedHTML(html, options = {}) {
   const documentRef = options.document || globalThis.document;
   if (!documentRef || typeof documentRef.createElement !== "function")
     return escapeHTML(html);
-  const template = documentRef.createElement("template");
-  template.innerHTML = String(html ?? "");
-  cleanTree(template.content, documentRef);
-  return template.innerHTML;
+  const fragment = createHTMLFragment(html, documentRef);
+  cleanTree(fragment, documentRef);
+  return serializeFragment(fragment, documentRef);
 }

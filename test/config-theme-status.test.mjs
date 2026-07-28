@@ -205,14 +205,18 @@ test("focused mutators are chainable", () => {
     assert.equal(editor.setAttribution(false), editor);
     assert.equal(editor.clear(), editor);
     assert.equal(editor.focus(), editor);
-    assert.equal(editor.statusBar, null);
+    assert.ok(editor.statusBar);
+    assert.equal(editor.wordCountEl.textContent, "0");
+    assert.equal(editor.charCountEl.textContent, "0");
+    assert.ok(editor.statusBar.querySelector(".feather-attribution-project"));
+    assert.ok(editor.statusBar.querySelector(".feather-attribution-support"));
     editor.destroy();
   } finally {
     fixture.cleanup();
   }
 });
 
-test("status attribution uses exact configurable links and inline currentColor icons", () => {
+test("status footer always exposes canonical counters and external links", () => {
   const fixture = installDom();
   try {
     const editor = new FeatherText("#editor", {
@@ -257,20 +261,32 @@ test("status attribution uses exact configurable links and inline currentColor i
       "attribution has no remote image assets",
     );
 
-    editor.setConfig({ supportLink: false });
+    editor.setConfig({
+      attribution: false,
+      charCount: false,
+      projectUrl: "https://example.com/project",
+      supportLink: false,
+      supportUrl: "https://example.com/support",
+      wordCount: false,
+    });
+    assert.ok(editor.statusBar);
+    assert.ok(editor.wordCountEl);
+    assert.ok(editor.charCountEl);
     assert.equal(
-      editor.statusBar.querySelector(".feather-attribution-support"),
-      null,
+      editor.statusBar.querySelector(".feather-attribution-project").href,
+      PROJECT_URL,
     );
-    editor.setConfig({ attribution: false });
-    assert.equal(editor.statusBar, null);
+    assert.equal(
+      editor.statusBar.querySelector(".feather-attribution-support").href,
+      SUPPORT_URL,
+    );
     editor.destroy();
   } finally {
     fixture.cleanup();
   }
 });
 
-test("unsafe custom attribution URLs are omitted", () => {
+test("custom attribution URLs are ignored in favor of canonical links", () => {
   const fixture = installDom();
   try {
     const editor = new FeatherText("#editor", {
@@ -281,7 +297,14 @@ test("unsafe custom attribution URLs are omitted", () => {
       supportUrl: "data:text/html,bad",
     });
     assert.ok(editor.statusBar);
-    assert.equal(editor.statusBar.querySelector("a"), null);
+    assert.equal(
+      editor.statusBar.querySelector(".feather-attribution-project").href,
+      PROJECT_URL,
+    );
+    assert.equal(
+      editor.statusBar.querySelector(".feather-attribution-support").href,
+      SUPPORT_URL,
+    );
     editor.destroy();
   } finally {
     fixture.cleanup();

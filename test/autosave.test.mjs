@@ -41,7 +41,7 @@ test("autosave is opt-in and legacy boolean/interval mode uses isolated per-inst
     });
     disabled.setHTML("not persisted");
     assert.equal(fixture.window.localStorage.length, 0);
-    assert.equal(disabled.statusBar, null);
+    assert.ok(disabled.statusBar);
 
     const first = new FeatherText("#one", {
       autosave: true,
