@@ -1,0 +1,90 @@
+lock["name"] = PACKAGE
+lock["version"] = VERSION
+lock["packages"][""]["name"] = PACKAGE
+lock["packages"][""]["version"] = VERSION
+lock_path.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8")
+
+manifest_path = ROOT / ".release-please-manifest.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+manifest["."] = VERSION
+manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+checker = read("scripts/check-package.mjs")
+checker = checker.replace('const EXPECTED_NAME = "feathertext";', f'const EXPECTED_NAME = "{PACKAGE}";', 1)
+checker = checker.replace('    await access(archivePath);\n\n', '', 1)
+checker = checker.replace(
+    '      `${EXPECTED_NAME}-${rootPackage.version}.tgz`,\n',
+    '      `misztersoul-feathertext-${rootPackage.version}.tgz`,\n',
+    1,
+)
+checker = checker.replace(
+    '/npm install feathertext/,',
+    '/npm install @misztersoul\\/feathertext/,',
+    1,
+)
+checker = checker.replace(
+    'import FeatherText, { themes, version } from "feathertext";',
+    'import FeatherText, { themes, version } from "@misztersoul/feathertext";',
+    1,
+)
+checker = checker.replace(
+    'const loaded = require("feathertext");',
+    'const loaded = require("@misztersoul/feathertext");',
+    1,
+)
+write("scripts/check-package.mjs", checker)
+
+# Anchor the test expectation exactly instead of using a partial regex.
+test_path = "test/dialogs-media-table.test.mjs"
+test_text = read(test_path)
+test_text = test_text.replace(
+    '    assert.match(\n'
+    '      fixture.commands.at(-1).value,\n'
+    '      /youtube-nocookie\\.com\\/embed\\/dQw4w9WgXcQ/,\n'
+    '    );\n',
+    '    assert.equal(\n'
+    '      fixture.commands.at(-1).value,\n'
+    '      \'<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" width="560" height="315" title="Embedded video" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>\',\n'
+    '    );\n',
+    1,
+)
+write(test_path, test_text)
+
+# Update unit tests for the permanent footer contract.
+unit_path = "test/config-theme-status.test.mjs"
+unit = read(unit_path)
+unit = unit.replace(
+    '    assert.equal(disabled.statusBar, null);\n',
+    '    assert.ok(disabled.statusBar);\n',
+    1,
+)
+unit = unit.replace(
+    '    assert.equal(editor.statusBar, null);\n',
+    '    assert.ok(editor.statusBar);\n'
+    '    assert.equal(editor.wordCountEl.textContent, "0");\n'
+    '    assert.equal(editor.charCountEl.textContent, "0");\n'
+    '    assert.ok(editor.statusBar.querySelector(".feather-attribution-project"));\n'
+    '    assert.ok(editor.statusBar.querySelector(".feather-attribution-support"));\n',
+    1,
+)
+unit = unit.replace(
+    'test("status attribution uses exact configurable links and inline currentColor icons", () => {',
+    'test("status footer always exposes canonical counters and external links", () => {',
+    1,
+)
+unit = unit.replace(
+    '    editor.setConfig({ supportLink: false });\n'
+    '    assert.equal(\n'
+    '      editor.statusBar.querySelector(".feather-attribution-support"),\n'
+    '      null,\n'
+    '    );\n'
+    '    editor.setConfig({ attribution: false });\n'
+    '    assert.equal(editor.statusBar, null);\n',
+    '    editor.setConfig({\n'
+    '      attribution: false,\n'
+    '      charCount: false,\n'
+    '      projectUrl: "https://example.com/project",\n'
+    '      supportLink: false,\n'
+    '      supportUrl: "https://example.com/support",\n'
+    '      wordCount: false,\n'
+    '    });\n'
