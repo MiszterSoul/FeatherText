@@ -18,6 +18,7 @@
     "redo",
     "source",
   ];
+
   const fullToolbar = [
     "format",
     "fontname",
@@ -71,9 +72,8 @@
 
   function createEditor(html) {
     [editor] = window.FeatherText.init("#api-editor", {
-      theme: theme ? theme.value : "dark-b",
-      fancy: false,
-      ariaLabel: "Runtime API rich text editor",
+      theme: theme?.value || "dark-b",
+      ariaLabel: "Runtime API rich-text editor",
       sourceAriaLabel: "Runtime API HTML source editor",
       sanitizePaste: true,
       toolbar: minimalToolbar,
@@ -94,7 +94,7 @@
 
   createEditor();
   show(`Editor ready · ${window.FeatherText.version || "development build"}`);
-  if (status) status.classList.add("is-ready");
+  status?.classList.add("is-ready");
 
   theme?.addEventListener("change", () => {
     editor.setTheme(theme.value);
@@ -116,7 +116,7 @@
       "<h2>Replaced through setHTML()</h2><p>The original textarea value is updated too.</p>",
     );
     updateOutput(editor.getHTML());
-    show("HTML replaced.");
+    show("HTML replaced and synchronized to the textarea.");
   });
 
   document.getElementById("api-source")?.addEventListener("click", () => {
@@ -124,34 +124,25 @@
       "<blockquote><strong>Inserted through pasteIntoSource()</strong></blockquote>",
     );
     updateOutput(editor.getHTML());
-    show("Source inserted and visual content updated.");
-  });
-
-  document.getElementById("api-fancy")?.addEventListener("click", (event) => {
-    const enabled = !editor.getConfig().fancy;
-    editor.setFancy(enabled);
-    event.currentTarget.textContent = enabled
-      ? "Disable fancy effects"
-      : "Enable fancy effects";
-    show(`Fancy effects ${enabled ? "enabled" : "disabled"}.`);
+    show("Source content inserted and synchronized.");
   });
 
   document.getElementById("api-disable")?.addEventListener("click", () => {
     editor.disable();
-    show("Visual editor disabled.");
+    show("Editor disabled.");
   });
 
   document.getElementById("api-enable")?.addEventListener("click", () => {
     editor.enable();
     editor.focus();
-    show("Visual editor enabled.");
+    show("Editor enabled and focused.");
   });
 
   document.getElementById("api-recreate")?.addEventListener("click", () => {
     const html = editor.getHTML();
     editor.destroy();
     createEditor(html);
-    show("Instance destroyed and recreated with content restored explicitly.");
+    show("Editor recreated with the textarea content preserved explicitly.");
   });
 
   window.addEventListener("pagehide", () => editor?.destroy(), { once: true });
