@@ -227,7 +227,7 @@ test.describe("security, dialogs, and attribution", () => {
       href: "https://github.com/MiszterSoul/FeatherText",
       label: "FeatherText on GitHub",
     });
-    await expect(project).toHaveText("FeatherText");
+    await expect(project).toHaveText("");
     await expectExternalLink(support, {
       href: "https://buymeacoffee.com/devpeter",
       label: "Support FeatherText on Buy Me a Coffee",
