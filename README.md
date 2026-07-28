@@ -4,7 +4,7 @@ A lightweight, dependency-free rich-text editor for browser applications.
 
 [Live demo](https://misztersoul.github.io/FeatherText/) · [Documentation](docs/index.md) · [GitHub](https://github.com/MiszterSoul/FeatherText) · [Buy Me a Coffee](https://buymeacoffee.com/devpeter) · [Security](SECURITY.md) · [MIT license](LICENSE)
 
-Current release: `0.3.2`. <!-- x-release-please-version -->
+Current release: `0.4.0`. <!-- x-release-please-version -->
 
 ## Install
 
@@ -41,8 +41,8 @@ editor.setLanguage("en");
 Browser bundle:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@misztersoul/feathertext@0.3.2/dist/feathertext.min.css"> <!-- x-release-please-version -->
-<script src="https://cdn.jsdelivr.net/npm/@misztersoul/feathertext@0.3.2/dist/feathertext.min.js"></script> <!-- x-release-please-version -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@misztersoul/feathertext@0.4.0/dist/feathertext.min.css"> <!-- x-release-please-version -->
+<script src="https://cdn.jsdelivr.net/npm/@misztersoul/feathertext@0.4.0/dist/feathertext.min.js"></script> <!-- x-release-please-version -->
 <script>
   const editor = new FeatherText("#editor", { language: "hu", theme: "auto" });
 </script>

@@ -2,6 +2,34 @@
 
 All notable changes are documented here. Versions follow Semantic Versioning.
 
+## [0.4.0](https://github.com/MiszterSoul/FeatherText/compare/v0.3.2...v0.4.0) (2026-07-28)
+
+
+### Features
+
+* expand themes and stabilize embedded tooltips ([2bcaa16](https://github.com/MiszterSoul/FeatherText/commit/2bcaa164bdc645ca093dab849d52c7da39a2d36f))
+
+
+### Bug Fixes
+
+* **ci:** advance Release Please baseline to v0.3.0 ([3cbdf68](https://github.com/MiszterSoul/FeatherText/commit/3cbdf6851132a67a7ae86da06e9964034fcc6d22))
+* **ci:** apply verified maintenance script from staged parts ([c7afb79](https://github.com/MiszterSoul/FeatherText/commit/c7afb79b565d3fa7f5ae35a161c46323e210c693))
+* **ci:** execute staged maintenance script after syntax check ([68ed36f](https://github.com/MiszterSoul/FeatherText/commit/68ed36f20a1ca68f4adc379948480c8d999e0b04))
+* **ci:** pass dependency review for release metadata PRs ([9ea30af](https://github.com/MiszterSoul/FeatherText/commit/9ea30afd0612f1b414a6ea2fffbaa66229086566))
+* **ci:** preserve split string across maintenance parts ([815c489](https://github.com/MiszterSoul/FeatherText/commit/815c4890ba0958b2acae2ccc99b3ac420e5fa66b))
+* **ci:** push verified non-workflow release changes ([bd6fb7a](https://github.com/MiszterSoul/FeatherText/commit/bd6fb7a6fb79b09556ec0c0bf315085f4c0e8285))
+* **ci:** repair staged correction script before execution ([055ddf8](https://github.com/MiszterSoul/FeatherText/commit/055ddf8241bbd1acead6a37664787f31c56cb1e9))
+* **ci:** rerun maintenance with autosave footer coverage ([fff4359](https://github.com/MiszterSoul/FeatherText/commit/fff4359b2464a805e0074619dba76fab96065fcb))
+* **ci:** retire Release Please bootstrap boundary ([06b897f](https://github.com/MiszterSoul/FeatherText/commit/06b897f147f367390e1cb3317377bff85611e329))
+* **ci:** retry verified security release maintenance ([e1dbe90](https://github.com/MiszterSoul/FeatherText/commit/e1dbe90f767193951d59da127922868b50216eac))
+* **ci:** run corrected security release maintenance ([1196673](https://github.com/MiszterSoul/FeatherText/commit/11966739d4027099bb7326e00d102a16da4e435f))
+* **ci:** run v3 failure diagnostic ([db15569](https://github.com/MiszterSoul/FeatherText/commit/db1556999c02ca70d6cadcce051e80daf83b63fb))
+* prepare FeatherText 0.3.2 ([1143186](https://github.com/MiszterSoul/FeatherText/commit/1143186ecb363d63b0acfa21078c4ab650a3e824))
+* **release:** configure annotated tag identity ([764e48c](https://github.com/MiszterSoul/FeatherText/commit/764e48c7fd2c70f369a0c23a6474c54326e0725f))
+* **release:** publish scoped package to npm ([0ee3ebd](https://github.com/MiszterSoul/FeatherText/commit/0ee3ebd4c358bf5013782a825a3ba002ce79e868))
+* **release:** tag workflow-free release target ([f6ec66e](https://github.com/MiszterSoul/FeatherText/commit/f6ec66e5a302a759a96bb539c67079309eeeabbb))
+* **test:** keep permanent footer assertion in autosave coverage ([c7c5875](https://github.com/MiszterSoul/FeatherText/commit/c7c5875824c678d4221558eb423c01f64bd302c2))
+
 ## [0.3.2](https://github.com/MiszterSoul/FeatherText/compare/v0.3.1...v0.3.2) - 2026-07-28
 
 ### Added
