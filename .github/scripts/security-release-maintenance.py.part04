@@ -51,13 +51,17 @@ test_text = test_text.replace(
 write(test_path, test_text)
 
 # Update unit tests for the permanent footer contract.
-unit_path = "test/config-theme-status.test.mjs"
-unit = read(unit_path)
-unit = unit.replace(
+autosave_path = "test/autosave.test.mjs"
+autosave = read(autosave_path)
+autosave = autosave.replace(
     '    assert.equal(disabled.statusBar, null);\n',
     '    assert.ok(disabled.statusBar);\n',
     1,
 )
+write(autosave_path, autosave)
+
+unit_path = "test/config-theme-status.test.mjs"
+unit = read(unit_path)
 unit = unit.replace(
     '    assert.equal(editor.statusBar, null);\n',
     '    assert.ok(editor.statusBar);\n'
@@ -87,4 +91,4 @@ unit = unit.replace(
     '      supportLink: false,\n'
     '      supportUrl: "https://example.com/support",\n'
     '      wordCount: false,\n'
-    '    });\n'
+    '    });\n',
