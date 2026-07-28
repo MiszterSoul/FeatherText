@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#0a0b0f" />
     <meta
       name="description"
-      content="A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization."
+      content="FeatherText turns a normal HTML textarea into a complete rich-text editor with form synchronization, themes, source mode, localization, autosave, and a direct JavaScript API."
     />
     <meta name="robots" content="index,follow" />
     <meta
@@ -15,7 +15,7 @@
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'none'; media-src https:; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'none'; form-action 'self'"
     />
 
-    <title>FeatherText — Rich text for plain JavaScript</title>
+    <title>FeatherText — Rich-text editor for HTML textareas</title>
     <link rel="canonical" href="https://misztersoul.github.io/FeatherText/" />
     <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./assets/site.css" />
@@ -24,11 +24,11 @@
     <meta property="og:site_name" content="FeatherText" />
     <meta
       property="og:title"
-      content="FeatherText — Rich text for plain JavaScript"
+      content="FeatherText — Rich-text editor for HTML textareas"
     />
     <meta
       property="og:description"
-      content="A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization."
+      content="Turn a normal textarea into a complete rich-text editor with form synchronization, source mode, themes, localization, autosave, and a direct JavaScript API."
     />
     <meta
       property="og:url"
@@ -43,16 +43,16 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="FeatherText launch artwork: rich text for plain JavaScript"
+      content="FeatherText rich-text editor for HTML textareas"
     />
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="FeatherText — Rich text for plain JavaScript"
+      content="FeatherText — Rich-text editor for HTML textareas"
     />
     <meta
       name="twitter:description"
-      content="A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization."
+      content="Turn a normal textarea into a complete rich-text editor with form synchronization, source mode, themes, localization, autosave, and a direct JavaScript API."
     />
     <meta
       name="twitter:image"
@@ -75,17 +75,16 @@
           />
         </a>
         <nav class="site-nav" aria-label="Primary navigation">
-          <a href="#demo">Demo</a>
-          <a href="#current">Current</a>
-          <a href="../examples/basic.html">Examples</a>
+          <a href="#demo">Live editor</a>
+          <a href="#features">Features</a>
+          <a href="../examples/index.html">Examples</a>
           <a href="#docs">Docs</a>
         </nav>
         <a
           class="header-link"
-          href="https://buymeacoffee.com/devpeter"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Support</a
+          href="https://www.npmjs.com/package/@misztersoul/feathertext"
+          rel="noreferrer"
+          >npm</a
         >
       </div>
     </header>
@@ -95,49 +94,43 @@
         <div class="shell hero-grid">
           <div class="hero-copy">
             <p class="eyebrow">
-              <span class="status-dot" aria-hidden="true"></span> Pre-1.0 · MIT
-              · plain JavaScript
+              <span class="status-dot" aria-hidden="true"></span> Textarea-backed
+              rich-text editor · MIT
             </p>
             <h1 id="hero-title">
-              Rich text.<br /><span>Less surface area.</span>
+              Turn a textarea into a<br /><span>complete rich-text editor.</span>
             </h1>
             <p class="hero-positioning">
-              A lightweight, free, framework-independent rich-text editor
-              focused on speed, clarity, and practical customization.
+              FeatherText enhances a normal HTML textarea with a full editing UI
+              while keeping the original field synchronized for forms and
+              application code.
             </p>
             <p class="hero-detail">
-              Enhance a textarea with a ready-made toolbar, sixteen themes,
-              HTML/source editing, and a direct runtime API. Decorative effects
-              default to <code>fancy: false</code> and can be changed live with
-              <code>setFancy()</code>.
+              Add formatting, links, media, tables, source editing, themes,
+              localization, autosave, history, find and replace, and a direct
+              JavaScript API without adding runtime dependencies.
             </p>
 
             <div class="hero-actions">
-              <a class="button button-primary" href="#demo"
-                >Try the live demo</a
-              >
+              <a class="button button-primary" href="#demo">Try the editor</a>
+              <a class="button" href="../examples/index.html">View examples</a>
               <a
-                class="button"
+                class="button button-quiet"
                 href="https://github.com/MiszterSoul/FeatherText"
                 rel="noreferrer"
                 >GitHub</a
-              >
-              <a
-                class="button button-quiet"
-                href="https://buymeacoffee.com/devpeter"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Support</a
               >
             </div>
 
             <div class="install-block" aria-labelledby="install-title">
               <div class="install-label">
-                <span id="install-title">Install command</span>
-                <span>after first verified publish</span>
+                <span id="install-title">Install</span>
+                <span>available on npm</span>
               </div>
               <div class="copy-row">
-                <code id="install-command">npm install feathertext</code>
+                <code id="install-command"
+                  >npm install @misztersoul/feathertext</code
+                >
                 <button
                   class="copy-button"
                   type="button"
@@ -148,12 +141,11 @@
                 </button>
               </div>
               <p class="microcopy">
-                The npm name is configured, but the registry page returned “not
-                found” on 2026-07-27.
+                Published as
                 <a
-                  href="https://www.npmjs.com/package/feathertext"
+                  href="https://www.npmjs.com/package/@misztersoul/feathertext"
                   rel="noreferrer"
-                  >Check npm status</a
+                  >@misztersoul/feathertext</a
                 >.
               </p>
               <p
@@ -169,8 +161,10 @@
             <div class="demo-card">
               <div class="demo-card-header">
                 <div>
-                  <p class="window-label">Live editor</p>
-                  <p class="window-subtitle">Textarea-backed · current build</p>
+                  <p class="window-label">Live textarea editor</p>
+                  <p class="window-subtitle">
+                    Form-backed · visual and HTML source modes
+                  </p>
                 </div>
                 <div class="window-dots" aria-hidden="true">
                   <span></span><span></span><span></span>
@@ -178,14 +172,13 @@
               </div>
 
               <div class="demo-controls">
-                <label for="demo-theme">Editor theme</label>
+                <label for="demo-theme">Theme</label>
                 <select id="demo-theme">
                   <option value="auto">Auto</option>
                   <option value="dark" selected>Dark</option>
                   <option value="light">Light</option>
                   <option value="ocean">Ocean</option>
                   <option value="forest">Forest</option>
-                  <option value="dark-b">Dark B</option>
                   <option value="aurora">Aurora</option>
                   <option value="dawn">Dawn</option>
                   <option value="rose">Rose</option>
@@ -198,9 +191,11 @@
                   <option value="ember">Ember</option>
                   <option value="high-contrast">High contrast</option>
                 </select>
-                <button class="text-button" type="button" id="demo-fancy">
-                  Enable fancy effects
-                </button>
+                <label for="demo-language">Language</label>
+                <select id="demo-language">
+                  <option value="en" selected>English</option>
+                  <option value="hu">Magyar</option>
+                </select>
                 <button class="text-button" type="button" id="demo-reset">
                   Reset content
                 </button>
@@ -219,14 +214,15 @@
                 name="demo-editor"
                 aria-describedby="demo-note"
               >
-<h2>A focused editing surface</h2><p>Select text, try the toolbar, or open <strong>source mode</strong>.</p><blockquote>Current capabilities are labelled separately from roadmap work.</blockquote></textarea>
+<h2>Write directly in a textarea-backed editor</h2><p>Format text, create lists and links, switch themes or languages, and open <strong>source mode</strong> to edit the HTML.</p><blockquote>The original textarea stays synchronized for normal form handling.</blockquote></textarea
+              >
               <p class="demo-note" id="demo-note">
-                Demo content remains in this page only. FeatherText does not
-                send it to a service.
+                The demo runs entirely in this page. Your content is not sent to a
+                service.
               </p>
 
               <details class="html-output">
-                <summary>Inspect current HTML</summary>
+                <summary>Inspect synchronized HTML</summary>
                 <pre><code id="demo-html-output"></code></pre>
               </details>
             </div>
@@ -236,121 +232,97 @@
 
       <section class="proof-strip" aria-label="Project facts">
         <div class="shell proof-grid">
-          <div>
-            <strong>0</strong><span>declared runtime dependencies</span>
-          </div>
-          <div><strong>70</strong><span>Node/JSDOM unit tests</span></div>
-          <div><strong>85</strong><span>automated browser runs</span></div>
-          <div><strong>12</strong><span>full-document axe checks</span></div>
+          <div><strong>0</strong><span>runtime dependencies</span></div>
+          <div><strong>74</strong><span>Node and JSDOM tests</span></div>
+          <div><strong>90</strong><span>browser test executions</span></div>
+          <div><strong>12</strong><span>axe accessibility checks</span></div>
         </div>
         <p class="proof-note shell">
-          Repository evidence at v0.2.0; browser versions and scope are
-          documented separately.
+          Automated repository evidence for the current Pages build; exact scope
+          is documented separately.
         </p>
       </section>
 
-      <section class="section" id="current" aria-labelledby="current-title">
+      <section class="section" id="features" aria-labelledby="features-title">
         <div class="shell">
           <div class="section-heading split-heading">
             <div>
-              <p class="eyebrow">Product contract</p>
-              <h2 id="current-title">Useful today. Honest about tomorrow.</h2>
+              <p class="eyebrow">Editor capabilities</p>
+              <h2 id="features-title">Everything needed around the textarea.</h2>
             </div>
             <p>
-              Current source behavior and planned work are deliberately
-              separated. A roadmap label never means “already shipped.”
+              FeatherText keeps the simplicity of a normal form field while
+              adding the controls expected from a practical browser editor.
             </p>
           </div>
 
           <div class="status-columns">
             <article class="status-panel current-panel">
               <p class="panel-kicker">
-                <span aria-hidden="true">✓</span> Current source
+                <span aria-hidden="true">✓</span> Editing
               </p>
-              <h3>Ready-made editing essentials</h3>
+              <h3>Rich content controls</h3>
               <ul class="feature-list">
                 <li>
-                  <strong>Textarea contract</strong
+                  <strong>Formatting toolbar</strong
                   ><span
-                    >Generated UI keeps the original value in sync for
-                    forms.</span
+                    >Headings, fonts, sizes, bold, italic, underline, strike,
+                    colors, alignment, lists, and indentation.</span
                   >
                 </li>
                 <li>
-                  <strong>Configurable toolbar</strong
+                  <strong>Content elements</strong
                   ><span
-                    >Formatting, links, media embeds, tables, lists, colors,
-                    history, and modes.</span
+                    >Links, images, videos, tables, blockquotes, code, and
+                    horizontal rules.</span
                   >
                 </li>
                 <li>
-                  <strong>Visual + source modes</strong
+                  <strong>Visual and source modes</strong
                   ><span
-                    >Line numbers, lightweight coloring, wrapping, indentation,
-                    and pairs.</span
+                    >Edit rendered content or work directly with synchronized HTML.</span
                   >
                 </li>
                 <li>
-                  <strong>Sixteen themes + auto</strong
-                  ><span>Named tokens and a custom theme-object path.</span>
-                </li>
-                <li>
-                  <strong>Direct HTML API</strong
-                  ><span
-                    >Get, set, clear, focus, theme, toolbar, lifecycle, and
-                    paste hooks.</span
-                  >
-                </li>
-                <li>
-                  <strong>Generated formats</strong
-                  ><span>Browser global, ESM, CJS, and CSS outputs.</span>
+                  <strong>History and search</strong
+                  ><span>Undo, redo, find, replace, and replace all.</span>
                 </li>
               </ul>
             </article>
 
             <article class="status-panel roadmap-panel">
               <p class="panel-kicker">
-                <span aria-hidden="true">→</span> Limits and evidence scope
+                <span aria-hidden="true">✓</span> Application integration
               </p>
-              <h3>Boundaries remain explicit</h3>
+              <h3>Designed for real forms and pages</h3>
               <ul class="feature-list">
                 <li>
-                  <strong>Limited sanitization</strong
+                  <strong>Textarea synchronization</strong
                   ><span
-                    >The conservative helper is not a complete sanitizer or
-                    authorization boundary.</span
+                    >The original field remains ready for standard form submission
+                    and application reads.</span
                   >
                 </li>
                 <li>
-                  <strong>Collaboration and revisions</strong
+                  <strong>Runtime configuration</strong
                   ><span
-                    >No CRDT, comments, track changes, or history service.</span
+                    >Change content, themes, toolbar, language, dimensions, and
+                    interaction state from JavaScript.</span
                   >
                 </li>
                 <li>
-                  <strong>Uploads and storage</strong
+                  <strong>Localization and themes</strong
                   ><span
-                    >Applications provide upload handling; FeatherText is not a
-                    file host or persistence service.</span
+                    >English and Hungarian interfaces, sixteen themes, automatic
+                    selection, and custom theme tokens.</span
                   >
                 </li>
                 <li>
-                  <strong>Exact browser evidence</strong
+                  <strong>Drafts and multiple instances</strong
                   ><span
-                    >Automated versioned runs are evidence, not a blanket
-                    compatibility promise.</span
+                    >Optional local autosave and independent editors on the same
+                    page.</span
                   >
-                </li>
-                <li>
-                  <strong>WCAG or screen-reader claim</strong
-                  ><span
-                    >Automated axe checks do not establish conformance or manual
-                    assistive-technology results.</span
-                  >
-                </li>
-                <li>
-                  <strong>Lighthouse score</strong
-                  ><span>No Lighthouse result is claimed.</span>
                 </li>
               </ul>
             </article>
@@ -364,19 +336,15 @@
       >
         <div class="shell workflow-grid">
           <div class="section-heading">
-            <p class="eyebrow">A narrow abstraction</p>
-            <h2 id="workflow-title">Textarea in. HTML out.</h2>
+            <p class="eyebrow">Textarea-first workflow</p>
+            <h2 id="workflow-title">Keep the HTML field your app already uses.</h2>
             <p>
-              FeatherText keeps a direct model: a host textarea, generated
-              editing UI, and HTML synchronized back to application code. That
-              is a feature when it matches the job—and a boundary when it does
-              not.
+              Start with semantic form markup, initialize FeatherText, and read or
+              submit the same textarea value. The editor UI is an enhancement—not a
+              replacement for your data flow.
             </p>
-            <a
-              class="text-link"
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/architecture.md"
-              rel="noreferrer"
-              >Read the architecture →</a
+            <a class="text-link" href="../examples/basic.html"
+              >Open the form example →</a
             >
           </div>
 
@@ -384,32 +352,29 @@
             <li>
               <span>01</span>
               <div>
-                <strong>Add a textarea</strong>
-                <p>Keep a normal `name` and label in the host form.</p>
+                <strong>Add a labelled textarea</strong>
+                <p>Keep its `id`, `name`, initial HTML, and form behavior.</p>
               </div>
             </li>
             <li>
               <span>02</span>
               <div>
                 <strong>Initialize FeatherText</strong>
-                <p>Choose a theme, toolbar, labels, and paste behavior.</p>
+                <p>Select the toolbar, theme, language, and editor dimensions.</p>
               </div>
             </li>
             <li>
               <span>03</span>
               <div>
-                <strong>Own the trust boundary</strong>
-                <p>Validate URLs and sanitize HTML in the application.</p>
+                <strong>Use the normal value</strong>
+                <p>Submit the form or call `getHTML()` when the application needs it.</p>
               </div>
             </li>
             <li>
               <span>04</span>
               <div>
-                <strong>Persist deliberately</strong>
-                <p>
-                  Use opt-in local draft autosave or callbacks; applications own
-                  durable persistence.
-                </p>
+                <strong>Control it at runtime</strong>
+                <p>Update content and configuration without replacing the field.</p>
               </div>
             </li>
           </ol>
@@ -419,14 +384,11 @@
       <section class="section" aria-labelledby="code-title">
         <div class="shell code-layout">
           <div class="section-heading">
-            <p class="eyebrow">Small integration surface</p>
-            <h2 id="code-title">Start with generated assets.</h2>
+            <p class="eyebrow">Minimal setup</p>
+            <h2 id="code-title">Install, add a textarea, initialize.</h2>
             <p>
-              Build the repository first. npm and CDN instructions should be
-              treated as post-publish until the registry package is verified.
-              See the <a href="../examples/basic.html">basic example</a> or
-              exercise live methods in the
-              <a href="../examples/api.html">runtime API example</a>.
+              Use the npm package with ESM, or load the browser bundle from a CDN.
+              The generated CSS and JavaScript are the only required assets.
             </p>
           </div>
           <div
@@ -434,83 +396,64 @@
             aria-label="FeatherText initialization example"
           >
             <div class="code-window-bar">
-              <span>index.html</span><span>current global build</span>
+              <span>app.js</span><span>npm package</span>
             </div>
             <pre
               tabindex="0"
               aria-label="Scrollable FeatherText initialization code"
-            ><code>&lt;link rel="stylesheet" href="./dist/feathertext.css"&gt;
-&lt;textarea id="editor" name="content"&gt;&lt;/textarea&gt;
-&lt;script src="./dist/feathertext.min.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const [editor] = FeatherText.init("#editor", {
-    theme: "auto",
-    fancy: false, // the default; opt in to decorative effects
-    sanitizePaste: true,
-    toolbar: ["format", "bold", "italic", "link", "|", "ul", "ol", "|", "source"]
-  });
-&lt;/script&gt;</code></pre>
+            ><code>import FeatherText from "@misztersoul/feathertext";
+import "@misztersoul/feathertext/css";
+
+const editor = new FeatherText("#article-body", {
+  theme: "auto",
+  language: "en",
+  toolbar: [
+    "format", "bold", "italic", "underline", "|",
+    "link", "blockquote", "|", "ul", "ol", "|",
+    "undo", "redo", "source"
+  ]
+});</code></pre>
           </div>
         </div>
       </section>
 
       <section
         class="section section-contrast"
-        id="baseline"
-        aria-labelledby="baseline-title"
+        id="examples"
+        aria-labelledby="examples-title"
       >
         <div class="shell">
           <div class="section-heading split-heading">
             <div>
-              <p class="eyebrow">Verified, with scope</p>
-              <h2 id="baseline-title">
-                Repository evidence—not a blanket promise.
-              </h2>
+              <p class="eyebrow">Working examples</p>
+              <h2 id="examples-title">See one integration problem at a time.</h2>
             </div>
             <p>
-              The v0.2.0 repository records exact automated checks. It does not
-              claim unrecorded manual, physical-device, or performance results.
+              Each example is a complete page using the same generated package
+              assets as the live editor.
             </p>
           </div>
 
-          <div class="metric-grid">
-            <article>
-              <span>Unit tests</span><strong>70</strong
-              ><small>Node and JSDOM</small>
-            </article>
-            <article>
-              <span>Browser runs</span><strong>85</strong
-              ><small>17 tests across five projects</small>
-            </article>
-            <article>
-              <span>Accessibility</span><strong>12</strong
-              ><small>full-document axe checks</small>
-            </article>
-            <article>
-              <span>Runtime floor</span><strong>Node 20.19+</strong
-              ><small>repository engines field</small>
-            </article>
-            <article>
-              <span>Build target</span><strong>ES2020</strong
-              ><small>generated JavaScript</small>
-            </article>
-            <article>
-              <span>Runtime dependencies</span><strong>0</strong
-              ><small>declared package dependencies</small>
-            </article>
-          </div>
-
-          <div class="baseline-callout">
-            <p>
-              <strong>Not claimed:</strong> latest-two-browser certification,
-              manual assistive-technology results, WCAG conformance, Lighthouse
-              results, or physical-device certification.
-            </p>
-            <a
-              class="button button-small"
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/browser-support.md"
-              rel="noreferrer"
-              >Read the browser evidence</a
+          <div class="docs-grid">
+            <a href="../examples/basic.html"
+              ><span>01</span><strong>Textarea and form</strong>
+              <p>Enhance a normal form field and submit synchronized HTML.</p></a
+            >
+            <a href="../examples/api.html"
+              ><span>02</span><strong>Runtime API</strong>
+              <p>Change content, toolbar, theme, source mode, and state.</p></a
+            >
+            <a href="../examples/localization.html"
+              ><span>03</span><strong>Localization</strong>
+              <p>Switch between English and Hungarian interfaces.</p></a
+            >
+            <a href="../examples/autosave.html"
+              ><span>04</span><strong>Autosave</strong>
+              <p>Store, restore, and clear a local browser draft.</p></a
+            >
+            <a href="../examples/multiple-editors.html"
+              ><span>05</span><strong>Multiple editors</strong>
+              <p>Run independent editor instances with separate configuration.</p></a
             >
           </div>
         </div>
@@ -520,12 +463,12 @@
         <div class="shell">
           <div class="section-heading split-heading">
             <div>
-              <p class="eyebrow">Production documentation</p>
-              <h2 id="docs-title">The caveats have pages, too.</h2>
+              <p class="eyebrow">Documentation</p>
+              <h2 id="docs-title">Configuration, API, and integration details.</h2>
             </div>
             <p>
-              API behavior, safety, compatibility, accessibility, measurement,
-              and release operations are documented independently.
+              Use the focused guides for JavaScript methods, localization,
+              security, browser behavior, accessibility, and project architecture.
             </p>
           </div>
 
@@ -534,53 +477,37 @@
               href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/api.md"
               rel="noreferrer"
               ><span>01</span><strong>API reference</strong>
-              <p>
-                Options, methods, callbacks, lifecycle, and current quirks.
-              </p></a
+              <p>Options, methods, events, callbacks, plugins, and lifecycle.</p></a
+            >
+            <a
+              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/localization.md"
+              rel="noreferrer"
+              ><span>02</span><strong>Localization</strong>
+              <p>English and Hungarian configuration and runtime switching.</p></a
+            >
+            <a
+              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/architecture.md"
+              rel="noreferrer"
+              ><span>03</span><strong>Architecture</strong>
+              <p>Textarea lifecycle, generated DOM, state flow, and builds.</p></a
             >
             <a
               href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/security.md"
               rel="noreferrer"
-              ><span>02</span><strong>Security boundary</strong>
-              <p>HTML, URLs, CSP, Trusted Types, and consumer controls.</p></a
-            >
-            <a
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/accessibility.md"
-              rel="noreferrer"
-              ><span>03</span><strong>Accessibility</strong>
-              <p>
-                Implemented semantics, open risks, and a real test protocol.
-              </p></a
+              ><span>04</span><strong>Security</strong>
+              <p>Trusted HTML paths, external HTML, URLs, and CSP.</p></a
             >
             <a
               href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/browser-support.md"
               rel="noreferrer"
-              ><span>04</span><strong>Browser support</strong>
-              <p>Exact automated versions, projects, and policy limits.</p></a
+              ><span>05</span><strong>Browser support</strong>
+              <p>Tested engines, responsive profiles, and compatibility notes.</p></a
             >
             <a
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/performance.md"
+              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/accessibility.md"
               rel="noreferrer"
-              ><span>05</span><strong>Performance</strong>
-              <p>
-                Baseline interpretation, budgets, and reproducible methods.
-              </p></a
-            >
-            <a
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/comparison.md"
-              rel="noreferrer"
-              ><span>06</span><strong>Factual comparison</strong>
-              <p>
-                Dated authoritative sources and unavailable measurements.
-              </p></a
-            >
-            <a
-              href="https://github.com/MiszterSoul/FeatherText/blob/main/docs/releasing.md"
-              rel="noreferrer"
-              ><span>07</span><strong>Releasing</strong>
-              <p>
-                OIDC, 2FA, channels, rollback, deprecation, and verification.
-              </p></a
+              ><span>06</span><strong>Accessibility</strong>
+              <p>Keyboard behavior, labels, dialogs, focus, and test coverage.</p></a
             >
           </div>
         </div>
@@ -589,35 +516,26 @@
       <section class="section closing" aria-labelledby="closing-title">
         <div class="shell closing-card">
           <div>
-            <p class="eyebrow">Build with the current contract</p>
-            <h2 id="closing-title">
-              Try it. Inspect it. Tell us where it bends.
-            </h2>
+            <p class="eyebrow">Start editing</p>
+            <h2 id="closing-title">Add FeatherText to an existing textarea.</h2>
             <p>
-              FeatherText is pre-1.0. Technical feedback on the API, editing
-              behavior, source mode, browser edges, and validation plan is
-              welcome.
+              Install the npm package, copy a focused example, and configure the
+              toolbar and language for your application.
             </p>
           </div>
           <div class="closing-actions">
             <a
               class="button button-primary"
-              href="https://github.com/MiszterSoul/FeatherText"
+              href="https://www.npmjs.com/package/@misztersoul/feathertext"
               rel="noreferrer"
-              >Browse GitHub</a
+              >Install from npm</a
             >
-            <a
-              class="button"
-              href="https://buymeacoffee.com/devpeter"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Support development</a
-            >
+            <a class="button" href="../examples/index.html">Browse examples</a>
             <a
               class="button button-quiet"
-              href="https://github.com/MiszterSoul/FeatherText/issues"
+              href="https://github.com/MiszterSoul/FeatherText"
               rel="noreferrer"
-              >Issue tracker</a
+              >View source</a
             >
           </div>
         </div>
@@ -634,32 +552,28 @@
             alt="FeatherText"
           />
           <p>
-            A lightweight, free, framework-independent rich-text editor focused
-            on speed, clarity, and practical customization.
+            A textarea-backed rich-text editor for browser forms and JavaScript
+            applications.
           </p>
         </div>
         <nav aria-label="Project links">
+          <a href="https://www.npmjs.com/package/@misztersoul/feathertext"
+            >npm</a
+          >
           <a href="https://github.com/MiszterSoul/FeatherText" rel="noreferrer"
             >GitHub</a
           >
-          <a href="https://www.npmjs.com/package/feathertext" rel="noreferrer"
-            >npm status</a
+          <a href="../examples/index.html">Examples</a>
+          <a
+            href="https://github.com/MiszterSoul/FeatherText/issues"
+            rel="noreferrer"
+            >Issues</a
           >
           <a
             href="https://buymeacoffee.com/devpeter"
             target="_blank"
             rel="noopener noreferrer"
             >Support</a
-          >
-          <a
-            href="https://github.com/MiszterSoul/FeatherText/issues"
-            rel="noreferrer"
-            >Issue tracker</a
-          >
-          <a
-            href="https://github.com/MiszterSoul/FeatherText/blob/main/SECURITY.md"
-            rel="noreferrer"
-            >Security</a
           >
           <a
             href="https://github.com/MiszterSoul/FeatherText/blob/main/LICENSE"
@@ -669,7 +583,7 @@
         </nav>
       </div>
       <div class="shell footer-bottom">
-        <span>FeatherText · v0.2.0</span>
+        <span>FeatherText · v0.3.2</span>
         <span>No analytics or remote fonts on this page.</span>
       </div>
     </footer>
