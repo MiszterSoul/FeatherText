@@ -132,7 +132,7 @@ jobs:
           wait_for_workflow codeql.yml
 
           for _ in {1..12}; do
-            high_count="$(gh api               -H "Accept: application/vnd.github+json"               "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100"               --jq '[.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical")] | length')"
+            high_count="$(gh api -H "Accept: application/vnd.github+json" "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" --jq '[.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical")] | length')"
             if [[ "$high_count" == "0" ]]; then
               break
             fi
@@ -140,7 +140,7 @@ jobs:
           done
           if [[ "$high_count" != "0" ]]; then
             echo "CodeQL still reports $high_count open high/critical alerts on main." >&2
-            gh api               -H "Accept: application/vnd.github+json"               "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100"               --jq '.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical") | [.number, .rule.id, .most_recent_instance.location.path, .most_recent_instance.location.start_line] | @tsv' >&2
+            gh api -H "Accept: application/vnd.github+json" "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" --jq '.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical") | [.number, .rule.id, .most_recent_instance.location.path, .most_recent_instance.location.start_line] | @tsv' >&2
             exit 1
           fi
 
@@ -194,3 +194,33 @@ jobs:
           done
           echo "npm did not return $PACKAGE_NAME@$RELEASE_VERSION after publication." >&2
           exit 1
+
+  report-failure:
+    name: Report maintenance failure
+    needs: maintain
+    if: ${{ always() && needs.maintain.result != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Create diagnostic issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESULT: ${{ needs.maintain.result }}
+        run: |
+          set -euo pipefail
+          log_file="$RUNNER_TEMP/failed.log"
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$log_file" 2>&1 || true
+          {
+            printf 'The one-shot security release maintenance run finished with `%s`.\n\n' "$RESULT"
+            printf 'Run: https://github.com/%s/actions/runs/%s\n\n' "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            printf '```text\n'
+            tail -c 50000 "$log_file"
+            printf '\n```\n'
+          } > "$RUNNER_TEMP/body.md"
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Security release maintenance failed" \
+            --body-file "$RUNNER_TEMP/body.md"
