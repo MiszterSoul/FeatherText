@@ -19,8 +19,8 @@ jobs:
       - name: Post completed failure log
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_RUN_ID: '30342757730'
-          TARGET_ISSUE: '7'
+          TARGET_RUN_ID: '30343484676'
+          TARGET_ISSUE: '8'
         run: |
           set -euo pipefail
           sleep 5
