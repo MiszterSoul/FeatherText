@@ -13,8 +13,8 @@ Use this section as the source of truth when adapting any copy below.
 | Current build size                 | 27.90 KiB JavaScript gzip and 4.57 KiB CSS gzip. State both assets and compression explicitly; do not combine them into a single package-size number.                                                                                       |
 | Current automated evidence         | 71 Node/JSDOM unit tests; 18 E2E cases in each of five Playwright projects (90 executions); 12 axe checks.                                                                                                                                  |
 | Validated package artifact         | Exact 159,373-byte npm tarball containing 11 files; this local artifact is not evidence of npm publication.                                                                                                                                 |
-| License/status                     | MIT; pre-1.0; package metadata version `0.3.1`.                                                                                                                                                                                             |
-| Release/registry status            | No GitHub tags or releases exist yet; the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. Do not claim publication.                                                                                           |
+| License/status                     | MIT; pre-1.0; package metadata version `0.3.2`.                                                                                                                                                                                             |
+| Release/registry status            | Source is configured for public `@misztersoul/feathertext` publication. Do not claim an npm version is available until the exact registry result is verified.                                                                               |
 | Live site                          | <https://misztersoul.github.io/FeatherText/>                                                                                                                                                                                                |
 | Source                             | <https://github.com/MiszterSoul/FeatherText>                                                                                                                                                                                                |
 | Bug reports                        | <https://github.com/MiszterSoul/FeatherText/issues>                                                                                                                                                                                         |
@@ -38,7 +38,7 @@ Before launch:
 - [ ] Check site canonical, Open Graph, GitHub, bug-report, and support links.
 - [ ] Verify the live textarea demo in the exact browsers actually represented in launch-day evidence.
 - [ ] Keep pre-1.0, security, privacy, and compatibility limitations visible.
-- [ ] Make no npm availability or publication claim; the latest recorded check returned `404 Not Found` for `feathertext` on 2026-07-28.
+- [ ] Verify the exact `@misztersoul/feathertext` registry version immediately before making an npm availability claim.
 - [ ] Make no Lighthouse, assistive-technology, WCAG-conformance, physical-device, or latest-two-browser claim.
 - [ ] Capture real release-artifact screenshots using the plan below; do not imply that screenshots or GIFs already exist.
 - [ ] Re-check each target community’s current rules immediately before posting.

@@ -2,9 +2,9 @@
 
 ## Status
 
-This guide describes the current `0.3` repository implementation. `package.json`, the root package metadata in `package-lock.json`, and `.release-please-manifest.json` declare `0.3.1`; the open bot-created Release Please PR #6 proposes `0.3.2`.
+This guide describes the current `0.3` repository implementation. `package.json`, the root package metadata in `package-lock.json`, and `.release-please-manifest.json` declare `0.3.2`.
 
-Repository metadata and a release PR are not publication evidence. No GitHub tags or releases exist yet, and the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. The source and tests contain behavior that older documentation described as future work; this guide records those implementation differences while an eventual tagged release and its release notes remain authoritative for consumers.
+Repository metadata is not publication evidence. The source is configured for `@misztersoul/feathertext`; verify an exact registry version and its release notes before consumer migration. This guide records implementation differences within the current 0.3 line.
 
 ## Current implementation changes to account for
 
@@ -24,10 +24,11 @@ Repository metadata and a release PR are not publication evidence. No GitHub tag
 | Plugins/events       | No extension lifecycle                                     | Named/direct plugins, cleanup, instance events, and bubbling DOM events                                                | Prefer lifecycle cleanup over unmanaged global listeners                     |
 | Image upload         | No adapter                                                 | Optional `imageUpload(file, editor)` hook with validated returned URL                                                  | Implement authorization/validation/storage outside FeatherText               |
 | Forms/state          | Basic value copying                                        | Input/change sync, `FormData`, reset/history restoration, inherited/mirrored read-only/disabled                        | Remove duplicate sync timers and test reset/state semantics                  |
-| Attribution          | Not configurable                                           | `attribution`, `supportLink`, `projectUrl`, and `supportUrl` are typed/defaulted                                       | Decide policy explicitly; update CSP/new-window expectations                 |
+| Footer identity      | Attribution could be hidden or redirected                  | Counters and canonical GitHub/Buy Me a Coffee icon links are permanent; labels appear through accessibility text and hover tooltips | Remove hide/redirect assumptions and preserve the canonical footer           |
 | Presentation         | Theme only                                                 | `fancy` and `themeTransitions` are opt-in wrapper classes                                                              | Respect reduced motion and retest custom CSS                                 |
-| Types                | Incomplete/absent                                          | `index.d.ts` declares configuration, APIs, plugins, autosave, find, security, and exports                              | Remove local ambient shims and compile against package types                 |
-| Browser/a11y harness | Absent                                                     | 70 Node/JSDOM tests, 85 Playwright E2E executions, and 12 axe checks                                                   | Cite exact evidence only; do not claim latest-two/manual AT/Lighthouse       |
+| Localization         | English-only built-in UI                                   | `language: "en" | "hu"` and `setLanguage()` localize built-in controls, dialogs, counters, and status text           | Select a language in configuration and preserve application-provided strings |
+| Types                | Incomplete/absent                                          | `index.d.ts` declares configuration, localization, APIs, plugins, autosave, find, security, and exports                | Remove local ambient shims and compile against package types                 |
+| Browser/a11y harness | Absent                                                     | 74 Node/JSDOM tests, 90 Playwright E2E executions, and 12 axe checks                                                   | Cite exact evidence only; do not claim latest-two/manual AT/Lighthouse       |
 
 ## Pre-migration inventory
 

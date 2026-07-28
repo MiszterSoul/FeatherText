@@ -1,6 +1,6 @@
 # API reference
 
-Status: current repository source and `index.d.ts`, package metadata `0.3.1`, reconciled 2026-07-28. No GitHub tags or releases exist yet, and the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28. FeatherText is pre-1.0; pin an exact commit/build and retest before production adoption.
+Status: current repository source and `index.d.ts`, package metadata `0.3.2`, reconciled 2026-07-28. The source is configured for the public package `@misztersoul/feathertext`; registry publication is a separate release operation and is not asserted by this reference. FeatherText is pre-1.0; pin an exact version and retest before production adoption.
 
 **A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.**
 
@@ -12,12 +12,12 @@ A successful build creates the package-facing outputs configured in `package.jso
 | ---------------------------------------- | -------------------------- |
 | package default import                   | `dist/feathertext.esm.js`  |
 | package `require`                        | `dist/feathertext.cjs`     |
-| `feathertext/browser` / browser metadata | `dist/feathertext.min.js`  |
-| `feathertext/feathertext.css`            | `dist/feathertext.css`     |
-| `feathertext/feathertext.min.css`        | `dist/feathertext.min.css` |
+| `@misztersoul/feathertext/browser`       | `dist/feathertext.min.js`  |
+| `@misztersoul/feathertext/css`           | `dist/feathertext.css`     |
+| `@misztersoul/feathertext/feathertext.min.css` | `dist/feathertext.min.css` |
 | package types                            | `index.d.ts`               |
 
-The browser bundle exposes `globalThis.FeatherText`. Because the public npm registry returned `404 Not Found` for `feathertext` on 2026-07-28, build locally until an exact registry release and its provenance are verified.
+The browser bundle exposes `globalThis.FeatherText`. Package metadata is configured for public scoped publication, but consumers must verify that the exact requested version exists in the npm registry before installation or CDN use.
 
 ### ESM
 
@@ -921,7 +921,7 @@ That is bounded exact-version automation, not latest-two browser certification, 
 - `maxLength` is partial client input handling, not authoritative validation.
 - Plugin and button registries are shared extension state; plugin/custom code is trusted.
 - Fullscreen is CSS class state, not the browser Fullscreen API.
-- The project is pre-1.0 and package publication is not yet verified.
+- The project is pre-1.0; verify the exact npm version and release provenance separately from this source documentation.
 
 
 ## Localization
