@@ -12,6 +12,7 @@ import {
   themes,
 } from "./config.js";
 import { iconMarkup } from "./icons.js";
+import { translate } from "./i18n.js";
 import { buttons, CommandManager } from "./commands.js";
 import { CommandCompatibilityAdapter } from "./command-adapter.js";
 import { SelectionManager } from "./selection.js";
@@ -54,6 +55,7 @@ const STATEFUL_TOOLBAR_KEYS = new Set([
   "headings",
   "fonts",
   "fontSizes",
+  "language",
 ]);
 const STATUS_KEYS = new Set([
   "wordCount",
@@ -63,6 +65,7 @@ const STATUS_KEYS = new Set([
   "projectUrl",
   "supportUrl",
   "autosave",
+  "language",
 ]);
 const pluginRegistry = new Map();
 
@@ -190,6 +193,18 @@ export default class FeatherText {
     this.emit("ready", {});
   }
 
+  t(key, params = {}, fallback = key) {
+    return translate(this.config?.language, key, params, fallback);
+  }
+
+  localizedConfigText(configKey, translationKey) {
+    const configured = this.config?.[configKey];
+    const englishDefault = defaultConfig[configKey];
+    if (configured == null || configured === englishDefault)
+      return this.t(translationKey, {}, englishDefault || "");
+    return String(configured);
+  }
+
   get history() {
     return this.transactionHistory
       ? this.transactionHistory.entries.map((entry) => entry.value)
@@ -222,6 +237,7 @@ export default class FeatherText {
     this.wrapper = this.document.createElement("div");
     this.wrapper.className = "feather";
     this.wrapper.id = this.id;
+    this.wrapper.lang = this.config.language;
     this.applyPresentationOptions();
     this.applyDimensions();
 
@@ -233,10 +249,16 @@ export default class FeatherText {
     this.editor.contentEditable = "true";
     this.editor.setAttribute("contenteditable", "true");
     this.editor.tabIndex = 0;
-    this.editor.setAttribute("placeholder", this.config.placeholder);
+    this.editor.setAttribute(
+      "placeholder",
+      this.localizedConfigText("placeholder", "editor.placeholder"),
+    );
     this.editor.setAttribute("role", "textbox");
     this.editor.setAttribute("aria-multiline", "true");
-    this.editor.setAttribute("aria-label", this.config.ariaLabel);
+    this.editor.setAttribute(
+      "aria-label",
+      this.localizedConfigText("ariaLabel", "editor.ariaLabel"),
+    );
     this.wrapper.appendChild(this.editor);
 
     this.sourceWrap = this.document.createElement("div");
@@ -255,7 +277,10 @@ export default class FeatherText {
     this.source = this.document.createElement("textarea");
     this.source.className = "feather-source";
     this.source.rows = clampInteger(this.config.sourceRows, 1, 1000, 10);
-    this.source.setAttribute("aria-label", this.config.sourceAriaLabel);
+    this.source.setAttribute(
+      "aria-label",
+      this.localizedConfigText("sourceAriaLabel", "editor.sourceAriaLabel"),
+    );
     this.sourcePane.append(this.sourceGutter, this.codeOverlay, this.source);
     this.sourceWrap.appendChild(this.sourcePane);
     this.wrapper.appendChild(this.sourceWrap);
@@ -300,7 +325,7 @@ export default class FeatherText {
     const bar = this.document.createElement("div");
     bar.className = "feather-toolbar";
     bar.setAttribute("role", "toolbar");
-    bar.setAttribute("aria-label", "Formatting options");
+    bar.setAttribute("aria-label", this.t("toolbar.label"));
 
     let group = null;
     let awaiting = { fore: false, back: false };
@@ -353,13 +378,13 @@ export default class FeatherText {
     bar.className = "feather-source-toolbar";
     bar.id = `${this.id}_srcbar`;
     bar.setAttribute("role", "toolbar");
-    bar.setAttribute("aria-label", "Source mode tools");
+    bar.setAttribute("aria-label", this.t("source.label"));
 
     const selectWrapper = this.document.createElement("div");
     selectWrapper.className = "feather-select";
     const select = this.document.createElement("select");
     select.id = `${this.id}_lang`;
-    select.setAttribute("aria-label", "Source syntax mode");
+    select.setAttribute("aria-label", this.t("source.syntaxMode"));
     for (const language of ["html", "css", "javascript", "xml", "json"]) {
       const option = this.document.createElement("option");
       option.value = language;
@@ -368,27 +393,27 @@ export default class FeatherText {
     }
     select.value = this.sourceLanguage;
     this.sourceLanguageSelect = select;
-    selectWrapper.dataset.featherTooltip = "Choose source syntax";
+    selectWrapper.dataset.featherTooltip = this.t("source.chooseSyntax");
     selectWrapper.appendChild(select);
     bar.appendChild(selectWrapper);
 
     this.sourceWrapToggle = this.createToolbarToggleButton(
       "wrap",
-      "Wrap lines",
+      this.t("source.wrapLines"),
       this.config.sourceWrapLines,
     );
     this.sourceWrapToggle.dataset.setting = "sourceWrapLines";
     bar.appendChild(this.sourceWrapToggle);
     this.sourceSmartTabsToggle = this.createToolbarToggleButton(
       "braces",
-      "Smart tabs",
+      this.t("source.smartTabs"),
       this.config.sourceSmartTabs,
     );
     this.sourceSmartTabsToggle.dataset.setting = "sourceSmartTabs";
     bar.appendChild(this.sourceSmartTabsToggle);
     this.sourceAutoCloseToggle = this.createToolbarToggleButton(
       "code",
-      "Auto close tags",
+      this.t("source.autoCloseTags"),
       this.config.sourceAutoClose,
     );
     this.sourceAutoCloseToggle.dataset.setting = "sourceAutoClose";
@@ -403,9 +428,14 @@ export default class FeatherText {
     control.className = "feather-btn";
     control.type = "button";
     control.innerHTML = definition.icon;
-    control.dataset.featherTooltip = definition.tip;
+    const tip = this.t(
+      `toolbar.${name}`,
+      {},
+      definition.tip || definition.tooltip || name,
+    );
+    control.dataset.featherTooltip = tip;
     control.dataset.command = name;
-    control.setAttribute("aria-label", definition.tip);
+    control.setAttribute("aria-label", tip);
     control.addEventListener("mousedown", (event) => {
       if (
         !this.isMutationBlocked() ||
@@ -437,14 +467,16 @@ export default class FeatherText {
   createHeadingDropdown() {
     const wrapper = this.document.createElement("div");
     wrapper.className = "feather-select";
-    wrapper.dataset.featherTooltip = "Paragraph format";
+    wrapper.dataset.featherTooltip = this.t("format.paragraphFormat");
     const select = this.document.createElement("select");
-    select.setAttribute("aria-label", "Paragraph format");
+    select.setAttribute("aria-label", this.t("format.paragraphFormat"));
     for (const heading of this.config.headings || []) {
       const option = this.document.createElement("option");
       option.value = String(heading).toLowerCase();
       option.textContent =
-        heading === "P" ? "Paragraph" : `Heading ${String(heading).slice(1)}`;
+        heading === "P"
+          ? this.t("format.paragraph")
+          : this.t("format.heading", { level: String(heading).slice(1) });
       select.appendChild(option);
     }
     select.addEventListener("mousedown", () => this.saveSelection());
@@ -464,7 +496,7 @@ export default class FeatherText {
   createFontDropdown() {
     return this.createStyleDropdown(
       "fontname",
-      "Font family",
+      this.t("format.fontFamily"),
       this.config.fonts,
       "fontFamily",
     );
@@ -473,7 +505,7 @@ export default class FeatherText {
   createFontSizeDropdown() {
     return this.createStyleDropdown(
       "fontsize",
-      "Font size",
+      this.t("format.fontSize"),
       this.config.fontSizes,
       "fontSize",
     );
@@ -507,7 +539,9 @@ export default class FeatherText {
     const wrapper = this.document.createElement("div");
     wrapper.className = "feather-color";
     wrapper.dataset.featherTooltip =
-      kind === "fore" ? "Text color" : "Background color";
+      kind === "fore"
+        ? this.t("format.textColor")
+        : this.t("format.backgroundColor");
     const input = this.document.createElement("input");
     input.type = "color";
     input.value = kind === "fore" ? "#000000" : "#ffff00";
@@ -518,7 +552,9 @@ export default class FeatherText {
     trigger.className = "feather-color-trigger";
     trigger.setAttribute(
       "aria-label",
-      kind === "fore" ? "Text color" : "Background color",
+      kind === "fore"
+        ? this.t("format.textColor")
+        : this.t("format.backgroundColor"),
     );
     trigger.setAttribute("aria-haspopup", "dialog");
     const swatch = this.document.createElement("span");
@@ -552,10 +588,12 @@ export default class FeatherText {
     const clear = this.document.createElement("button");
     clear.type = "button";
     clear.className = "feather-clear-color";
-    clear.dataset.featherTooltip = "Clear color";
+    clear.dataset.featherTooltip = this.t("format.clearColor");
     clear.setAttribute(
       "aria-label",
-      kind === "fore" ? "Clear text color" : "Clear background color",
+      kind === "fore"
+        ? this.t("format.clearTextColor")
+        : this.t("format.clearBackgroundColor"),
     );
     clear.textContent = "×";
     clear.addEventListener("mousedown", () => this.saveSelection());
@@ -979,20 +1017,20 @@ export default class FeatherText {
         ? `https://${selectedText}`
         : "https://");
     return this.dialogs.open({
-      title: anchor ? "Edit link" : "Insert link",
-      confirmLabel: anchor ? "Update" : "Insert",
+      title: anchor ? this.t("link.editTitle") : this.t("link.insertTitle"),
+      confirmLabel: anchor ? this.t("common.update") : this.t("common.insert"),
       initialField: "url",
       fields: [
         {
           name: "url",
-          label: "Link URL",
+          label: this.t("link.url"),
           type: "url",
           value: prefill,
           required: !anchor,
           autocomplete: "url",
         },
         ...(!selectedText && !anchor
-          ? [{ name: "text", label: "Link text", value: "" }]
+          ? [{ name: "text", label: this.t("link.text"), value: "" }]
           : []),
       ],
       onConfirm: ({ url: enteredUrl, text: enteredText }) => {
@@ -1003,7 +1041,7 @@ export default class FeatherText {
         }
         if (!this.applyLink(enteredUrl, enteredText, anchor))
           throw new Error(
-            "Enter a safe HTTP(S), mail, telephone, or relative URL.",
+            this.t("link.safeError"),
           );
         return true;
       },
@@ -1094,25 +1132,25 @@ export default class FeatherText {
     const fields = [
       {
         name: "url",
-        label: "Image URL",
+        label: this.t("image.url"),
         type: "url",
         value: "https://",
         required: typeof this.config.imageUpload !== "function",
         autocomplete: "url",
       },
-      { name: "alt", label: "Alternative text", value: "" },
+      { name: "alt", label: this.t("image.alt"), value: "" },
     ];
     if (typeof this.config.imageUpload === "function")
       fields.push({
         name: "file",
-        label: "Upload image",
+        label: this.t("image.upload"),
         type: "file",
         accept: "image/*",
-        description: "Choose a local image or enter a URL above.",
+        description: this.t("image.uploadDescription"),
       });
     return this.dialogs.open({
-      title: "Insert image",
-      confirmLabel: "Insert",
+      title: this.t("image.insertTitle"),
+      confirmLabel: this.t("common.insert"),
       fields,
       initialField: "url",
       onConfirm: async (values) => {
@@ -1122,7 +1160,7 @@ export default class FeatherText {
           return true;
         }
         if (!this.applyImage(values.url, values.alt))
-          throw new Error("Enter a safe HTTP(S) or relative image URL.");
+          throw new Error(this.t("image.safeError"));
         return true;
       },
     });
@@ -1139,7 +1177,7 @@ export default class FeatherText {
   async uploadImage(file, alt = "") {
     if (this.isMutationBlocked()) return false;
     if (typeof this.config.imageUpload !== "function")
-      throw new Error("No imageUpload hook is configured.");
+      throw new Error(this.t("image.uploadMissing"));
     if (!this.isSource) this.saveSelection();
     this.wrapper.classList.add("feather-loading");
     try {
@@ -1150,7 +1188,7 @@ export default class FeatherText {
       if (!this.isSource) this.restoreSelection();
       if (!this.applyImage(url, resolvedAlt))
         throw new Error(
-          "The imageUpload hook returned an unsafe or empty URL.",
+          this.t("image.uploadUnsafe"),
         );
       this.emit("imageupload", { file, url, alt: resolvedAlt });
       return this;
@@ -1167,13 +1205,13 @@ export default class FeatherText {
     if (typeof url === "string") return this.applyVideo(url);
     this.saveSelection();
     return this.dialogs.open({
-      title: "Insert video",
+      title: this.t("video.insertTitle"),
       confirmLabel: "Insert",
       initialField: "url",
       fields: [
         {
           name: "url",
-          label: "YouTube or Vimeo URL",
+          label: this.t("video.url"),
           type: "url",
           value: "",
           required: true,
@@ -1183,7 +1221,7 @@ export default class FeatherText {
       onConfirm: ({ url: enteredUrl }) => {
         this.restoreSelection();
         if (!this.applyVideo(enteredUrl))
-          throw new Error("Enter a valid YouTube or Vimeo video URL.");
+          throw new Error(this.t("video.safeError"));
         return true;
       },
     });
@@ -1202,13 +1240,13 @@ export default class FeatherText {
     if (rows != null || columns != null) return this.applyTable(rows, columns);
     this.saveSelection();
     return this.dialogs.open({
-      title: "Insert table",
+      title: this.t("table.insertTitle"),
       confirmLabel: "Insert",
       initialField: "rows",
       fields: [
         {
           name: "rows",
-          label: "Rows",
+          label: this.t("table.rows"),
           type: "number",
           value: 3,
           min: 1,
@@ -1217,7 +1255,7 @@ export default class FeatherText {
         },
         {
           name: "columns",
-          label: "Columns",
+          label: this.t("table.columns"),
           type: "number",
           value: 3,
           min: 1,
@@ -1229,7 +1267,10 @@ export default class FeatherText {
         this.restoreSelection();
         if (!this.applyTable(rowCount, columnCount))
           throw new Error(
-            `Table dimensions must be between 1×1 and ${this.config.tableMaxRows}×${this.config.tableMaxColumns}.`,
+            this.t("table.dimensionError", {
+              rows: this.config.tableMaxRows,
+              columns: this.config.tableMaxColumns,
+            }),
           );
         return true;
       },
@@ -2136,6 +2177,7 @@ export default class FeatherText {
     if (entering) {
       if (target) this.showTooltip(target);
     } else if (
+      target &&
       target === this.tooltipAnchor &&
       !(event.relatedTarget && target.contains(event.relatedTarget))
     )
@@ -2337,6 +2379,10 @@ export default class FeatherText {
     return this.setConfig({ theme });
   }
 
+  setLanguage(language) {
+    return this.setConfig({ language });
+  }
+
   applyTheme(theme) {
     this.themeController?.set(theme);
     this.syncTooltipTheme();
@@ -2371,6 +2417,46 @@ export default class FeatherText {
       !!this.config.themeTransitions,
     );
     this.syncTooltipTheme();
+    return this;
+  }
+
+  applyLanguage() {
+    if (!this.wrapper) return this;
+    this.wrapper.lang = this.config.language;
+    this.toolbar?.setAttribute("aria-label", this.t("toolbar.label"));
+    this.sourceHeader?.setAttribute("aria-label", this.t("source.label"));
+    this.sourceLanguageSelect?.setAttribute(
+      "aria-label",
+      this.t("source.syntaxMode"),
+    );
+    const syntaxWrapper = this.sourceLanguageSelect?.closest?.(".feather-select");
+    if (syntaxWrapper)
+      syntaxWrapper.dataset.featherTooltip = this.t("source.chooseSyntax");
+    const settingKeys = {
+      sourceWrapLines: "source.wrapLines",
+      sourceSmartTabs: "source.smartTabs",
+      sourceAutoClose: "source.autoCloseTags",
+    };
+    for (const [setting, key] of Object.entries(settingKeys)) {
+      const control = this.sourceHeader?.querySelector(`[data-setting="${setting}"]`);
+      if (!control) continue;
+      const label = this.t(key);
+      control.setAttribute("aria-label", label);
+      control.dataset.featherTooltip = label;
+    }
+    this.editor?.setAttribute(
+      "placeholder",
+      this.localizedConfigText("placeholder", "editor.placeholder"),
+    );
+    this.editor?.setAttribute(
+      "aria-label",
+      this.localizedConfigText("ariaLabel", "editor.ariaLabel"),
+    );
+    this.source?.setAttribute(
+      "aria-label",
+      this.localizedConfigText("sourceAriaLabel", "editor.sourceAriaLabel"),
+    );
+    this.autosaveManager?.refreshStatus();
     return this;
   }
 
@@ -2438,6 +2524,7 @@ export default class FeatherText {
     if (changed.includes("theme")) this.applyTheme(this.config.theme);
     if (changed.includes("fancy") || changed.includes("themeTransitions"))
       this.applyPresentationOptions();
+    if (changed.includes("language")) this.applyLanguage();
     if (changed.some((key) => STATEFUL_TOOLBAR_KEYS.has(key)))
       this.rebuildToolbar();
     if (changed.some((key) => STATUS_KEYS.has(key))) this.rebuildStatus();
@@ -2447,12 +2534,21 @@ export default class FeatherText {
       )
     )
       this.applyDimensions();
-    if (changed.includes("placeholder"))
-      this.editor.setAttribute("placeholder", this.config.placeholder);
-    if (changed.includes("ariaLabel"))
-      this.editor.setAttribute("aria-label", this.config.ariaLabel);
-    if (changed.includes("sourceAriaLabel"))
-      this.source.setAttribute("aria-label", this.config.sourceAriaLabel);
+    if (changed.includes("placeholder") || changed.includes("language"))
+      this.editor.setAttribute(
+        "placeholder",
+        this.localizedConfigText("placeholder", "editor.placeholder"),
+      );
+    if (changed.includes("ariaLabel") || changed.includes("language"))
+      this.editor.setAttribute(
+        "aria-label",
+        this.localizedConfigText("ariaLabel", "editor.ariaLabel"),
+      );
+    if (changed.includes("sourceAriaLabel") || changed.includes("language"))
+      this.source.setAttribute(
+        "aria-label",
+        this.localizedConfigText("sourceAriaLabel", "editor.sourceAriaLabel"),
+      );
     if (changed.includes("sourceRows"))
       this.source.rows = clampInteger(this.config.sourceRows, 1, 1000, 10);
     if (

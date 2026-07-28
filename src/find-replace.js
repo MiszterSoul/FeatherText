@@ -392,14 +392,14 @@ export class FindReplaceManager {
     dialog.setAttribute("aria-labelledby", `${id}_title`);
     const title = documentRef.createElement("h2");
     title.id = `${id}_title`;
-    title.textContent = "Find and replace";
+    title.textContent = this.editor.t("find.title");
 
     const form = documentRef.createElement("form");
     const findField = documentRef.createElement("div");
     findField.className = "feather-dialog-field";
     const findLabel = documentRef.createElement("label");
     findLabel.htmlFor = `${id}_term`;
-    findLabel.textContent = "Find";
+    findLabel.textContent = this.editor.t("find.find");
     const termInput = documentRef.createElement("input");
     termInput.id = findLabel.htmlFor;
     termInput.className = "feather-find-term";
@@ -411,7 +411,7 @@ export class FindReplaceManager {
     replaceField.className = "feather-dialog-field";
     const replaceLabel = documentRef.createElement("label");
     replaceLabel.htmlFor = `${id}_replacement`;
-    replaceLabel.textContent = "Replace with";
+    replaceLabel.textContent = this.editor.t("find.replaceWith");
     const replacementInput = documentRef.createElement("input");
     replacementInput.id = replaceLabel.htmlFor;
     replacementInput.className = "feather-replace-term";
@@ -425,14 +425,14 @@ export class FindReplaceManager {
       documentRef,
       `${id}_case`,
       "feather-find-match-case",
-      "Match case",
+      this.editor.t("find.matchCase"),
     );
     matchCase.input.checked = this.options.matchCase;
     const wholeWord = labelledCheckbox(
       documentRef,
       `${id}_word`,
       "feather-find-whole-word",
-      "Whole word",
+      this.editor.t("find.wholeWord"),
     );
     wholeWord.input.checked = this.options.wholeWord;
     options.append(matchCase.label, wholeWord.label);
@@ -447,11 +447,27 @@ export class FindReplaceManager {
 
     const actions = documentRef.createElement("div");
     actions.className = "feather-dialog-actions feather-find-actions";
-    const previous = actionButton(documentRef, "previous", "Previous");
-    const next = actionButton(documentRef, "next", "Next");
-    const replace = actionButton(documentRef, "replace", "Replace");
-    const replaceAll = actionButton(documentRef, "replace-all", "Replace all");
-    const close = actionButton(documentRef, "close", "Close");
+    const previous = actionButton(
+      documentRef,
+      "previous",
+      this.editor.t("find.previous"),
+    );
+    const next = actionButton(documentRef, "next", this.editor.t("find.next"));
+    const replace = actionButton(
+      documentRef,
+      "replace",
+      this.editor.t("find.replace"),
+    );
+    const replaceAll = actionButton(
+      documentRef,
+      "replace-all",
+      this.editor.t("find.replaceAll"),
+    );
+    const close = actionButton(
+      documentRef,
+      "close",
+      this.editor.t("common.close"),
+    );
     actions.append(previous, next, replace, replaceAll, close);
     form.append(findField, replaceField, options, summary, actions);
     dialog.append(title, form);

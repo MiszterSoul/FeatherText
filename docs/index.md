@@ -8,6 +8,7 @@ This documentation separates current source behavior, historical measurements, r
 
 - [`../README.md`](../README.md) — installation, configuration, toolbar, callbacks, and instance API
 - [`api.md`](api.md) — detailed API contract and current caveats
+- [`localization.md`](localization.md) — English and Hungarian interface configuration
 - [`browser-support.md`](browser-support.md) — provisional compatibility policy and test matrix
 - [`accessibility.md`](accessibility.md) — implemented semantics, unverified areas, and release protocol
 - [`security.md`](security.md) — HTML trust boundary, URL handling, CSP, and deployment controls

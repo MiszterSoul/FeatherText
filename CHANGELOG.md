@@ -1,20 +1,24 @@
 # Changelog
 
-## [0.4.0](https://github.com/MiszterSoul/FeatherText/releases/tag/v0.4.0) - 2026-07-28
+All notable changes are documented here. Versions follow Semantic Versioning.
+
+## [0.3.2](https://github.com/MiszterSoul/FeatherText/compare/v0.3.1...v0.3.2) - 2026-07-28
+
+### Added
+
+- Hungarian interface language selectable with `language: "hu"` and `setLanguage("hu")`.
+- English and Hungarian labels for toolbar controls, source controls, dialogs, find/replace, autosave state, counters, and footer links.
+
+### Fixed
+
+- Prevented tooltip mouseout handling from dereferencing a null target.
+- Changed footer attribution links to icon-only controls with accessible labels and hover tooltips.
+- Restored the correct patch-version sequence after `0.3.1`.
+- Kept README release references synchronized through Release Please markers.
 
 ### Security
 
-- Removed uncontrolled `innerHTML` writes from editor content paths and replaced them with parsed DOM node updates.
-- Replaced the encoded-markup regular expressions with bounded scanners.
-- Removed the package-verification file-system race and anchored the video markup assertion.
-
-### Changed
-
-- Published as the public scoped package `@misztersoul/feathertext`.
-- Made the GitHub, Buy Me a Coffee, word-count, and character-count footer permanent.
-- Replaced the repository README with release-focused installation and usage guidance.
-
-All notable project changes should be documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and release versions should follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- Retained the conservative untrusted-HTML path and the previously applied CodeQL remediations.
 
 ## [0.3.1](https://github.com/MiszterSoul/FeatherText/compare/v0.3.0...v0.3.1) (2026-07-28)
 
@@ -35,48 +39,6 @@ All notable project changes should be documented here. The format follows [Keep 
 - **ci:** Bootstrap Release Please from v0.2.0 baseline ([054e896](https://github.com/MiszterSoul/FeatherText/commit/054e896064ecdd3d4b9767c1c39556959ca53522))
 - **ci:** Skip dependency review for release metadata PRs ([e90967a](https://github.com/MiszterSoul/FeatherText/commit/e90967a04d0b454e2c1620ab400cf1731f89f6ec))
 
-## [Unreleased]
-
-### Added
-
-- Five additional built-in themes: `midnight`, `solarized`, `lavender`, `mint`, and `ember`.
-- Typed public configuration, autosave, find/replace, plugin, event, upload, theme, paste, and security utility declarations in `index.d.ts`.
-- Local labelled dialogs for links, images, videos, tables, draft restoration, and find/replace; browser `prompt()` is no longer used.
-- Visual/source find and replace with case/whole-word options, cyclic navigation, replace-current, replace-all, and undoable transactions.
-- Opt-in local draft autosave with stable custom keys, debounce, storage adapters, restore prompts, status/events, stop/start, and clear operations.
-- Minimal plugin registry/lifecycle, instance event subscriptions, and bubbling `feathertext:*` DOM events.
-- `setUntrustedHTML()`, `sanitizeUntrustedHTML()`, centralized safe-URL helpers, restricted video embed normalization, secure link attributes, and validated attribution URLs.
-- Application-provided asynchronous `imageUpload` hooks and bounded table insertion/editing operations.
-- Theme-transition, read-only, disabled, attribution, support-link, project URL, and support URL configuration, building on the performance-first `fancy: false` behavior released in 0.2.0.
-- Framework-free site and examples using local scripts, styles, SVG assets, and generated distribution files.
-- Playwright E2E projects for Chromium, Firefox, WebKit, Mobile Chrome, and Tablet WebKit, plus full-document axe checks.
-- Governance and detailed API, architecture, browser, accessibility, security, comparison, and migration documentation.
-
-### Changed
-
-- Theme attributes and `--feather-*` tokens are scoped to each editor wrapper, allowing independent simultaneous themes without mutating `document.documentElement`.
-- `theme: "auto"` responds to color scheme, forced colors, and increased-contrast media queries.
-- `setConfig()` now applies focused diffs while preserving wrapper/editor/source identity, content, source/fullscreen mode, history, and relevant focus/selection state.
-- HTML clipboard content and HTML returned by `pasteFilter` now pass through the conservative untrusted-HTML baseline.
-- `onPaste` now uses one consistent `(event, payload, editor)` callback shape.
-- `maxLength` now blocks overflowing visual `beforeinput` text insertion; applications must still enforce authoritative limits elsewhere.
-- Original form controls now remain synchronized with native input/change behavior, inherited read-only/disabled semantics, and native form reset/history restoration.
-- History uses bounded transactions shared by visual edits, source edits, API changes, media/table operations, and find/replace.
-- Public documentation and site copy now use the current implementation, exact automated evidence, and the canonical positioning: “A lightweight, free, framework-independent rich-text editor focused on speed, clarity, and practical customization.”
-- Support actions now use <https://buymeacoffee.com/devpeter>; GitHub issues remain available separately for bugs and feature proposals.
-- Release Please now owns annotated README version references and forces release-tag creation.
-
-### Fixed
-
-- Toolbar tooltips are rendered in a body-level portal and remain anchored to their controls inside transformed or overflow-clipped host layouts.
-
-### Security
-
-- Trusted `setHTML()`/source-mode paths are documented separately from the limited `setUntrustedHTML()` baseline.
-- Source mode remains an explicit trusted-author path and does not sanitize raw source when applying it to the visual editor.
-- Link, image, video, upload-result, project, and support URLs use purpose-specific validation; unsafe external attribution links are omitted.
-
-The following sections preserve verified upstream repository release history. They do not assert npm publication: current source metadata declares `0.3.1`, no GitHub release tags exist yet, and the npm registry returned `404 Not Found` for `feathertext` on 2026-07-28.
 
 ## [0.2.0] - 2026-07-23
 

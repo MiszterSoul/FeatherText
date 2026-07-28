@@ -1,3 +1,5 @@
+import { normalizeLanguage } from "./i18n.js";
+
 export const PROJECT_URL = "https://github.com/MiszterSoul/FeatherText";
 export const SUPPORT_URL = "https://buymeacoffee.com/devpeter";
 
@@ -209,6 +211,7 @@ const defaultToolbar = [
 
 export const defaultConfig = Object.freeze({
   theme: "dark",
+  language: "en",
   toolbar: Object.freeze(defaultToolbar),
   headings: Object.freeze(["P", "H1", "H2", "H3", "H4", "H5", "H6"]),
   sanitizePaste: true,
@@ -307,6 +310,7 @@ export function createConfig(overrides = {}, base = defaultConfig) {
     for (const [key, value] of Object.entries(overrides))
       result[key] = cloneConfigValue(key, value);
   }
+  result.language = normalizeLanguage(result.language);
   result.wordCount = true;
   result.charCount = true;
   result.attribution = true;

@@ -922,3 +922,10 @@ That is bounded exact-version automation, not latest-two browser certification, 
 - Plugin and button registries are shared extension state; plugin/custom code is trusted.
 - Fullscreen is CSS class state, not the browser Fullscreen API.
 - The project is pre-1.0 and package publication is not yet verified.
+
+
+## Localization
+
+Set `language: "en"` or `language: "hu"`. Hungarian locale variants such as `hu-HU` are normalized to `hu`; unsupported values fall back to English. Use `editor.setLanguage(language)` or `editor.setConfig({ language })` at runtime. Built-in toolbar labels, source controls, dialogs, find/replace, autosave states, counters, and footer tooltips are localized. Application-provided strings remain unchanged.
+
+The footer is permanent. Word and character counts are always present. GitHub and Buy Me a Coffee are icon-only links with accessible names and hover tooltips; legacy footer configuration cannot hide or redirect them.

@@ -88,11 +88,11 @@ export class DialogManager {
     const cancel = documentRef.createElement("button");
     cancel.type = "button";
     cancel.className = "feather-dialog-cancel";
-    cancel.textContent = options.cancelLabel || "Cancel";
+    cancel.textContent = options.cancelLabel || this.editor.t("common.cancel");
     const confirm = documentRef.createElement("button");
     confirm.type = "submit";
     confirm.className = "feather-dialog-confirm";
-    confirm.textContent = options.confirmLabel || "Insert";
+    confirm.textContent = options.confirmLabel || this.editor.t("common.insert");
     actions.append(cancel, confirm);
     form.appendChild(actions);
     dialog.append(title, form);
@@ -177,7 +177,7 @@ export class DialogManager {
         const result = await options.onConfirm(values, { fields, dialog });
         if (result === false)
           throw new Error(
-            options.invalidMessage || "Please check the entered values.",
+            options.invalidMessage || this.editor.t("common.invalidValues"),
           );
         finish(result ?? true);
       } catch (caught) {

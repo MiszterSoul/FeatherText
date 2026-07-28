@@ -29,6 +29,7 @@ export interface ThemeTokens {
 }
 
 export type Theme = BuiltInThemeName | ThemeTokens;
+export type FeatherTextLanguage = "en" | "hu";
 export type PasteMode = "auto" | "text" | "html";
 export type PasteContent = { type: "text" | "html"; content: string };
 
@@ -134,6 +135,7 @@ export interface PasteFilter {
 
 export interface FeatherTextConfig {
   theme?: Theme;
+  language?: FeatherTextLanguage;
   toolbar?: string[];
   headings?: string[];
   sanitizePaste?: boolean;
@@ -283,6 +285,7 @@ export default class FeatherText {
   setDisabled(disabled: boolean): this;
   setReadOnly(readOnly: boolean): this;
   setTheme(theme: Theme): this;
+  setLanguage(language: FeatherTextLanguage): this;
   setToolbar(toolbar: string[]): this;
   setPlaceholder(placeholder: string): this;
   setHeight(height: number | string): this;

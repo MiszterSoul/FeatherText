@@ -62,7 +62,8 @@ export class AutosaveManager {
     this.lastSavedValue = null;
     this.lastSavedMode = null;
     this.state = "disabled";
-    this.message = "Draft autosave off";
+    this.messageKey = "autosave.off";
+    this.message = this.editor.t(this.messageKey);
     this.promptDialog = null;
   }
 
@@ -87,7 +88,7 @@ export class AutosaveManager {
         typeof storage.setItem !== "function" ||
         typeof storage.removeItem !== "function"
       ) {
-        throw new Error("Autosave storage is unavailable.");
+        throw new Error(this.editor.t("autosave.storageUnavailable"));
       }
       this.storage = storage;
       return storage;
@@ -101,12 +102,12 @@ export class AutosaveManager {
     this.destroyed = false;
     this.running = false;
     if (!this.options.enabled) {
-      this.setState("disabled", "Draft autosave off");
+      this.setState("disabled", "autosave.off");
       return this;
     }
     if (!this.resolveStorage()) return this;
     this.running = true;
-    this.setState("idle", "Draft autosave on");
+    this.setState("idle", "autosave.on");
     if (offerRestore && this.options.restore) this.offerRestore();
     return this;
   }
@@ -120,7 +121,7 @@ export class AutosaveManager {
     )
       return false;
     this.cancelTimer();
-    this.setState("pending", "Draft not saved");
+    this.setState("pending", "autosave.pending");
     if (!this.options.debounce) return this.save();
     this.timer = setTimeout(() => {
       this.timer = null;
@@ -138,10 +139,10 @@ export class AutosaveManager {
     const html = this.editor.getHTML();
     const mode = this.editor.isSource ? "source" : "editor";
     if (html === this.lastSavedValue && mode === this.lastSavedMode) {
-      this.setState("saved", "Draft saved");
+      this.setState("saved", "autosave.saved");
       return true;
     }
-    this.setState("saving", "Saving draft…");
+    this.setState("saving", "autosave.saving");
     try {
       storage.setItem(
         this.options.key,
@@ -154,7 +155,7 @@ export class AutosaveManager {
       );
       this.lastSavedValue = html;
       this.lastSavedMode = mode;
-      this.setState("saved", "Draft saved");
+      this.setState("saved", "autosave.saved");
       this.editor.emit("autosave", { key: this.options.key, html, mode });
       return true;
     } catch (error) {
@@ -183,12 +184,12 @@ export class AutosaveManager {
       }
       return false;
     }
-    this.setState("available", "Saved draft available");
+    this.setState("available", "autosave.available");
     const promise = this.editor.dialogs.open({
-      title: "Restore saved draft",
-      description: "A saved local draft is available. Restore it?",
-      confirmLabel: "Restore",
-      cancelLabel: "Not now",
+      title: this.editor.t("autosave.restoreTitle"),
+      description: this.editor.t("autosave.restoreDescription"),
+      confirmLabel: this.editor.t("autosave.restore"),
+      cancelLabel: this.editor.t("autosave.notNow"),
       fields: [],
       onConfirm: () => {
         this.restore(draft);
@@ -200,7 +201,7 @@ export class AutosaveManager {
     void promise.then(() => {
       if (this.promptDialog === promptDialog) this.promptDialog = null;
       if (!this.destroyed && this.state === "available")
-        this.setState("available", "Saved draft available");
+        this.setState("available", "autosave.available");
     });
     return true;
   }
@@ -219,7 +220,7 @@ export class AutosaveManager {
     } finally {
       this.schedulingSuspended = false;
     }
-    this.setState("restored", "Draft restored");
+    this.setState("restored", "autosave.restored");
     this.editor.emit("autosaverestore", {
       key: this.options.key,
       html: draft.html,
@@ -236,7 +237,7 @@ export class AutosaveManager {
       storage.removeItem(this.options.key);
       this.lastSavedValue = null;
       this.lastSavedMode = null;
-      this.setState("cleared", "Saved draft cleared");
+      this.setState("cleared", "autosave.cleared");
       this.editor.emit("autosaveclear", { key: this.options.key });
       return true;
     } catch (error) {
@@ -245,22 +246,25 @@ export class AutosaveManager {
     }
   }
 
-  setState(state, message) {
+  setState(state, messageKey) {
     this.state = state;
-    this.message = message;
+    this.messageKey = messageKey;
+    this.message = this.editor.t(messageKey);
     this.editor.autosaveState = state;
     if (this.editor.saveStateEl) {
       this.editor.saveStateEl.dataset.state = state;
-      this.editor.saveStateEl.textContent = message;
+      this.editor.saveStateEl.textContent = this.message;
     }
     this.editor.emit("autosavestate", {
       state,
-      message,
+      message: this.message,
       key: this.options.key,
     });
   }
 
   refreshStatus() {
+    if (!this.editor) return;
+    this.message = this.editor.t(this.messageKey);
     if (this.editor.saveStateEl) {
       this.editor.saveStateEl.dataset.state = this.state;
       this.editor.saveStateEl.textContent = this.message;
@@ -269,7 +273,7 @@ export class AutosaveManager {
 
   fail(operation, error) {
     this.stop();
-    this.setState("error", "Draft unavailable");
+    this.setState("error", "autosave.unavailable");
     this.editor.emit("autosaveerror", {
       operation,
       error,
