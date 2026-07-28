@@ -1,0 +1,40 @@
+    "      url: https://www.npmjs.com/package/feathertext\n",
+    "      url: https://www.npmjs.com/package/@misztersoul/feathertext\n",
+    1,
+)
+publish = publish.replace(
+    '          export TGZ_NAME="$EXPECTED_PACKAGE-$VERSION.tgz"\n'
+    '          export ZIP_NAME="$EXPECTED_PACKAGE-$VERSION-dist.zip"\n',
+    '          export TGZ_NAME="$EXPECTED_TARBALL_PREFIX-$VERSION.tgz"\n'
+    '          export ZIP_NAME="$EXPECTED_TARBALL_PREFIX-$VERSION-dist.zip"\n',
+    1,
+)
+publish = publish.replace(
+    '          if [[ "$TGZ_NAME" != "$EXPECTED_PACKAGE-$VERSION.tgz"\n'
+    '                || "$ZIP_NAME" != "$EXPECTED_PACKAGE-$VERSION-dist.zip" ]]; then\n',
+    '          if [[ "$TGZ_NAME" != "$EXPECTED_TARBALL_PREFIX-$VERSION.tgz"\n'
+    '                || "$ZIP_NAME" != "$EXPECTED_TARBALL_PREFIX-$VERSION-dist.zip" ]]; then\n',
+    2,
+)
+publish = publish.replace(
+    '      - name: Publish with provenance\n'
+    '        run: npm publish "$ASSET_DIR/$TGZ_NAME" --access public --provenance\n',
+    '      - name: Publish with provenance\n'
+    '        env:\n'
+    '          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n'
+    '        run: npm publish "$ASSET_DIR/$TGZ_NAME" --access public --provenance\n',
+    1,
+)
+write(".github/workflows/publish.yml", publish)
+
+# Delete the one-shot maintenance mechanism from the commit it creates.
+for path in [
+    ROOT / ".github/scripts/security-release-maintenance.py",
+    ROOT / ".github/workflows/security-release-maintenance.yml",
+    ROOT / ".github/workflows/fetch-maintenance-log.yml",
+    ROOT / ".github/workflows/security-release-maintenance-v2.yml",
+]:
+    if path.exists():
+        path.unlink()
+
+print(f"Prepared {PACKAGE}@{VERSION} security and release changes")
