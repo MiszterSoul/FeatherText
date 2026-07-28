@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Create concise failure issue
+      - name: Create filtered failure issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_RUN_ID: '30343484676'
@@ -24,9 +24,10 @@ jobs:
           set -euo pipefail
           sleep 5
           gh run view "$TARGET_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt"
+          grep -v '  PAYLOAD:' "$RUNNER_TEMP/log.txt" > "$RUNNER_TEMP/filtered.txt" || true
           {
-            printf 'Failure tail:\n\n```text\n'
-            tail -n 80 "$RUNNER_TEMP/log.txt"
+            printf 'Filtered failure tail:\n\n```text\n'
+            tail -n 40 "$RUNNER_TEMP/filtered.txt"
             printf '\n```\n'
           } > "$RUNNER_TEMP/body.md"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v2 concise failure" --body-file "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security maintenance v2 traceback" --body-file "$RUNNER_TEMP/body.md"
