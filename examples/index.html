@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Modern FeatherText examples using generated dist assets."
+      content="Practical FeatherText examples using generated distribution assets."
     />
     <meta name="robots" content="noindex" />
     <meta
@@ -20,6 +20,7 @@
     <header class="example-header">
       <a class="example-brand" href="../site/">FeatherText</a>
       <nav aria-label="Project links">
+        <a href="https://www.npmjs.com/package/@misztersoul/feathertext">npm</a>
         <a
           href="https://buymeacoffee.com/devpeter"
           target="_blank"
@@ -32,36 +33,70 @@
 
     <main class="example-shell">
       <section class="example-intro">
-        <p class="example-kicker">Examples · v0.2.0</p>
-        <h1>Choose a focused example.</h1>
+        <p class="example-kicker">Examples · current Pages build</p>
+        <h1>Choose a focused integration example.</h1>
         <p>
-          A lightweight, free, framework-independent rich-text editor focused on
-          speed, clarity, and practical customization.
-        </p>
-        <p>
-          FeatherText defaults to <code>fancy: false</code>. The runtime API
-          example demonstrates opting in with <code>setFancy()</code>.
+          These pages use the generated browser bundle and CSS from the current
+          repository build. They demonstrate isolated tasks rather than hiding
+          several concepts in one large demo.
         </p>
       </section>
 
       <section class="example-index" aria-label="Available examples">
         <article class="example-card">
           <p class="example-kicker">Basic</p>
-          <h2>Textarea integration</h2>
+          <h2>Textarea and form integration</h2>
           <p>
             Initialize a compact toolbar, keep the original textarea synchronized,
             and submit it through a normal form.
           </p>
           <a class="example-link" href="./basic.html">Open the basic example</a>
         </article>
+
         <article class="example-card">
           <p class="example-kicker">Runtime API</p>
-          <h2>Focused live methods</h2>
+          <h2>Live methods and configuration</h2>
           <p>
-            Change themes, toolbars, content, disabled state, and fancy presentation
-            on a live editor instance.
+            Change themes, toolbars, content, disabled state, source content, and
+            presentation on a live editor instance.
           </p>
           <a class="example-link" href="./api.html">Open the API example</a>
+        </article>
+
+        <article class="example-card">
+          <p class="example-kicker">Localization</p>
+          <h2>English and Hungarian UI</h2>
+          <p>
+            Select <code>language: "en"</code> or <code>language: "hu"</code> and
+            switch the built-in interface at runtime without replacing content.
+          </p>
+          <a class="example-link" href="./localization.html"
+            >Open the localization example</a
+          >
+        </article>
+
+        <article class="example-card">
+          <p class="example-kicker">Autosave</p>
+          <h2>Local draft and restore</h2>
+          <p>
+            Save one debounced draft in browser storage, reload the page, restore
+            it through the local dialog, and clear it explicitly.
+          </p>
+          <a class="example-link" href="./autosave.html"
+            >Open the autosave example</a
+          >
+        </article>
+
+        <article class="example-card">
+          <p class="example-kicker">Multiple instances</p>
+          <h2>Independent editors</h2>
+          <p>
+            Run two editors with separate themes, languages, content, history, and
+            runtime controls on the same page.
+          </p>
+          <a class="example-link" href="./multiple-editors.html"
+            >Open the multiple-editor example</a
+          >
         </article>
       </section>
     </main>
