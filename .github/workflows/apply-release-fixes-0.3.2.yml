@@ -38,6 +38,16 @@ jobs:
       - name: Apply corrections
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/apply-release-fixes-0.3.2.mjs")
+          source = path.read_text(encoding="utf-8")
+          source = source.replace(': `{${name}}`,', ': "{" + name + "}",')
+          source = source.replace('documentRef.createTextNode(` ${editor.t("status.words")}`),', 'documentRef.createTextNode(" " + editor.t("status.words")),')
+          source = source.replace('documentRef.createTextNode(` ${editor.t("status.characters")}`),', 'documentRef.createTextNode(" " + editor.t("status.characters")),')
+          path.write_text(source, encoding="utf-8")
+          PY
+          node --check scripts/apply-release-fixes-0.3.2.mjs
           node scripts/apply-release-fixes-0.3.2.mjs
           rm scripts/apply-release-fixes-0.3.2.mjs
 
@@ -59,6 +69,17 @@ jobs:
           git add -A
           git commit -m "fix: prepare FeatherText 0.3.2"
           git push origin HEAD:main
+
+      - name: Remove erroneous 0.4.0 release and tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh release view v0.4.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete v0.4.0 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+          elif git ls-remote --exit-code --tags origin refs/tags/v0.4.0 >/dev/null 2>&1; then
+            git push origin :refs/tags/v0.4.0
+          fi
 
       - name: Remove non-main branches
         run: |
