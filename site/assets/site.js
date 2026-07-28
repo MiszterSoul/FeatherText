@@ -7,12 +7,13 @@
   const PACKAGE_NAME = "@misztersoul/feathertext";
   const PACKAGE_URL = "https://www.npmjs.com/package/@misztersoul/feathertext";
   const initialDemoHTML =
-    "<h2>A focused editing surface</h2><p>Select text, try the toolbar, or open <strong>source mode</strong>.</p><blockquote>Current capabilities are labelled separately from roadmap work.</blockquote>";
+    "<h2>Write directly in a textarea-backed editor</h2><p>Format text, create lists and links, switch themes or languages, and open <strong>source mode</strong> to edit the HTML.</p><blockquote>The original textarea stays synchronized for normal form handling.</blockquote>";
+
   const copyStatus = document.getElementById("copy-status");
   const demoState = document.getElementById("demo-state");
   const demoOutput = document.getElementById("demo-html-output");
   const themeSelect = document.getElementById("demo-theme");
-  const fancyButton = document.getElementById("demo-fancy");
+  const languageSelect = document.getElementById("demo-language");
   const resetButton = document.getElementById("demo-reset");
   const installCommand = document.getElementById("install-command");
   const installBlock = document.querySelector(".install-block");
@@ -53,7 +54,7 @@
       if (!target) return;
       const text = target.textContent || "";
       try {
-        if (!navigator.clipboard || !navigator.clipboard.writeText)
+        if (!navigator.clipboard?.writeText)
           throw new Error("Clipboard API unavailable");
         await navigator.clipboard.writeText(text);
         setCopyStatus("Install command copied.");
@@ -102,23 +103,14 @@
       installMicrocopy.replaceChildren("Published as ", npmLink, ".");
     }
 
+    const examplesHref = usesRepositorySitePath()
+      ? "../examples/index.html"
+      : "./examples/index.html";
     document
-      .querySelectorAll(
-        'a[href="https://www.npmjs.com/package/feathertext"], a[href="https://www.npmjs.com/package/@misztersoul/feathertext"]',
-      )
+      .querySelectorAll('a[href="../examples/index.html"]')
       .forEach((link) => {
-        link.href = PACKAGE_URL;
-        if (link.textContent?.trim() === "npm status") link.textContent = "npm";
+        link.href = examplesHref;
       });
-
-    const examplesLink = Array.from(
-      document.querySelectorAll(".site-nav a"),
-    ).find((link) => link.textContent?.trim() === "Examples");
-    if (examplesLink) {
-      examplesLink.href = usesRepositorySitePath()
-        ? "../examples/index.html"
-        : "./examples/index.html";
-    }
 
     if (footerVersion) {
       footerVersion.textContent = stableVersion
@@ -126,16 +118,10 @@
         : "FeatherText · current build";
     }
 
-    const proofValues = document.querySelectorAll(".proof-grid strong");
-    const currentValues = ["0", "74", "90", "12"];
-    proofValues.forEach((element, index) => {
-      if (currentValues[index]) element.textContent = currentValues[index];
-    });
-
     if (proofNote) {
       proofNote.textContent = stableVersion
-        ? `Repository and browser evidence for the v${stableVersion} Pages build; exact test scope is documented separately.`
-        : "Repository and browser evidence for the current Pages build; exact test scope is documented separately.";
+        ? `Automated repository evidence for the v${stableVersion} Pages build; exact scope is documented separately.`
+        : "Automated repository evidence for the current Pages build; exact scope is documented separately.";
     }
   }
 
@@ -183,8 +169,8 @@
       );
 
     [demoEditor] = window.FeatherText.init("#demo-editor", {
-      theme: themeSelect ? themeSelect.value : "dark",
-      fancy: false,
+      theme: themeSelect?.value || "dark",
+      language: languageSelect?.value || "en",
       ariaLabel: "FeatherText live demo editor",
       sourceAriaLabel: "FeatherText live demo source editor",
       sanitizePaste: true,
@@ -216,6 +202,7 @@
     sourcePreview(demoEditor.getHTML());
     const rawVersion = window.FeatherText.version || "";
     updateReleasePresentation(rawVersion);
+
     if (demoState) {
       const version =
         rawVersion && rawVersion !== "0.0.0-dev"
@@ -225,29 +212,19 @@
       demoState.classList.add("is-ready");
     }
 
-    if (themeSelect) {
-      themeSelect.addEventListener("change", () =>
-        demoEditor.setTheme(themeSelect.value),
-      );
-    }
+    themeSelect?.addEventListener("change", () => {
+      demoEditor.setTheme(themeSelect.value);
+    });
 
-    if (fancyButton) {
-      fancyButton.addEventListener("click", () => {
-        const enabled = !demoEditor.getConfig().fancy;
-        demoEditor.setFancy(enabled);
-        fancyButton.textContent = enabled
-          ? "Disable fancy effects"
-          : "Enable fancy effects";
-      });
-    }
+    languageSelect?.addEventListener("change", () => {
+      demoEditor.setLanguage(languageSelect.value);
+    });
 
-    if (resetButton) {
-      resetButton.addEventListener("click", () => {
-        demoEditor.setHTML(initialDemoHTML);
-        sourcePreview(demoEditor.getHTML());
-        demoEditor.focus();
-      });
-    }
+    resetButton?.addEventListener("click", () => {
+      demoEditor.setHTML(initialDemoHTML);
+      sourcePreview(demoEditor.getHTML());
+      demoEditor.focus();
+    });
   }
 
   updateReleasePresentation("");
@@ -264,7 +241,7 @@
     .catch((error) => {
       if (demoState) {
         demoState.textContent =
-          "Demo unavailable: build the generated dist assets and serve the site over HTTP.";
+          "Demo unavailable: build the generated distribution assets and serve the site over HTTP.";
         demoState.classList.add("is-error");
       }
       console.error("[FeatherText site]", error);
