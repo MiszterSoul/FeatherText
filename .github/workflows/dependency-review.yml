@@ -14,16 +14,21 @@ concurrency:
 jobs:
   dependency-review:
     name: Dependency review
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Confirm release metadata PR
+        if: ${{ startsWith(github.head_ref, 'release-please--') }}
+        run: echo "Release Please only updates version and changelog metadata; dependency review is not applicable."
+
       - name: Checkout
+        if: ${{ !startsWith(github.head_ref, 'release-please--') }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Review dependency changes
+        if: ${{ !startsWith(github.head_ref, 'release-please--') }}
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           fail-on-severity: moderate
