@@ -24,27 +24,25 @@ jobs:
     timeout-minutes: 90
     steps:
       - name: Checkout main
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply release changes
-        env:
-          PAYLOAD: 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
+      - name: Reassemble and apply release changes
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import base64, gzip, os
-          from pathlib import Path
-          target = Path(os.environ["RUNNER_TEMP"]) / "maintenance.py"
-          target.write_bytes(gzip.decompress(base64.b64decode(os.environ["PAYLOAD"])))
-          PY
+          cat .github/scripts/security-release-maintenance.py.part* > "$RUNNER_TEMP/maintenance.py"
+          echo "858ab3c7fc9c73e7857f61b13603ee362333df87468ac5cb3c38c0a1f3c3aa97  $RUNNER_TEMP/maintenance.py" | sha256sum --check
           python "$RUNNER_TEMP/maintenance.py"
+          rm -f .github/scripts/security-release-maintenance.py.part*
+          rm -f .github/workflows/security-release-maintenance.yml
+          rm -f .github/workflows/security-release-maintenance-v2.yml
+          rm -f .github/workflows/fetch-maintenance-log.yml
 
       - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
@@ -80,7 +78,11 @@ jobs:
             git push origin --delete "$branch"
           done
           remaining="$(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | sort -u)"
-          [[ "$remaining" == "main" ]]
+          if [[ "$remaining" != "main" ]]; then
+            echo "Unexpected remaining branches:" >&2
+            printf '%s\n' "$remaining" >&2
+            exit 1
+          fi
 
       - name: Dispatch CI and CodeQL
         env:
@@ -90,20 +92,26 @@ jobs:
           before="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           gh workflow run ci.yml --ref main
           gh workflow run codeql.yml --ref main
+
           wait_run() {
             local workflow="$1" run_id=""
-            for _ in {1..30}; do
+            for _ in {1..45}; do
               run_id="$(gh run list --workflow "$workflow" --branch main --event workflow_dispatch --created ">=$before" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
               [[ -n "$run_id" ]] && break
               sleep 2
             done
-            [[ -n "$run_id" ]]
+            if [[ -z "$run_id" ]]; then
+              echo "Unable to locate dispatched workflow: $workflow" >&2
+              exit 1
+            fi
             gh run watch "$run_id" --exit-status
           }
+
           wait_run ci.yml
           wait_run codeql.yml
+
           high_count="1"
-          for _ in {1..18}; do
+          for _ in {1..24}; do
             high_count="$(gh api -H "Accept: application/vnd.github+json" "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" --jq '[.[] | select((.rule.security_severity_level // .rule.severity // "") == "high" or (.rule.security_severity_level // "") == "critical")] | length')"
             [[ "$high_count" == "0" ]] && break
             sleep 10
@@ -126,15 +134,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           sleep 10
           gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/log.txt" 2>&1 || true
+          grep -v 'security-release-maintenance.py.part' "$RUNNER_TEMP/log.txt" > "$RUNNER_TEMP/filtered.txt" || true
           {
-            echo "Security release maintenance v2 failed."
+            echo "Security release maintenance v3 failed."
             echo
             echo "Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             echo
             echo '```text'
-            tail -c 50000 "$RUNNER_TEMP/log.txt"
+            tail -n 120 "$RUNNER_TEMP/filtered.txt"
             echo '```'
           } > "$RUNNER_TEMP/body.md"
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v2 failed" --body-file "$RUNNER_TEMP/body.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Security release maintenance v3 failed" --body-file "$RUNNER_TEMP/body.md"
