@@ -1,0 +1,91 @@
+from pathlib import Path
+import json
+import re
+
+ROOT = Path.cwd()
+VERSION = "0.4.0"
+PACKAGE = "@misztersoul/feathertext"
+TARBALL_PREFIX = "misztersoul-feathertext"
+
+
+def read(path: str) -> str:
+    return (ROOT / path).read_text(encoding="utf-8")
+
+
+def write(path: str, content: str) -> None:
+    (ROOT / path).write_text(content, encoding="utf-8")
+
+
+def replace_once(path: str, old: str, new: str) -> None:
+    text = read(path)
+    count = text.count(old)
+    if count != 1:
+        raise RuntimeError(f"Expected exactly one match in {path}, found {count}: {old[:120]!r}")
+    write(path, text.replace(old, new, 1))
+
+
+# Security/HTML helpers: parse through DOMParser and update DOM with nodes instead of assigning uncontrolled innerHTML.
+security = read("src/security.js")
+security = security.replace('  "iframe",\n', '', 1)
+security = security.replace('  "figure",\n', '  "figure",\n  "font",\n', 1)
+security = security.replace('  "img",\n', '  "iframe",\n  "img",\n', 1)
+security = security.replace(
+    '  img: new Set(["alt", "height", "src", "width"]),\n',
+    '  iframe: new Set([\n'
+    '    "allow",\n'
+    '    "allowfullscreen",\n'
+    '    "height",\n'
+    '    "loading",\n'
+    '    "referrerpolicy",\n'
+    '    "src",\n'
+    '    "title",\n'
+    '    "width",\n'
+    '  ]),\n'
+    '  img: new Set(["alt", "height", "src", "width"]),\n',
+    1,
+)
+security = security.replace(
+    '    } else if (name === "src") {\n'
+    '      const safe = normalizeSafeUrl(attribute.value, { kind: "image" });\n'
+    '      if (safe) element.setAttribute("src", safe);\n'
+    '      else element.removeAttribute(attribute.name);\n',
+    '    } else if (name === "src") {\n'
+    '      const safe =\n'
+    '        tag === "iframe"\n'
+    '          ? toSafeVideoEmbedUrl(attribute.value)\n'
+    '          : normalizeSafeUrl(attribute.value, { kind: "image" });\n'
+    '      if (safe) element.setAttribute("src", safe);\n'
+    '      else element.removeAttribute(attribute.name);\n',
+    1,
+)
+security = security.replace(
+    '  if (tag === "img" && !element.hasAttribute("src")) element.remove();\n',
+    '  if ((tag === "img" || tag === "iframe") && !element.hasAttribute("src"))\n'
+    '    element.remove();\n',
+    1,
+)
+old_tail = '''/**
+ * Applies a deliberately conservative built-in baseline policy for untrusted HTML.
+ * This small allowlist is not a complete sanitizer or a replacement for a reviewed,
+ * application-specific security boundary (for example, a maintained sanitizer plus CSP).
+ */
+export function sanitizeUntrustedHTML(html, options = {}) {
+  const documentRef = options.document || globalThis.document;
+  if (!documentRef || typeof documentRef.createElement !== "function")
+    return escapeHTML(html);
+  const template = documentRef.createElement("template");
+  template.innerHTML = String(html ?? "");
+  cleanTree(template.content, documentRef);
+  return template.innerHTML;
+}
+'''
+new_tail = '''function createHTMLFragment(html, documentRef) {
+  const DOMParserRef = documentRef?.defaultView?.DOMParser || globalThis.DOMParser;
+  if (typeof DOMParserRef !== "function") {
+    const fragment = documentRef.createDocumentFragment();
+    fragment.appendChild(documentRef.createTextNode(String(html ?? "")));
+    return fragment;
+  }
+  const parsed = new DOMParserRef().parseFromString(String(html ?? ""), "text/html");
+  const fragment = documentRef.createDocumentFragment();
+  for (const node of [...parsed.body.childNodes]) {
