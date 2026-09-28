@@ -187,6 +187,39 @@ test("async image upload restores the captured insertion selection", async () =>
   }
 });
 
+test("pending image uploads stop when the editor is disabled or destroyed", async () => {
+  const fixture = installDom();
+  try {
+    const pending = [];
+    const editor = new FeatherText("#editor", {
+      imageUpload() {
+        return new Promise((resolve) => pending.push(resolve));
+      },
+    });
+    const file = new fixture.window.File(["image"], "photo.png", {
+      type: "image/png",
+    });
+
+    const disabledUpload = editor.uploadImage(file);
+    editor.setDisabled(true);
+    pending.shift()("/disabled.png");
+    assert.equal(await disabledUpload, false);
+    assert.equal(editor.getHTML(), "");
+
+    editor.setDisabled(false);
+    const destroyedUpload = editor.uploadImage(file);
+    editor.destroy();
+    pending.shift()("/destroyed.png");
+    assert.equal(await destroyedUpload, false);
+    assert.equal(
+      fixture.commands.some(({ command }) => command === "insertHTML"),
+      false,
+    );
+  } finally {
+    fixture.cleanup();
+  }
+});
+
 test("dropped image uploads at the drop caret and remains undoable", async () => {
   const fixture = installDom();
   try {

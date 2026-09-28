@@ -112,6 +112,20 @@ test.describe("keyboard, responsive, and internationalization smoke", () => {
       "Live editor ready",
     );
 
+    const headlineBounds = await page.locator("#hero-title").evaluate((title) => {
+      const range = document.createRange();
+      range.selectNodeContents(title);
+      return [...range.getClientRects()].map((rect) => ({
+        left: rect.left,
+        right: rect.right,
+      }));
+    });
+    expect(headlineBounds.length).toBeGreaterThan(0);
+    for (const bounds of headlineBounds) {
+      expect(bounds.left).toBeGreaterThanOrEqual(-1);
+      expect(bounds.right).toBeLessThanOrEqual(321);
+    }
+
     const overflow = await page.evaluate(() => {
       const viewportWidth = globalThis.innerWidth;
       const scrollWidth = Math.max(

@@ -6,8 +6,22 @@
 
   const PACKAGE_NAME = "@misztersoul/feathertext";
   const PACKAGE_URL = "https://www.npmjs.com/package/@misztersoul/feathertext";
-  const initialDemoHTML =
-    "<h2>Write directly in a textarea-backed editor</h2><p>Format text, create lists and links, switch themes or languages, and open <strong>source mode</strong> to edit the HTML.</p><blockquote>The original textarea stays synchronized for normal form handling.</blockquote>";
+  const samples = Object.freeze({
+    note:
+      "<h2>A place for your next idea</h2>" +
+      "<p>Make this yours. Add a heading, highlight a thought, or turn a few lines into a list.</p>" +
+      "<p>The editor keeps this HTML in the original textarea as you write.</p>",
+    announcement:
+      "<h2>Something good is coming</h2>" +
+      "<p>Share a clear opening with your audience. <strong>Put the important part first.</strong></p>" +
+      "<ul><li>What is changing?</li><li>Who is it for?</li><li>What happens next?</li></ul>",
+    brief:
+      "<h2>Project brief</h2>" +
+      "<p><strong>Goal:</strong> Give the team one place to capture the plan.</p>" +
+      "<blockquote>Keep the message simple enough to act on.</blockquote>" +
+      "<p>Use headings, lists, and links to shape the details.</p>",
+  });
+  let activeSample = "note";
 
   const copyStatus = document.getElementById("copy-status");
   const demoState = document.getElementById("demo-state");
@@ -20,7 +34,7 @@
   const footerVersion = document.querySelector(
     ".site-footer .footer-bottom span:first-child",
   );
-  const proofNote = document.querySelector(".proof-note");
+  const sampleButtons = [...document.querySelectorAll("[data-demo-sample]")];
   let demoEditor = null;
 
   function setCopyStatus(message) {
@@ -116,12 +130,6 @@
       footerVersion.textContent = stableVersion
         ? `FeatherText · v${stableVersion}`
         : "FeatherText · current build";
-    }
-
-    if (proofNote) {
-      proofNote.textContent = stableVersion
-        ? `Automated repository evidence for the v${stableVersion} Pages build; exact scope is documented separately.`
-        : "Automated repository evidence for the current Pages build; exact scope is documented separately.";
     }
   }
 
@@ -220,8 +228,23 @@
       demoEditor.setLanguage(languageSelect.value);
     });
 
+    for (const button of sampleButtons) {
+      button.addEventListener("click", () => {
+        const sample = button.dataset.demoSample;
+        if (!Object.hasOwn(samples, sample)) return;
+        activeSample = sample;
+        for (const option of sampleButtons)
+          option.setAttribute(
+            "aria-pressed",
+            String(option.dataset.demoSample === sample),
+          );
+        demoEditor.setHTML(samples[sample]);
+        sourcePreview(demoEditor.getHTML());
+      });
+    }
+
     resetButton?.addEventListener("click", () => {
-      demoEditor.setHTML(initialDemoHTML);
+      demoEditor.setHTML(samples[activeSample]);
       sourcePreview(demoEditor.getHTML());
       demoEditor.focus();
     });

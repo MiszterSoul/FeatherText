@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore FeatherText's image picker, paste, and drop integration."
+    />
+    <meta name="robots" content="noindex" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>FeatherText image upload example</title>
+    <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../dist/feathertext.css" />
+    <link rel="stylesheet" href="./examples.css" />
+    <script defer src="../dist/feathertext.min.js"></script>
+    <script defer src="./upload.js"></script>
+  </head>
+  <body>
+    <header class="example-header">
+      <a class="example-brand" href="../site/">FeatherText</a>
+      <nav aria-label="Examples">
+        <a href="./index.html">All examples</a>
+        <a href="./basic.html">Basic form</a>
+        <a href="./upload.html" aria-current="page">Images</a>
+        <a href="https://github.com/MiszterSoul/FeatherText">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="example-shell">
+      <section class="example-intro">
+        <p class="example-kicker">Image integration</p>
+        <h1>Give the image picker an upload adapter.</h1>
+        <p>
+          Configure <code>imageUpload(file, editor)</code> to enable the file
+          picker, image paste, and image drop. Your application stores the file
+          and returns its URL.
+        </p>
+      </section>
+
+      <section class="example-card" id="upload-demo" data-sample-src="../site/assets/favicon.svg">
+        <label class="field-label" for="upload-editor">Try the image dialog</label>
+        <p class="field-help">
+          Place the cursor, choose Insert Image, then pick a file. You can also
+          paste or drop an image onto the editor. This static demo returns a
+          sample FeatherText image URL; it does not store or send your file.
+        </p>
+        <textarea id="upload-editor" aria-describedby="upload-help">
+<h2>Illustrate your story</h2><p>Place the caret in this note, then add an image.</p></textarea
+        >
+        <p class="example-status" id="upload-status" role="status" aria-live="polite">
+          Waiting for the generated bundle…
+        </p>
+        <p class="field-help" id="upload-help">
+          The returned URL is inserted into the synchronized textarea.
+        </p>
+        <details class="output-card">
+          <summary>Application upload adapter</summary>
+          <pre><code>async imageUpload(file) {
+  const body = new FormData();
+  body.append("image", file);
+  const response = await fetch("/api/images", {
+    method: "POST",
+    body,
+    credentials: "same-origin",
+  });
+  if (!response.ok) throw new Error("Image upload failed");
+  const { url } = await response.json();
+  return url;
+}</code></pre>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>

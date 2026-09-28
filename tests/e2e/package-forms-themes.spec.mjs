@@ -35,6 +35,19 @@ test.describe("built package, forms, and themes", () => {
       /README\.md#uploading-images-from-the-image-dialog$/,
     );
 
+    const announcement = page.getByRole("button", {
+      name: "An announcement",
+    });
+    await announcement.click();
+    await expect(announcement).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#demo-editor")).toHaveValue(
+      /Something good is coming/,
+    );
+    await page.getByRole("button", { name: "Reset content" }).click();
+    await expect(page.locator("#demo-editor")).toHaveValue(
+      /Something good is coming/,
+    );
+
     const browserGlobal = await page.evaluate(() => ({
       constructor: typeof globalThis.FeatherText,
       init: typeof globalThis.FeatherText?.init,

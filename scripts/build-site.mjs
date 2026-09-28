@@ -27,6 +27,7 @@ const REQUIRED_PAGE_FILES = Object.freeze([
   "examples/index.html",
   "examples/basic.html",
   "examples/api.html",
+  "examples/upload.html",
 ]);
 
 const options = parseArguments(process.argv.slice(2));

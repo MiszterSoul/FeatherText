@@ -233,6 +233,7 @@ The links are icon-only and expose their text through accessible labels and hove
 - [Runtime API](https://misztersoul.github.io/FeatherText/examples/api.html)
 - [English and Hungarian localization](https://misztersoul.github.io/FeatherText/examples/localization.html)
 - [Local draft autosave](https://misztersoul.github.io/FeatherText/examples/autosave.html)
+- [Image picker, paste, and drop](https://misztersoul.github.io/FeatherText/examples/upload.html)
 - [Multiple independent editors](https://misztersoul.github.io/FeatherText/examples/multiple-editors.html)
 
 ## HTML and security

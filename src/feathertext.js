@@ -1272,13 +1272,17 @@ export default class FeatherText {
   }
 
   async uploadImage(file, alt = "") {
-    if (this.isMutationBlocked()) return false;
+    if (this._destroyed || this.isMutationBlocked()) return false;
     if (typeof this.config.imageUpload !== "function")
       throw new Error(this.t("image.uploadMissing"));
     if (!this.isSource) this.saveSelection();
     this.wrapper.classList.add("feather-loading");
     try {
       const result = await this.config.imageUpload(file, this);
+      if (this._destroyed || this.isMutationBlocked()) {
+        this.selectionManager.clearSaved();
+        return false;
+      }
       const url = typeof result === "string" ? result : result?.url;
       const resolvedAlt =
         typeof result === "object" && result?.alt != null ? result.alt : alt;
@@ -2758,7 +2762,10 @@ export default class FeatherText {
       try {
         handler(payload);
       } catch (error) {
-        this.reportError(`event:${type}`, error);
+        if (type === "error") {
+          if (this.config.logErrors && globalThis.console?.warn)
+            console.warn("[FeatherText] event:error", error);
+        } else this.reportError(`event:${type}`, error);
       }
     }
     const CustomEventConstructor =

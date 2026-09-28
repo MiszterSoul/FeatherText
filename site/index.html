@@ -97,18 +97,13 @@
               <span class="status-dot" aria-hidden="true"></span> Textarea-backed
               rich-text editor · MIT
             </p>
-            <h1 id="hero-title">
-              Turn a textarea into a<br /><span>complete rich-text editor.</span>
-            </h1>
+            <h1 id="hero-title">Rich text for <span>real forms.</span></h1>
             <p class="hero-positioning">
-              FeatherText enhances a normal HTML textarea with a full editing UI
-              while keeping the original field synchronized for forms and
-              application code.
+              A capable editor that keeps your original textarea in sync.
             </p>
             <p class="hero-detail">
-              Add formatting, links, media, tables, source editing, themes,
-              localization, autosave, history, find and replace, and a direct
-              JavaScript API without adding runtime dependencies.
+              Give writers the tools they expect. Keep the forms, frameworks,
+              and data flow your application already has.
             </p>
 
             <div class="hero-actions">
@@ -122,53 +117,27 @@
               >
             </div>
 
-            <div class="install-block" aria-labelledby="install-title">
-              <div class="install-label">
-                <span id="install-title">Install</span>
-                <span>available on npm</span>
-              </div>
-              <div class="copy-row">
-                <code id="install-command"
-                  >npm install @misztersoul/feathertext</code
-                >
-                <button
-                  class="copy-button"
-                  type="button"
-                  data-copy-target="install-command"
-                  aria-describedby="copy-status"
-                >
-                  Copy
-                </button>
-              </div>
-              <p class="microcopy">
-                Published as
-                <a
-                  href="https://www.npmjs.com/package/@misztersoul/feathertext"
-                  rel="noreferrer"
-                  >@misztersoul/feathertext</a
-                >.
-              </p>
-              <p
-                class="copy-status"
-                id="copy-status"
-                role="status"
-                aria-live="polite"
-              ></p>
-            </div>
           </div>
 
           <div class="demo-column" id="demo">
             <div class="demo-card">
               <div class="demo-card-header">
                 <div>
-                  <p class="window-label">Live textarea editor</p>
+                  <p class="window-label">Your editor, live</p>
                   <p class="window-subtitle">
-                    Form-backed · visual and HTML source modes
+                    Type, format, switch themes, inspect the HTML
                   </p>
                 </div>
                 <div class="window-dots" aria-hidden="true">
                   <span></span><span></span><span></span>
                 </div>
+              </div>
+
+              <div class="demo-presets" role="group" aria-label="Sample documents">
+                <span>Start with</span>
+                <button type="button" data-demo-sample="note" aria-pressed="true">A note</button>
+                <button type="button" data-demo-sample="announcement" aria-pressed="false">An announcement</button>
+                <button type="button" data-demo-sample="brief" aria-pressed="false">A brief</button>
               </div>
 
               <div class="demo-controls">
@@ -214,11 +183,10 @@
                 name="demo-editor"
                 aria-describedby="demo-note"
               >
-<h2>Write directly in a textarea-backed editor</h2><p>Format text, create lists and links, switch themes or languages, and open <strong>source mode</strong> to edit the HTML.</p><blockquote>The original textarea stays synchronized for normal form handling.</blockquote></textarea
+<h2>A place for your next idea</h2><p>Make this yours. Add a heading, highlight a thought, or turn a few lines into a list.</p><p>The editor keeps this HTML in the original textarea as you write.</p></textarea
               >
               <p class="demo-note" id="demo-note">
-                The demo runs entirely in this page. Your content is not sent to a
-                service.
+                This demo stays in your browser. Your edits are not sent to a service.
               </p>
 
               <details class="html-output">
@@ -227,20 +195,50 @@
               </details>
             </div>
           </div>
+
+          <div class="install-block" aria-labelledby="install-title">
+            <div class="install-label">
+              <span id="install-title">Install</span>
+              <span>available on npm</span>
+            </div>
+            <div class="copy-row">
+              <code id="install-command" tabindex="0"
+                >npm install @misztersoul/feathertext</code
+              >
+              <button
+                class="copy-button"
+                type="button"
+                data-copy-target="install-command"
+                aria-describedby="copy-status"
+              >
+                Copy
+              </button>
+            </div>
+            <p class="microcopy">
+              Published as
+              <a
+                href="https://www.npmjs.com/package/@misztersoul/feathertext"
+                rel="noreferrer"
+                >@misztersoul/feathertext</a
+              >.
+            </p>
+            <p
+              class="copy-status"
+              id="copy-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </div>
         </div>
       </section>
 
       <section class="proof-strip" aria-label="Project facts">
         <div class="shell proof-grid">
-          <div><strong>0</strong><span>runtime dependencies</span></div>
-          <div><strong>74</strong><span>Node and JSDOM tests</span></div>
-          <div><strong>90</strong><span>browser test executions</span></div>
-          <div><strong>12</strong><span>axe accessibility checks</span></div>
+          <div><strong>Zero</strong><span>runtime dependencies</span></div>
+          <div><strong>Native</strong><span>textarea and form flow</span></div>
+          <div><strong>16</strong><span>built-in themes</span></div>
+          <div><strong>2</strong><span>built-in languages</span></div>
         </div>
-        <p class="proof-note shell">
-          Automated repository evidence for the current Pages build; exact scope
-          is documented separately.
-        </p>
       </section>
 
       <section class="section" id="features" aria-labelledby="features-title">
@@ -454,6 +452,10 @@ const editor = new FeatherText("#article-body", {
             <a href="../examples/multiple-editors.html"
               ><span>05</span><strong>Multiple editors</strong>
               <p>Run independent editor instances with separate configuration.</p></a
+            >
+            <a href="../examples/upload.html"
+              ><span>06</span><strong>Images and uploads</strong>
+              <p>Try the picker, paste, and drop with a local sample adapter.</p></a
             >
           </div>
         </div>

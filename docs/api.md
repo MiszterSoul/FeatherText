@@ -649,7 +649,7 @@ await editor.uploadImage(file, "Fallback alt");
 
 Image URLs allow HTTP(S) and relative paths, not `data:`. The dialog always offers alternative text and adds a file field when `imageUpload` exists. With that hook configured, users can also drop an image file onto the visual editor. The image is inserted at the drop position after the upload completes. Other dropped file types are left to the browser.
 
-`uploadImage` throws if no hook is configured or the hook fails/returns an unsafe URL. It preserves insertion selection across async work, toggles a loading class, and emits `imageupload` on success.
+`uploadImage` throws if no hook is configured or the hook fails/returns an unsafe URL. It preserves insertion selection across async work, toggles a loading class, and emits `imageupload` on success. It returns `false` without inserting if the editor is disabled, read-only, or destroyed before the upload completes.
 
 ### Videos
 

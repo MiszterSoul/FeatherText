@@ -180,6 +180,23 @@ test("instance events, DOM custom events, and plugin lifecycle form a minimal ex
   }
 });
 
+test("a failing error listener does not recursively report itself", () => {
+  const fixture = installDom();
+  try {
+    const editor = new FeatherText("#editor", { logErrors: false });
+    let calls = 0;
+    editor.on("error", () => {
+      calls += 1;
+      throw new Error("listener failed");
+    });
+    assert.doesNotThrow(() => editor.reportError("test", new Error("original")));
+    assert.equal(calls, 1);
+    editor.destroy();
+  } finally {
+    fixture.cleanup();
+  }
+});
+
 test("large source buffers fall back to escaped plain overlay text at the configured threshold", () => {
   const fixture = installDom();
   try {

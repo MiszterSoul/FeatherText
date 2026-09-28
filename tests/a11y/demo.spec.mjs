@@ -41,3 +41,18 @@ for (const viewport of VIEWPORTS) {
     ).toEqual([]);
   });
 }
+
+test("image integration example has no axe violations at mobile 320px", async ({
+  page,
+}) => {
+  const AxeBuilder = await loadAxeBuilder();
+  test.skip(!AxeBuilder, "@axe-core/playwright is not installed in this checkout");
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/examples/upload.html", { waitUntil: "load" });
+  await expect(page.locator("#upload-status")).toContainText("Editor ready");
+  const results = await analyzeDocument(page, AxeBuilder);
+  expect(
+    results.violations,
+    formatAxeViolations(results.violations),
+  ).toEqual([]);
+});
