@@ -139,6 +139,40 @@ test.describe("media, tables, and lifecycle", () => {
     );
   });
 
+  test("image dialog inserts into an editor that has not been focused", async ({
+    page,
+  }) => {
+    await loadBuiltFixture(page, {
+      body: '<textarea id="unfocused-editor"></textarea>',
+    });
+    await page.evaluate(() => {
+      globalThis.__unfocusedEditor = new globalThis.FeatherText(
+        "#unfocused-editor",
+        {
+          toolbar: ["image"],
+          async imageUpload() {
+            return "/assets/favicon.svg";
+          },
+        },
+      );
+      void globalThis.__unfocusedEditor.insertImage();
+    });
+    const dialog = page.getByRole("dialog", { name: "Insert image" });
+    await dialog.getByLabel("Upload image").setInputFiles({
+      name: "picture.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("image fixture"),
+    });
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(page.locator(".feather-editor img")).toHaveAttribute(
+      "src",
+      "/assets/favicon.svg",
+    );
+    await expect(page.locator("#unfocused-editor")).toHaveValue(
+      '<img src="/assets/favicon.svg" alt="">',
+    );
+  });
+
   test("the table dialog inserts the requested bounded dimensions", async ({
     page,
   }) => {

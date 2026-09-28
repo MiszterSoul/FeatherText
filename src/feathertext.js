@@ -1151,6 +1151,26 @@ export default class FeatherText {
       this.sourceMutated(label);
       return true;
     }
+    const selection = this.window.getSelection?.();
+    const savedRange =
+      selection?.rangeCount &&
+      this.selectionManager.contains(
+        selection.getRangeAt(0).commonAncestorContainer,
+      )
+        ? selection.getRangeAt(0).cloneRange()
+        : null;
+    this.editor.focus();
+    if (selection) {
+      const range = savedRange?.startContainer?.isConnected
+        ? savedRange
+        : this.document.createRange();
+      if (range !== savedRange) {
+        range.selectNodeContents(this.editor);
+        range.collapse(false);
+      }
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
     return this.commandManager.execute("insertHTML", markup, { label });
   }
 
