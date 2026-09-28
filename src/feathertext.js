@@ -696,6 +696,12 @@ export default class FeatherText {
     this.addManagedListener(this.editor, "paste", (event) =>
       this.handlePaste(event),
     );
+    this.addManagedListener(this.editor, "dragover", (event) =>
+      this.handleImageDragOver(event),
+    );
+    this.addManagedListener(this.editor, "drop", (event) =>
+      this.handleImageDrop(event),
+    );
     this.addManagedListener(this.editor, "keydown", (event) =>
       this.handleEditorKeydown(event),
     );
@@ -908,6 +914,77 @@ export default class FeatherText {
     }
     this.invokePasteCallback(event, payload);
     return true;
+  }
+
+  handleImageDragOver(event) {
+    if (this.isMutationBlocked() || typeof this.config.imageUpload !== "function")
+      return;
+    const transfer = event.dataTransfer;
+    const items = [...(transfer?.items || [])].filter(
+      (item) => item.kind === "file",
+    );
+    const files = [...(transfer?.files || [])];
+    if (
+      (items.length &&
+        !items.some((item) => String(item.type).startsWith("image/"))) ||
+      (files.length &&
+        !files.some((file) => String(file.type).startsWith("image/")))
+    )
+      return;
+    if (
+      items.length ||
+      files.length ||
+      [...(transfer?.types || [])].includes("Files")
+    ) {
+      event.preventDefault();
+      transfer.dropEffect = "copy";
+    }
+  }
+
+  handleImageDrop(event) {
+    if (this.isMutationBlocked() || typeof this.config.imageUpload !== "function")
+      return;
+    const image = [...(event.dataTransfer?.files || [])].find((file) =>
+      String(file.type || "").startsWith("image/"),
+    );
+    if (!image) return;
+
+    event.preventDefault();
+    const selection = this.window.getSelection?.();
+    const previous =
+      selection?.rangeCount &&
+      this.selectionManager.contains(
+        selection.getRangeAt(0).commonAncestorContainer,
+      )
+        ? selection.getRangeAt(0).cloneRange()
+        : null;
+    this.editor.focus();
+    const position = this.document.caretPositionFromPoint?.(
+      event.clientX,
+      event.clientY,
+    );
+    let range = null;
+    if (position && this.selectionManager.contains(position.offsetNode)) {
+      range = this.document.createRange();
+      range.setStart(position.offsetNode, position.offset);
+    } else {
+      range = this.document.caretRangeFromPoint?.(event.clientX, event.clientY);
+    }
+    const target =
+      range && this.selectionManager.contains(range.startContainer)
+        ? range
+        : previous?.startContainer?.isConnected
+          ? previous
+          : this.document.createRange();
+    if (target !== range && target !== previous) {
+      target.selectNodeContents(this.editor);
+      target.collapse(false);
+    } else target.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(target);
+    void this.uploadImage(image).catch((error) =>
+      this.reportError("imageUpload:drop", error),
+    );
   }
 
   invokePasteCallback(event, payload) {

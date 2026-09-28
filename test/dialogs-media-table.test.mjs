@@ -187,6 +187,109 @@ test("async image upload restores the captured insertion selection", async () =>
   }
 });
 
+test("dropped image uploads at the drop caret and remains undoable", async () => {
+  const fixture = installDom();
+  try {
+    const uploaded = [];
+    const editor = new FeatherText("#editor", {
+      historyDebounceMs: 0,
+      async imageUpload(file) {
+        uploaded.push(file.name);
+        await wait(1);
+        return "/uploaded.png";
+      },
+    });
+    editor.setHTML("beforeafter");
+    const text = editor.editor.firstChild;
+    selectText(fixture.window, text, 0, 0);
+    fixture.document.caretRangeFromPoint = () => {
+      const range = fixture.document.createRange();
+      range.setStart(text, 6);
+      range.collapse(true);
+      return range;
+    };
+    const image = new fixture.window.File(["image"], "photo.png", {
+      type: "image/png",
+    });
+    const dragover = new fixture.window.MouseEvent("dragover", {
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(dragover, "dataTransfer", {
+      value: { files: [image], types: ["Files"], dropEffect: "none" },
+    });
+    editor.editor.dispatchEvent(dragover);
+    assert.equal(dragover.defaultPrevented, true);
+    assert.equal(dragover.dataTransfer.dropEffect, "copy");
+
+    const drop = new fixture.window.MouseEvent("drop", {
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(drop, "dataTransfer", { value: { files: [image] } });
+    editor.editor.dispatchEvent(drop);
+    assert.equal(drop.defaultPrevented, true);
+    await wait(10);
+    assert.deepEqual(uploaded, ["photo.png"]);
+    assert.equal(
+      editor.getHTML(),
+      'before<img src="/uploaded.png" alt="">after',
+    );
+    assert.equal(editor.element.value, editor.getHTML());
+    editor.undo();
+    assert.equal(editor.getHTML(), "beforeafter");
+    editor.destroy();
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test("image drop ignores other files and blocked or unconfigured editors", async () => {
+  const fixture = installDom();
+  try {
+    const editor = new FeatherText("#editor", {
+      imageUpload() {
+        throw new Error("unexpected upload");
+      },
+    });
+    const image = new fixture.window.File(["image"], "photo.png", {
+      type: "image/png",
+    });
+    const textFile = new fixture.window.File(["text"], "notes.txt", {
+      type: "text/plain",
+    });
+    const dragover = new fixture.window.MouseEvent("dragover", {
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(dragover, "dataTransfer", {
+      value: { files: [textFile], types: ["Files"], dropEffect: "none" },
+    });
+    editor.editor.dispatchEvent(dragover);
+    assert.equal(dragover.defaultPrevented, false);
+    const drop = (file) => {
+      const event = new fixture.window.MouseEvent("drop", {
+        bubbles: true,
+        cancelable: true,
+      });
+      Object.defineProperty(event, "dataTransfer", {
+        value: { files: [file] },
+      });
+      editor.editor.dispatchEvent(event);
+      return event;
+    };
+    assert.equal(drop(textFile).defaultPrevented, false);
+    editor.setReadOnly(true);
+    assert.equal(drop(image).defaultPrevented, false);
+    editor.setReadOnly(false).setConfig({ imageUpload: null });
+    assert.equal(drop(image).defaultPrevented, false);
+    await wait(0);
+    editor.destroy();
+  } finally {
+    fixture.cleanup();
+  }
+});
+
 test("safe insertion APIs write markup directly into the active source transaction", () => {
   const fixture = installDom();
   try {

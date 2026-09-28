@@ -215,7 +215,7 @@ Missing/empty custom values fall back to dark tokens. Unknown theme strings reso
 | `sanitizePaste` | `boolean`                    | `true`   | In `pasteMode: "auto"`, selects plain text when true and HTML when false |
 | `pasteMode`     | `"auto" \| "text" \| "html"` | `"auto"` | Built-in clipboard content choice                                        |
 | `pasteFilter`   | function or `null`           | `null`   | Transforms/blocks payload before built-in choice                         |
-| `imageUpload`   | function or `null`           | `null`   | Application upload adapter used by image dialog and pasted image files   |
+| `imageUpload`   | function or `null`           | `null`   | Application upload adapter used by the image dialog, pasted files, and dropped files |
 
 `pasteFilter(payload, event, editor)` receives:
 
@@ -246,6 +246,8 @@ HTML selected by any paste path is passed through `sanitizeUntrustedHTML()` befo
 ```
 
 The returned image URL must pass the image policy. FeatherText does not validate, authorize, store, scan, or serve uploaded files.
+
+Configure this callback with your application's upload endpoint to enable the image dialog's file picker. For a multipart `POST /api/images` example and the expected JSON response, see the [README](../README.md#uploading-images-from-the-image-dialog). No third-party uploader is required by FeatherText.
 
 ### Source mode
 
@@ -645,7 +647,7 @@ await editor.insertImage();
 await editor.uploadImage(file, "Fallback alt");
 ```
 
-Image URLs allow HTTP(S) and relative paths, not `data:`. The dialog always offers alternative text and adds a file field when `imageUpload` exists.
+Image URLs allow HTTP(S) and relative paths, not `data:`. The dialog always offers alternative text and adds a file field when `imageUpload` exists. With that hook configured, users can also drop an image file onto the visual editor. The image is inserted at the drop position after the upload completes. Other dropped file types are left to the browser.
 
 `uploadImage` throws if no hook is configured or the hook fails/returns an unsafe URL. It preserves insertion selection across async work, toggles a loading class, and emits `imageupload` on success.
 

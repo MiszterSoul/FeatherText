@@ -91,6 +91,54 @@ test.describe("media, tables, and lifecycle", () => {
     });
   });
 
+  test("dropping an image uploads it at the drop caret", async ({ page }) => {
+    await loadBuiltFixture(page, {
+      body: '<textarea id="drop-editor">beforeafter</textarea>',
+    });
+    await page.evaluate(() => {
+      globalThis.__dropEditor = new globalThis.FeatherText("#drop-editor", {
+        async imageUpload(file) {
+          await Promise.resolve();
+          return { url: "/dropped.png", alt: file.name };
+        },
+      });
+      const surface = globalThis.__dropEditor.editor;
+      const range = document.createRange();
+      range.setStart(surface.firstChild, 6);
+      range.setEnd(surface.firstChild, 7);
+      const rect = range.getBoundingClientRect();
+      const clientX = rect.left + 1;
+      const clientY = rect.top + rect.height / 2;
+      const transfer = new DataTransfer();
+      transfer.items.add(new File(["image"], "drop.png", { type: "image/png" }));
+      surface.dispatchEvent(
+        new DragEvent("dragover", {
+          bubbles: true,
+          cancelable: true,
+          clientX,
+          clientY,
+          dataTransfer: transfer,
+        }),
+      );
+      surface.dispatchEvent(
+        new DragEvent("drop", {
+          bubbles: true,
+          cancelable: true,
+          clientX,
+          clientY,
+          dataTransfer: transfer,
+        }),
+      );
+    });
+    await expect(page.locator(".feather-editor img")).toHaveAttribute(
+      "src",
+      "/dropped.png",
+    );
+    await expect(page.locator("#drop-editor")).toHaveValue(
+      'before<img src="/dropped.png" alt="drop.png">after',
+    );
+  });
+
   test("the table dialog inserts the requested bounded dimensions", async ({
     page,
   }) => {

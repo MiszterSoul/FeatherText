@@ -30,6 +30,10 @@ test.describe("built package, forms, and themes", () => {
     ).toBeVisible();
     await expect(page.locator(".demo-card .feather")).toHaveCount(1);
     await expect(page.locator("#demo-editor")).toBeHidden();
+    await expect(page.getByRole("link", { name: /Image upload/ })).toHaveAttribute(
+      "href",
+      /README\.md#uploading-images-from-the-image-dialog$/,
+    );
 
     const browserGlobal = await page.evaluate(() => ({
       constructor: typeof globalThis.FeatherText,

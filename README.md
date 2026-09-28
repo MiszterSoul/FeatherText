@@ -137,6 +137,29 @@ const editor = new FeatherText("#editor", {
 });
 ```
 
+## Uploading images from the image dialog
+
+Provide an `imageUpload` callback to show the file picker in the image dialog. The same callback handles pasted and dropped images. FeatherText does not include a file host; use your application's authenticated upload endpoint and return the stored image URL.
+
+```js
+const editor = new FeatherText("#editor", {
+  async imageUpload(file) {
+    const body = new FormData();
+    body.append("image", file);
+    const response = await fetch("/api/images", {
+      method: "POST",
+      body,
+      credentials: "same-origin",
+    });
+    if (!response.ok) throw new Error("Image upload failed");
+    const { url } = await response.json();
+    return url;
+  },
+});
+```
+
+Your `/api/images` endpoint should accept the multipart `image` field and return JSON such as `{ "url": "/uploads/photo.png" }`. Validate and store the file on the server. The editor checks the returned URL before inserting it.
+
 ## Common API methods
 
 ```js
