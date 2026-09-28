@@ -182,7 +182,7 @@
       ariaLabel: "FeatherText live demo editor",
       sourceAriaLabel: "FeatherText live demo source editor",
       sanitizePaste: true,
-      minHeight: 250,
+      minHeight: 300,
       maxHeight: 420,
       toolbar: [
         "format",
@@ -192,7 +192,8 @@
         "|",
         "link",
         "blockquote",
-        "code",
+        "image",
+        "table",
         "|",
         "ul",
         "ol",
@@ -201,10 +202,15 @@
         "redo",
         "|",
         "source",
+        "fullscreen",
       ],
       onChange(html) {
         sourcePreview(html);
       },
+    });
+
+    document.querySelector('a[href="#demo"]')?.addEventListener("click", () => {
+      demoEditor.activeSurface().focus({ preventScroll: true });
     });
 
     sourcePreview(demoEditor.getHTML());

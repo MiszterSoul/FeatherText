@@ -197,3 +197,20 @@ test.describe("built package, forms, and themes", () => {
     await expect(editorWrapper(page, 1)).toHaveAttribute("data-theme", "dawn");
   });
 });
+
+test("demo customization and fullscreen preserve a usable writing surface", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#demo-state")).toContainText("Live editor ready");
+  await page.getByText("Customize editor", { exact: true }).click();
+  await page.locator("#demo-theme").selectOption("dark");
+  await expect(page.locator(".demo-card .feather")).toHaveAttribute("data-theme", "dark");
+  const fullscreen = page.locator('.demo-card [data-command="fullscreen"]');
+  await fullscreen.click();
+  const wrapper = page.locator(".demo-card .feather");
+  await expect(wrapper).toHaveClass(/feather-fullscreen/);
+  const bounds = await wrapper.locator(".feather-status").boundingBox();
+  expect(bounds.y + bounds.height).toBeLessThanOrEqual(page.viewportSize().height + 1);
+  await page.locator(".demo-card .feather-editor").press("Escape");
+  await expect(wrapper).not.toHaveClass(/feather-fullscreen/);
+  await expect(page.locator(".demo-card .feather-editor")).toBeFocused();
+});

@@ -31,7 +31,7 @@
   --feather-border: #dee2e6;
   --feather-accent: #0d6efd;
   --feather-text: #212529;
-  --feather-muted: #6c757d;
+  --feather-muted: #626b74;
   --feather-hover: #e9ecef;
   --feather-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
@@ -199,7 +199,8 @@
 .feather {
   position: relative;
   max-width: 100%;
-  border-radius: 14px;
+  border: 1px solid var(--feather-border);
+  border-radius: 16px;
   box-shadow: none;
   overflow: hidden;
   font:
@@ -216,8 +217,8 @@
 .feather-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px;
+  gap: 4px;
+  padding: 8px;
   border-bottom: 1px solid var(--feather-border);
   background: var(--feather-panel);
   position: sticky;
@@ -238,17 +239,18 @@
 .feather-btn,
 .feather-select,
 .feather-color {
-  height: 34px;
-  border-radius: 10px;
-  border: 1px solid var(--feather-border);
-  background: var(--feather-bg);
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--feather-text);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 0 10px;
+  padding: 0 9px;
+  font: inherit;
   transition: none;
   position: relative;
 }
@@ -278,8 +280,8 @@
   transform: scale(0.98);
 }
 .feather-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: block;
   opacity: 0.95;
   fill: none;
@@ -421,7 +423,7 @@
 .feather-editor,
 .feather-source {
   min-height: var(--feather-min-height);
-  padding: 16px;
+  padding: 24px;
   outline: none;
   background: var(--feather-bg);
   color: var(--feather-text);
@@ -610,10 +612,8 @@
   gap: 7px;
 }
 .feather-badge {
-  background: var(--feather-bg);
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--feather-border);
+  padding: 2px 4px;
+  font-variant-numeric: tabular-nums;
 }
 .feather-attribution a {
   display: inline-flex;
@@ -774,8 +774,8 @@
   max-height: 100%;
   overflow: auto;
   border: 1px solid var(--feather-border);
-  border-radius: 14px;
-  padding: 18px;
+  border-radius: 18px;
+  padding: 24px;
   color: var(--feather-text);
   background: var(--feather-panel);
   box-shadow: none;
@@ -785,7 +785,8 @@
 }
 .feather-dialog h2 {
   margin: 0 0 14px;
-  font-size: 1rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.025em;
 }
 .feather-dialog-description {
   margin: 0 0 14px;
@@ -802,7 +803,7 @@
 .feather-dialog-field input {
   box-sizing: border-box;
   width: 100%;
-  min-height: 38px;
+  min-height: 44px;
   border: 1px solid var(--feather-border);
   border-radius: 9px;
   padding: 7px 9px;
@@ -838,6 +839,8 @@
   font: inherit;
 }
 .feather-dialog-actions .feather-dialog-confirm {
+  font-weight: 650;
+  background: var(--feather-hover);
   border-color: var(--feather-accent);
 }
 .feather-dialog-actions button:focus-visible {
@@ -880,6 +883,9 @@
 /* Fullscreen mode */
 .feather-fullscreen {
   position: fixed !important;
+  display: flex;
+  flex-direction: column;
+  background: var(--feather-bg);
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
@@ -892,9 +898,11 @@
 }
 
 .feather-fullscreen .feather-editor {
-  height: calc(100vh - 120px) !important;
-  height: calc(100dvh - 120px) !important;
+  flex: 1;
+  min-height: 0;
+  height: auto !important;
   max-height: none !important;
+  overflow-y: auto;
 }
 
 /* Table styles */
@@ -959,7 +967,7 @@
 .feather-source:focus-visible,
 .feather-editor:focus-visible {
   outline: 2px solid var(--feather-accent);
-  outline-offset: 2px;
+  outline-offset: -2px;
 }
 
 /* Loading state */
@@ -1123,4 +1131,19 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* Quiet controls keep the document as the visual focus. */
+.feather-editor { font-size: 15px; line-height: 1.75; overflow-wrap: anywhere; }
+.feather-editor > :first-child { margin-top: 0; }
+.feather-editor h1, .feather-editor h2, .feather-editor h3 { line-height: 1.3; letter-spacing: -0.025em; }
+.feather-editor a { color: var(--feather-accent); text-underline-offset: 3px; }
+.feather-btn:disabled { opacity: 0.4; cursor: default; }
+.feather-btn:disabled:hover { background: transparent; }
+.feather-dialog-field input::file-selector-button { font: inherit; padding: 7px 10px; margin-right: 10px; border: 0; border-radius: 6px; color: var(--feather-text); background: var(--feather-hover); cursor: pointer; }
+.feather-fullscreen > .feather-toolbar, .feather-fullscreen > .feather-status { flex-shrink: 0; }
+.feather-fullscreen .feather-source-wrap { flex: 1; min-height: 0; max-height: none; }
+.feather-fullscreen .feather-source-pane { flex: 1; min-height: 0; }
+@media (pointer: coarse) {
+  .feather-attribution a { min-height: 36px; min-width: 36px; justify-content: center; }
 }

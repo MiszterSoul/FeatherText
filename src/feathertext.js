@@ -657,6 +657,13 @@ export default class FeatherText {
     this.addManagedListener(this.wrapper, "keydown", (event) =>
       this.handleToolbarKeydown(event),
     );
+    this.addManagedListener(this.wrapper, "keydown", (event) => {
+      if (event.key === "Escape" && !event.defaultPrevented && this.isFullscreen) {
+        event.preventDefault();
+        this.toggleFullscreen();
+        this.activeSurface().focus();
+      }
+    });
     this.addManagedListener(this.wrapper, "mouseover", (event) =>
       this.handleTooltipPointer(event, true),
     );

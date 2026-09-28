@@ -97,13 +97,13 @@
               <span class="status-dot" aria-hidden="true"></span> Textarea-backed
               rich-text editor · MIT
             </p>
-            <h1 id="hero-title">Rich text for <span>real forms.</span></h1>
+            <h1 id="hero-title">A little lighter.<br /><span>A lot more expressive.</span></h1>
             <p class="hero-positioning">
-              A capable editor that keeps your original textarea in sync.
+              Beautiful writing. Seamless integration.
             </p>
             <p class="hero-detail">
-              Give writers the tools they expect. Keep the forms, frameworks,
-              and data flow your application already has.
+              A thoughtful rich-text editor for your next project.
+              Just a textarea, a few lines of code, and room for your ideas.
             </p>
 
             <div class="hero-actions">
@@ -123,9 +123,9 @@
             <div class="demo-card">
               <div class="demo-card-header">
                 <div>
-                  <p class="window-label">Your editor, live</p>
+                  <p class="window-label">Make yourself at home.</p>
                   <p class="window-subtitle">
-                    Type, format, switch themes, inspect the HTML
+                    A real editor. Ready for your words.
                   </p>
                 </div>
                 <div class="window-dots" aria-hidden="true">
@@ -138,14 +138,19 @@
                 <button type="button" data-demo-sample="note" aria-pressed="true">A note</button>
                 <button type="button" data-demo-sample="announcement" aria-pressed="false">An announcement</button>
                 <button type="button" data-demo-sample="brief" aria-pressed="false">A brief</button>
+                <button class="text-button" type="button" id="demo-reset">
+                  Reset content
+                </button>
               </div>
 
+              <details class="demo-settings">
+                <summary>Customize editor</summary>
               <div class="demo-controls">
                 <label for="demo-theme">Theme</label>
                 <select id="demo-theme">
                   <option value="auto">Auto</option>
-                  <option value="dark" selected>Dark</option>
-                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="light" selected>Light</option>
                   <option value="ocean">Ocean</option>
                   <option value="forest">Forest</option>
                   <option value="aurora">Aurora</option>
@@ -165,11 +170,16 @@
                   <option value="en" selected>English</option>
                   <option value="hu">Magyar</option>
                 </select>
-                <button class="text-button" type="button" id="demo-reset">
-                  Reset content
-                </button>
               </div>
+              </details>
 
+              <textarea
+                id="demo-editor"
+                name="demo-editor"
+                aria-describedby="demo-note"
+              >
+<h2>A place for your next idea</h2><p>Make this yours. Add a heading, highlight a thought, or turn a few lines into a list.</p><p>The editor keeps this HTML in the original textarea as you write.</p></textarea
+              >
               <p
                 class="demo-state"
                 id="demo-state"
@@ -178,15 +188,9 @@
               >
                 Loading the generated editor build…
               </p>
-              <textarea
-                id="demo-editor"
-                name="demo-editor"
-                aria-describedby="demo-note"
-              >
-<h2>A place for your next idea</h2><p>Make this yours. Add a heading, highlight a thought, or turn a few lines into a list.</p><p>The editor keeps this HTML in the original textarea as you write.</p></textarea
-              >
+              <p class="toolbar-hint">Scroll the toolbar for more tools →</p>
               <p class="demo-note" id="demo-note">
-                This demo stays in your browser. Your edits are not sent to a service.
+                Your words stay in this browser. Expand to focus. Press Escape to return.
               </p>
 
               <details class="html-output">

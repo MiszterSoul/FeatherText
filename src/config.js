@@ -20,7 +20,7 @@ export const themes = Object.freeze({
     border: "#dee2e6",
     accent: "#0d6efd",
     text: "#212529",
-    muted: "#6c757d",
+    muted: "#626b74",
     hover: "#e9ecef",
     shadow: "0 6px 24px rgba(0, 0, 0, 0.08)",
   }),
